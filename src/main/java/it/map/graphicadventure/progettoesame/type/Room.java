@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Room {
+    private String imagePath;
+    
     private final int id;
     private String name;
     private String description;
@@ -47,4 +49,19 @@ public class Room {
     public int getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }
+    
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Room) {
+            return (((Room)o).getId() == this.getId());
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        // Genera un hash basato sull'ID.
+        return java.util.Objects.hash(id);
+    }
 }

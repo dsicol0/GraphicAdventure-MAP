@@ -1,6 +1,8 @@
 package it.map.graphicadventure.progettoesame.type;
 
 public class GameObject {
+    private String imagePath;
+    
     private final int id;
     private String name;
     private String description;
@@ -20,4 +22,19 @@ public class GameObject {
     public void setDescription(String description) { this.description = description; }
     public boolean isTakeable() { return takeable; }
     public void setTakeable(boolean takeable) { this.takeable = takeable; }
+    
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof GameObject) {
+            return (((GameObject)o).getId() == this.getId());
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        // Genera un hash basato sull'ID.
+        return java.util.Objects.hash(id);
+    }
 }
