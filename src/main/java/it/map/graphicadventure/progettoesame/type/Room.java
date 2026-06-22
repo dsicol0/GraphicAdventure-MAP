@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Room {
-    private String imagePath;
     
     private final int id;
     private String name;
     private String description;
+    private String imagePath;
 
-    // Mappa delle uscite: es. "nord" -> Stanza numero 2
+    // Mappa delle uscite: la chiave è la direzione ("nord"), il valore è la Stanza di destinazione
     private final Map<String,Room> exits = new HashMap<>();
 
     // Lista degli oggetti presenti nella stanza
@@ -24,6 +24,15 @@ public class Room {
         this.description = description;
     }
 
+    public int getId() { return id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    // Utile se la descrizione cambia (es. "La stanza è buia" -> "La stanza è illuminata")
+    public void setDescription(String description) { this.description = description; }
+
     // Metodi per gestire le uscite
     public void setExit(String direction, Room room) {
         exits.put(direction.toLowerCase(), room);
@@ -31,6 +40,12 @@ public class Room {
 
     public Room getExit(String direction) {
         return exits.get(direction.toLowerCase());
+    }
+
+    // Ritorna la mappa intera: utilissimo per controllare quante uscite ci sono
+    // o per stampare a video "Puoi andare a: nord, ovest".
+    public Map<String, Room> getExits() {
+        return exits;
     }
 
     // Metodi per gestire gli oggetti nella stanza
@@ -46,10 +61,6 @@ public class Room {
         objects.remove(obj);
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    
     @Override
     public boolean equals(Object o) {
         if(o instanceof Room) {
