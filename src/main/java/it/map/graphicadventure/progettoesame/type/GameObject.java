@@ -13,14 +13,7 @@ public class GameObject {
     // Gestione degli Alias (es: il nome è "spada", gli alias sono "spadone", "lama")
     private Set<String> aliases;
 
-    // Cosa si può fare con l'oggetto)
     private boolean takeable; // Indica se il giocatore può metterlo nell'inventario
-    private boolean pushable;
-    private boolean openable;
-
-    // Stato attuale dell'oggetto
-    private boolean pushed;
-    private boolean opened;
 
     public GameObject(int id, String name, String description) {
         this.id = id;
@@ -29,10 +22,6 @@ public class GameObject {
         this.aliases = new HashSet<>();
 
         this.takeable = true; // Di default un oggetto è prendibile
-        this.pushable = false;
-        this.openable = false;
-        this.pushed = false;
-        this.opened = false;
     }
 
     public Set<String> getAliases() {
@@ -68,18 +57,6 @@ public class GameObject {
 
     public boolean isTakeable() { return takeable; }
     public void setTakeable(boolean takeable) { this.takeable = takeable; }
-
-    public boolean isPushable() { return pushable; }
-    public void setPushable(boolean pushable) { this.pushable = pushable; }
-
-    public boolean isOpenable() { return openable; }
-    public void setOpenable(boolean openable) { this.openable = openable; }
-
-    public boolean isPushed() { return pushed; }
-    public void setPushed(boolean pushed) { this.pushed = pushed; }
-
-    public boolean isOpened() { return opened; }
-    public void setOpened(boolean opened) { this.opened = opened; }
 
     @Override
     public boolean equals(Object o) {
