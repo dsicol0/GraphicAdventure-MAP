@@ -14,6 +14,4 @@ public interface Usable {
         'false' se non è successo nulla (es. hai usato la chiave su un muro).
     */ 
     boolean use(GameObject target);
-    
-    
 }

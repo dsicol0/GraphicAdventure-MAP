@@ -1,47 +1,19 @@
 package it.map.graphicadventure.progettoesame.type;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
-public class GameObject {
+public abstract class GameObject {
 
     private final int id;
     private String name;
     private String description;
     private String imagePath;
 
-    // Gestione degli Alias (es: il nome è "spada", gli alias sono "spadone", "lama")
-    private Set<String> aliases;
-
-    private boolean takeable; // Indica se il giocatore può metterlo nell'inventario
-
-    public GameObject(int id, String name, String description) {
+    public GameObject(int id, String name, String description, String imagePath) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.aliases = new HashSet<>();
-
-        this.takeable = true; // Di default un oggetto è prendibile
-    }
-
-    public Set<String> getAliases() {
-        return aliases;
-    }
-
-    public void setAliases(Set<String> aliases) {
-        this.aliases = aliases;
-    }
-
-    // Metodo comodo per aggiungere un alias singolo (lo salviamo in minuscolo per facilitare i controlli del parser)
-    public void addAlias(String alias) {
-        this.aliases.add(alias.toLowerCase());
-    }
-
-    // Metodo comodo per aggiungere più alias in una volta sola
-    public void addAliases(String... newAliases) {
-        for(String a : newAliases) {
-            this.aliases.add(a.toLowerCase());
-        }
+        this.imagePath = imagePath;
     }
 
     public int getId() { return id; }
@@ -55,8 +27,6 @@ public class GameObject {
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
-    public boolean isTakeable() { return takeable; }
-    public void setTakeable(boolean takeable) { this.takeable = takeable; }
 
     @Override
     public boolean equals(Object o) {

@@ -3,12 +3,11 @@ package it.map.graphicadventure.progettoesame.type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectContainer extends GameObject {
+public class ObjectContainer extends GameObject implements Openable {
     private final List<GameObject> list = new ArrayList<>();
 
-    public ObjectContainer(int id, String name, String description) {
-        super(id, name, description);
-        this.setTakeable(false); // Di solito i grandi contenitori (es. bauli) non si possono prendere
+    public ObjectContainer(int id, String name, String description, String imagePath) {
+        super(id, name, description, imagePath);
     }
 
     public List<GameObject> getList() {
@@ -21,5 +20,15 @@ public class ObjectContainer extends GameObject {
 
     public void remove(GameObject obj) {
         list.remove(obj);
+    }
+
+    @Override
+    public void open() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean isOpen() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
