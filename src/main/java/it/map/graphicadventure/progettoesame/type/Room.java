@@ -61,6 +61,13 @@ public class Room {
         objects.remove(obj);
     }
 
+    public GameObject findObjectByName(String name) {
+        return objects.stream()
+                .filter(obj -> obj.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if(o instanceof Room) {

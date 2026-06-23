@@ -1,5 +1,6 @@
 package it.map.graphicadventure.progettoesame.impl;
 import it.map.graphicadventure.progettoesame.GameDescription;
+import it.map.graphicadventure.progettoesame.GameUtils;
 import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.GameObject;
@@ -18,23 +19,21 @@ public class EsameGame extends GameDescription {
         // 1. INIZIALIZZA IL GIOCATORE
         studente = new Player("Matricola Disperata", 100);
 
-        // 3. CREAZIONE STANZE
-        Room aulaStudio = new Room(1, "Aula Studio", "Sei circondato da appunti. La porta a NORD conduce all'atrio.");
-        Room atrio = new Room(2, "Atrio Principale", "L'uscita è sbarrata. Il lettore badge è spento. C'è odore di bruciato.");
+        // 2. CARICAMENTO DINAMICO DA FILE
+        String pathMappa = "src/main/resources/mappa.txt";
+        List<Room> stanzeCaricate = GameUtils.loadMapFromFile(pathMappa);
 
-        // 4. COLLEGAMENTI (La Mappa)
-        aulaStudio.setExit("nord", atrio);
-        atrio.setExit("sud", aulaStudio);
+        // REQUISITO LAMBDA: Usiamo il forEach per aggiungere tutte le stanze caricate
+        stanzeCaricate.forEach(room -> getRooms().add(room));
 
-        // 5. CREAZIONE OGGETTI
-        //GameObject libretto = new GameObject(10, "Libretto", "Il tuo prezioso libretto. Potrebbe distrarre qualche prof...");
-        //libretto.setTakeable(true);
-        //aulaStudio.addObject(libretto);
+        // REQUISITO STREAM & PIPELINE: Cerchiamo la stanza iniziale (Aula Studio con ID 1)
+        Room stanzaIniziale = getRooms().stream()
+                .filter(room -> room.getId() == 1)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Errore critico: Aula Studio (ID 1) non trovata nel file di configurazione!"));
 
-        // 6. SETUP FINALE
-        getRooms().add(aulaStudio);
-        getRooms().add(atrio);
-        setCurrentRoom(aulaStudio);
+        // Imposta la stanza corrente
+        setCurrentRoom(stanzaIniziale);
     }
 
     // Un getter per recuperare facilmente il giocatore durante la partita
