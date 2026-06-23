@@ -1,5 +1,7 @@
-package it.map.graphicadventure.progettoesame.type;
+package it.map.graphicadventure.progettoesame.type.items;
 
+import it.map.graphicadventure.progettoesame.type.GameObject;
+import it.map.graphicadventure.progettoesame.type.interfaces.Openable;
 import java.util.ArrayList;
 import java.util.List;
 
