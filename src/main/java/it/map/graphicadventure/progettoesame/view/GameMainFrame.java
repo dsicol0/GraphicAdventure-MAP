@@ -92,7 +92,6 @@ public class GameMainFrame extends javax.swing.JFrame {
         jtfTitle.setText("Exception : Outbreak");
         jtfTitle.setBorder(null);
         jtfTitle.setFocusable(false);
-        jtfTitle.addActionListener(this::jtfTitleActionPerformed);
         jpMenu.add(jtfTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, 590, 70));
 
         jbContinue.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -109,6 +108,8 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbQuit.setText("ESCI");
         jbQuit.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 0, 0), 2));
         jbQuit.setContentAreaFilled(false);
+        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbQuit.addActionListener(this::jbQuitActionPerformed);
         jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 440, 220, 50));
 
         jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main_menu_background.png"))); // NOI18N
@@ -132,9 +133,9 @@ public class GameMainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jtfTitleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfTitleActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jtfTitleActionPerformed
+    private void jbQuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbQuitActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_jbQuitActionPerformed
 
     /**
      * @param args the command line arguments
