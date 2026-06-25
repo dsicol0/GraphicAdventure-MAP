@@ -14,11 +14,27 @@ import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
  */
 public class Key extends GameObject implements Takeable, Usable {
 
+    private boolean takeable;
+
     public Key(int id, String name, String description, String imagePath) {
 
         super(id, name, description, imagePath);
+
+        this.takeable = true;
     }
-    
+
+    // metodo di Takeable
+    @Override
+    public boolean isTakeable() {
+        return this.takeable;
+    }
+
+    @Override
+    public void setTakeable(boolean takeable) {
+        this.takeable = takeable;
+    }
+
+    // metodo di Usable
     @Override
     public boolean use(GameObject target) {
         // Se proviamo a usare la chiave su una Cassa...

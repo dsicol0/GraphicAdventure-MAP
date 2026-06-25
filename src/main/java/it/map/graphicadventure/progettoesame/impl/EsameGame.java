@@ -4,7 +4,6 @@ import it.map.graphicadventure.progettoesame.GameUtils;
 import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.GameObject;
-// Importa anche eventuali tue sottoclassi come Weapon, ObjectContainer ecc.
 
 import java.io.PrintStream;
 import java.util.List;

@@ -16,17 +16,30 @@ import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
 public class Weapon extends GameObject implements Usable, Takeable {
     
     private final int damage;
+    private boolean takeable;
 
     public Weapon(int id, String name, String description, String imagePath, int damage) {
         super(id, name, description, imagePath);
         this.damage = damage;
+        this.takeable = true;
     }
 
     public int getDamage() {
         return damage;
     }
 
-    // Usiamo l'UNICO metodo dell'interfaccia
+    // metodi di Takeable
+    @Override
+    public boolean isTakeable() {
+        return this.takeable;
+    }
+
+    @Override
+    public void setTakeable(boolean takeable) {
+        this.takeable = takeable;
+    }
+
+    // Usiamo l'UNICO metodo dell'interfaccia di Usable
     @Override
     public boolean use(GameObject target) {
         

@@ -11,6 +11,9 @@ package it.map.graphicadventure.progettoesame.type.interfaces;
 public interface Openable {
     
     void open();
+    void close();
     boolean isOpen();
-    
+
+    boolean isLocked();
+    void setOpen(boolean locked);
 }
