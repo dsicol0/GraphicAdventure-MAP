@@ -1,0 +1,48 @@
+# File di configurazione del mondo di gioco
+
+[ROOMS]
+# === PRIMO PIANO ===
+1; Corridoio Primo Piano; Conosci bene questo posto ma sai bene che devi scappare il prima possibile. L'aria è pesante. Vedi le luci sfarfallare. Ti chiedi che cosa sia successo...
+2; Aula 2; Una normale aula scolastica con i banchi rovesciati. Senti dei passi trascinati in fondo...
+3; Aula di Biologia; Sulla lavagna vedi scritte delle formule incomprensibili. In un ampolla al primo banco c'è una sostanza verde. Inizi a sentire dei passi provenienti dal piano superiore...
+4; Segreteria; Vedi il cadavere del custode della segreteria seduto alla sua scrivania. Hai paura anche al solo pensiero di avvicinarti.
+5; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.
+
+# === SECONDO PIANO ===
+6; Corridoio Secondo Piano; Il corridoio del piano superiore è completamente immerso nel silenzio. Le plafoniere pendono dal soffitto. A SUD ci sono le scale per scendere.
+7; Laboratorio Chimico; Banconi pieni di fiale distrutte e vetri infranti. L'odore di zolfo qui è insopportabile.
+8; Presidenza; La lussuosa porta di legno è semiaperta. All'interno regna il caos più totale, scartoffie ovunque.
+
+[EXITS]
+# idStanzaPartenza ; direzione ; idStanzaDestinazione
+
+# ==========================================
+# PRIMO PIANO (Il Corridoio 1 si collega a TUTTI)
+# ==========================================
+1; NORD; 2
+2; SUD; 1
+
+1; OVEST; 3
+3; EST; 1
+
+1; EST; 4
+4; OVEST; 1
+
+1; SUD; 5
+5; NORD; 1
+
+# ==========================================
+# COLLEGAMENTO TRA I PIANI (Il trucco delle scale)
+# ==========================================
+# Quando sei nel Vano Scale (5), andando ancora a NORD sali al secondo piano (6)
+5; NORD; 6
+6; SUD; 5
+
+# ==========================================
+# SECONDO PIANO (Il Corridoio 6 fa da Hub sopra)
+# ==========================================
+6; NORD; 7
+7; SUD; 6
+
+6; EST; 8
+8; OVEST; 6
