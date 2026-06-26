@@ -23,6 +23,20 @@ public class GameMainFrame extends javax.swing.JFrame {
     public GameMainFrame() {
         initComponents();
         
+      
+        try {
+            javax.swing.ImageIcon iconaOriginale = (javax.swing.ImageIcon) jlBackground.getIcon();
+            
+            if (iconaOriginale != null) {
+                java.awt.Image img = iconaOriginale.getImage();
+                java.awt.Image imgScalata = img.getScaledInstance(800, 610, java.awt.Image.SCALE_SMOOTH);
+                jlBackground.setIcon(new javax.swing.ImageIcon(imgScalata));
+            }
+        } catch (Exception e) {
+            System.out.println("Impossibile ridimensionare lo sfondo: " + e.getMessage());
+        }
+
+        
         try {
             java.io.InputStream is = getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf");
 
@@ -34,11 +48,13 @@ public class GameMainFrame extends javax.swing.JFrame {
             ge.registerFont(pixelFontBase);
 
             // Creiamo le varianti di dimensione che ci servono
-            Font fontTitolo = pixelFontBase.deriveFont(Font.BOLD, 24f);  // Per il titolo
+            Font fontTitolo = pixelFontBase.deriveFont(Font.BOLD, 40f);  // Per il titolo
             Font fontBottoni = pixelFontBase.deriveFont(Font.PLAIN, 14f); // Per i pulsanti
 
             // 5. APPLICHIAMO IL FONT AI COMPONENTI 
             jtfTitle.setFont(fontTitolo);
+            jtfTitle.setOpaque(false);
+            jtfTitle.setBackground(new Color(0, 0, 0, 0));
             jbNewGame.setFont(fontBottoni);
             jbContinue.setFont(fontBottoni);
             jbQuit.setFont(fontBottoni);
@@ -69,7 +85,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         jlBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Exception : Outbreak");
+        setTitle("Final Exam");
         setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
 
@@ -79,17 +95,17 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbNewGame.setText("NUOVA PARTITA");
         jbNewGame.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
         jbNewGame.setContentAreaFilled(false);
-        jbNewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbNewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbNewGame.setFocusPainted(false);
         jbNewGame.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jpMenu.add(jbNewGame, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 320, 240, 40));
 
         jtfTitle.setEditable(false);
-        jtfTitle.setBackground(new java.awt.Color(0, 0, 102));
-        jtfTitle.setFont(new java.awt.Font("Noto Serif Bold", 1, 14)); // NOI18N
+        jtfTitle.setBackground(new java.awt.Color(0, 0, 0));
+        jtfTitle.setFont(new java.awt.Font("Noto Serif Bold", 1, 36)); // NOI18N
         jtfTitle.setForeground(new java.awt.Color(102, 255, 0));
         jtfTitle.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jtfTitle.setText("Exception : Outbreak");
+        jtfTitle.setText("Final Exam");
         jtfTitle.setBorder(null);
         jtfTitle.setFocusable(false);
         jpMenu.add(jtfTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, 590, 70));
@@ -99,7 +115,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbContinue.setText("CONTINUA");
         jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
         jbContinue.setContentAreaFilled(false);
-        jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbContinue.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jpMenu.add(jbContinue, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 380, 240, 40));
 
@@ -108,11 +124,13 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbQuit.setText("ESCI");
         jbQuit.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 0, 0), 2));
         jbQuit.setContentAreaFilled(false);
-        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbQuit.addActionListener(this::jbQuitActionPerformed);
         jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 440, 220, 50));
 
+        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main_menu_background.png"))); // NOI18N
+        jlBackground.setToolTipText("");
         jpMenu.add(jlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 610));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
