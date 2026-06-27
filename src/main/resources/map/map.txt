@@ -2,16 +2,17 @@
 
 [ROOMS]
 # === PRIMO PIANO ===
-1; Corridoio Primo Piano; Conosci bene questo posto ma sai bene che devi scappare il prima possibile. L'aria è pesante. Vedi le luci sfarfallare. Ti chiedi che cosa sia successo...
-2; Aula 2; Una normale aula scolastica con i banchi rovesciati. Senti dei passi trascinati in fondo...
-3; Aula di Biologia; Sulla lavagna vedi scritte delle formule incomprensibili. In un ampolla al primo banco c'è una sostanza verde. Inizi a sentire dei passi provenienti dal piano superiore...
-4; Segreteria; Vedi il cadavere del custode della segreteria seduto alla sua scrivania. Hai paura anche al solo pensiero di avvicinarti.
-5; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.
+# id ; nome ; descrizione ; immagine
+1; Corridoio Primo Piano; Conosci bene questo posto ma sai bene che devi scappare il prima possibile. L'aria è pesante. Vedi le luci sfarfallare. Ti chiedi che cosa sia successo...; /aula_4.png
+2; Aula 2; Una normale aula scolastica con i banchi rovesciati. Senti dei passi trascinati in fondo...; /aula_4.png
+3; Aula di Biologia; Sulla lavagna vedi scritte delle formule incomprensibili. In un ampolla al primo banco c'è una sostanza verde. Inizi a sentire dei passi provenienti dal piano superiore...; /aula_4.png
+4; Segreteria; Vedi il cadavere del custode della segreteria seduto alla sua scrivania. Hai paura anche al solo pensiero di avvicinarti.; /aula_4.png
+5; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.; /aula_4.png
 
 # === SECONDO PIANO ===
-6; Corridoio Secondo Piano; Il corridoio del piano superiore è completamente immerso nel silenzio. Le plafoniere pendono dal soffitto. A SUD ci sono le scale per scendere.
-7; Laboratorio Chimico; Banconi pieni di fiale distrutte e vetri infranti. L'odore di zolfo qui è insopportabile.
-8; Presidenza; La lussuosa porta di legno è semiaperta. All'interno regna il caos più totale, scartoffie ovunque.
+6; Corridoio Secondo Piano; Il corridoio del piano superiore è completamente immerso nel silenzio. Le plafoniere pendono dal soffitto. A SUD ci sono le scale per scendere.; /aula_4.png
+7; Laboratorio Chimico; Banconi pieni di fiale distrutte e vetri infranti. L'odore di zolfo qui è insopportabile.; /aula_4.png
+8; Presidenza; La lussuosa porta di legno è semiaperta. All'interno regna il caos più totale, scartoffie ovunque.; /aula_4.png
 
 [EXITS]
 # idStanzaPartenza ; direzione ; idStanzaDestinazione
