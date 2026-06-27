@@ -47,3 +47,9 @@
 
 6; EST; 8
 8; OVEST; 6
+
+[OBJECTS]
+# idStanza; idOggetto; TipoClasse; Nome; Descrizione; PathImmagine; X; Y; Larghezza; Altezza
+1;10;ObjectContainer;Baule Segreto;Una cassa chiusa.;/closedChest.png;200;150;100;80
+1;11;Key;Badge Insanguinato;Il pass di un professore. È sporco, ma dovrebbe funzionare.;/closed_elevator.png;400;300;50;50
+1;12;Weapon;Tubo di Ferro;Un pezzo di tubatura divelta, perfetto per difendersi.;/key.png;600;250;90;90

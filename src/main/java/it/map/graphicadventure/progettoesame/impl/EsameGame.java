@@ -4,6 +4,7 @@ import it.map.graphicadventure.progettoesame.GameUtils;
 import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.GameObject;
+import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -19,7 +20,7 @@ public class EsameGame extends GameDescription {
         studente = new Player("Matricola Disperata", 100);
 
         // 2. CARICAMENTO DINAMICO DA FILE
-        String pathMappa = "src/main/resources/mappa.txt";
+        String pathMappa = "src/main/resources/map/map.txt";
         List<Room> stanzeCaricate = GameUtils.loadMapFromFile(pathMappa);
 
         // REQUISITO LAMBDA: Usiamo il forEach per aggiungere tutte le stanze caricate
@@ -31,6 +32,7 @@ public class EsameGame extends GameDescription {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Errore critico: Aula Studio (ID 1) non trovata nel file di configurazione!"));
 
+       System.out.println("[DEBUG INIT] Oggetti nell'Aula Studio: " + stanzaIniziale.getObjects().size());        
         // Imposta la stanza corrente
         setCurrentRoom(stanzaIniziale);
     }

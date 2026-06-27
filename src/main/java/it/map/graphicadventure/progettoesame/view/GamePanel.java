@@ -84,6 +84,51 @@ public class GamePanel extends javax.swing.JPanel {
         } else {
             jlBackground.setIcon(null);
         }
+        
+        jlBackground.removeAll();
+        jlBackground.setLayout(null);
+       
+        if (room.getObjects() != null) {
+            for (it.map.graphicadventure.progettoesame.type.GameObject obj : room.getObjects()) {
+                
+                System.out.println("[DEBUG] Disegno oggetto: " + obj.getName() + " in X:" + obj.getX() + " Y:" + obj.getY());
+                
+                // Crea una nuova Label per l'oggetto
+                javax.swing.JLabel objectLabel = new javax.swing.JLabel();
+                
+                // Carichiamo l'icona dell'oggetto (es. la png della cassa)
+                if (obj.getImagePath() != null && !obj.getImagePath().isEmpty()) {
+                    java.net.URL objUrl = getClass().getResource(obj.getImagePath());
+                    if (objUrl != null) {
+                        javax.swing.ImageIcon objIcon = new javax.swing.ImageIcon(objUrl);
+                        java.awt.Image objScaled = objIcon.getImage().getScaledInstance(obj.getWidth(), obj.getHeight(), java.awt.Image.SCALE_SMOOTH);
+                        objectLabel.setIcon(new javax.swing.ImageIcon(objScaled));
+                    }
+                }
+                
+                // Posizioniamo l'oggetto esattamente dove hai deciso
+                objectLabel.setBounds(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+                objectLabel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED, 2));
+                
+                
+                // Facciamo comparire la "manina" quando ci passi sopra
+                objectLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+                
+                // AGGIUNGIAMO IL LISTENER PER IL CLICK!
+                objectLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        // Qui passerai l'oggetto cliccato al GameController!
+                        // Esempio: String risposta = controller.handleObjectInteraction(obj);
+                        // jtaDialogs.setText(risposta);
+                        System.out.println("Hai cliccato su: " + obj.getName());
+                    }
+                });
+                
+                // Aggiungiamo l'oggetto DENTRO l'immagine di sfondo
+                jlBackground.add(objectLabel);
+            }
+        }
 
         // 3. Forza il ridisegno
         jpPlayingArea.revalidate();

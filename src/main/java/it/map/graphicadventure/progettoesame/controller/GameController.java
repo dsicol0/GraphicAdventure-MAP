@@ -30,23 +30,28 @@ public class GameController {
     }
     
     public void startNewGame() {
-        MapBuilder mb = new MapBuilder();
-        Room initialRoom = mb.buildWorld();
-        
-        if (initialRoom != null) {
-            // 1. Salva la stanza nel modello
-            model.setCurrentRoom(initialRoom);
+        try {
+            // 1. Chiediamo al MODEL di preparare tutto (leggere il txt, mettere gli oggetti, ecc.)
+            model.init(); 
 
-            // 2. Mostra il pannello di gioco sul Frame
-            view.showGamePanel();
+            // 2. Recuperiamo la stanza iniziale che il Model ha appena preparato
+            Room initialRoom = model.getCurrentRoom();
+            
+            System.out.println("[DEBUG] Stanza iniziale: " + initialRoom.getName() + " | Oggetti dentro: " + initialRoom.getObjects().size());
+            
+            if (initialRoom != null) {
+                // 3. Mostra il pannello di gioco sul Frame
+                view.showGamePanel();
 
-            // 3. PASSA LA STANZA ALLA GRAFICA PER DISEGNARLA!
-            view.getGamePanel().renderRoom(initialRoom);
-        } else {
-            System.err.println("Errore: la stanza iniziale è null. Controlla mappa.txt");
+                // 4. PASSA LA STANZA ALLA GRAFICA PER DISEGNARLA!
+                view.getGamePanel().renderRoom(initialRoom);
+            } else {
+                System.err.println("Errore: la stanza iniziale dal Model è null!");
+            }
+        } catch (Exception ex) {
+            System.err.println("Errore durante l'inizializzazione del gioco: " + ex.getMessage());
+            ex.printStackTrace();
         }
-        
-        view.showGamePanel();
     }
 
     /**

@@ -2,6 +2,9 @@ package it.map.graphicadventure.progettoesame;
 
 import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.type.items.Key;
+import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.type.items.Weapon;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -58,6 +61,8 @@ public class GameUtils {
 
                             // ... qui ci sarà il tuo codice per aggiungere la stanza alla lista/mappa ...
                             rooms.add(room);
+                            
+                            roomMap.put(id, room);
                         }
                         break;
 
@@ -78,6 +83,58 @@ public class GameUtils {
                             }
                         }
                         break;
+                    case "[OBJECTS]":
+                        // Formato: IdStanza;IdOggetto;TipoClasse;Nome;Descrizione;PathImmagine;X;Y;Larghezza;Altezza
+                        String[] objParts = line.split(";");
+                        if (objParts.length >= 10) {
+                            int roomId = Integer.parseInt(objParts[0].trim());
+                            int objId = Integer.parseInt(objParts[1].trim());
+                            String objType = objParts[2].trim();
+                            String objName = objParts[3].trim();
+                            String objDesc = objParts[4].trim();
+                            String objImg = objParts[5].trim();
+                            int x = Integer.parseInt(objParts[6].trim());
+                            int y = Integer.parseInt(objParts[7].trim());
+                            int width = Integer.parseInt(objParts[8].trim());
+                            int height = Integer.parseInt(objParts[9].trim());
+
+                            // 1. Troviamo a quale stanza aggiungere l'oggetto
+                            Room targetRoom = roomMap.get(roomId);
+                            
+                            if (targetRoom != null) {
+                                GameObject newObj = null;
+                                
+                                System.out.println("[DEBUG] Provo a creare l'oggetto di tipo: [" + objType + "]");
+                                // 2. Instanziamo la classe corretta in base al tipo (Factory)
+                                switch (objType.trim()) {
+                                    case "ObjectContainer":
+                                        newObj = new ObjectContainer(objId, objName, objDesc, objImg);
+                                        System.out.println("[DEBUG] Baule creato con successo!");
+                                        break;
+                                    case "Key":
+                                        newObj = new Key(objId, objName, objDesc, objImg);
+                                        break;
+                                    case "Weapon":
+                                        // Nota: per ora supponiamo che le armi abbiano danno 10 di default
+                                        newObj = new Weapon(objId, objName, objDesc, objImg, 10);
+                                        break;
+                                    // Aggiungi qui altre classi (Badge, ecc.) man mano che le crei
+                                }
+
+                                // 3. Se l'oggetto è stato creato, applichiamo le coordinate e lo salviamo nella stanza
+                                if (newObj != null) {
+                                    newObj.setX(x);
+                                    newObj.setY(y);
+                                    newObj.setWidth(width);
+                                    newObj.setHeight(height);
+                                    
+                                    targetRoom.addObject(newObj);
+                                } else {
+                                     System.err.println("Impossibile creare l'oggetto: tipo '" + objType + "' non riconosciuto.");
+                                }
+                            }
+                        }
+                        break;    
                 }
             }
         }
