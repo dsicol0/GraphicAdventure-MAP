@@ -5,12 +5,15 @@
 package it.map.graphicadventure.progettoesame.view;
 
 import it.map.graphicadventure.progettoesame.type.Room;
+import javax.swing.Timer;
 
 /**
  *
  * @author David
  */
 public class GamePanel extends javax.swing.JPanel {
+    
+    private Timer timerText;
 
     /**
      * Creates new form GamePanel
@@ -19,9 +22,39 @@ public class GamePanel extends javax.swing.JPanel {
         initComponents();
     }
     
+    private void scriviTestoAnimato(String testo) {
+        // 1. Se c'è un'altra frase che sta ancora scorrendo, la fermiamo
+        if (timerText != null && timerText.isRunning()) {
+            timerText.stop();
+        }
+
+        // 2. Puliamo la text area e mettiamo il cursore iniziale per la nuova stanza
+        jtaDialogs.setText("> ");
+
+        // 3. Usiamo un array come "contatore" per ricordarci a quale lettera siamo
+        int[] indice = {0};
+
+        // 4. Creiamo il Timer (35 millisecondi per lettera)
+        timerText = new javax.swing.Timer(35, e -> {
+            // Finché ci sono lettere da scrivere...
+            if (indice[0] < testo.length()) {
+                // Aggiungiamo una singola lettera alla tua jtaDialogs reale
+                jtaDialogs.append(String.valueOf(testo.charAt(indice[0])));
+                indice[0]++;
+            } else {
+                // Frase finita, fermiamo il Timer
+                timerText.stop();
+            }
+        });
+
+        // 5. Facciamo partire l'animazione!
+        timerText.start();
+    }
+    
     public void renderRoom(Room room) {
         // 1. Aggiorna il testo della descrizione
-        jtaDialogs.setText(room.getDescription());
+ 
+        scriviTestoAnimato(room.getDescription());;
 
         // 2. Aggiorna l'immagine di sfondo
         String imagePath = room.getBackgroundPath();
