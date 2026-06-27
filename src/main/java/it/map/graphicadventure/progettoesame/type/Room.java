@@ -10,18 +10,28 @@ public class Room {
     private final int id;
     private String name;
     private String description;
-    private String imagePath;
+    private String backgroundPath; // 1. Cambiato il nome in backgroundPath per allinearsi al GamePanel
 
     // Mappa delle uscite: la chiave è la direzione ("nord"), il valore è la Stanza di destinazione
-    private final Map<String,Room> exits = new HashMap<>();
+    private final Map<String, Room> exits = new HashMap<>();
 
     // Lista degli oggetti presenti nella stanza
     private final List<GameObject> objects = new ArrayList<>();
 
+    // Costruttore originale a 3 parametri (utile per stanze di test o senza sfondo)
     public Room(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.backgroundPath = ""; // Vuoto di default
+    }
+
+    // 2. NUOVO COSTRUTTORE COMPLETO (Usato da GameUtils / MapBuilder per caricare le immagini da file!)
+    public Room(int id, String name, String description, String backgroundPath) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.backgroundPath = backgroundPath;
     }
 
     public int getId() { return id; }
@@ -30,8 +40,16 @@ public class Room {
     public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
-    // Utile se la descrizione cambia (es. "La stanza è buia" -> "La stanza è illuminata")
     public void setDescription(String description) { this.description = description; }
+
+    // 3. IL GETTER MANCANTE: Ora il GamePanel troverà finalmente questo metodo!
+    public String getBackgroundPath() { 
+        return backgroundPath; 
+    }
+    
+    public void setBackgroundPath(String backgroundPath) { 
+        this.backgroundPath = backgroundPath; 
+    }
 
     // Metodi per gestire le uscite
     public void setExit(String direction, Room room) {
@@ -42,8 +60,6 @@ public class Room {
         return exits.get(direction.toLowerCase());
     }
 
-    // Ritorna la mappa intera: utilissimo per controllare quante uscite ci sono
-    // o per stampare a video "Puoi andare a: nord, ovest".
     public Map<String, Room> getExits() {
         return exits;
     }
@@ -79,7 +95,6 @@ public class Room {
     
     @Override
     public int hashCode() {
-        // Genera un hash basato sull'ID.
         return java.util.Objects.hash(id);
     }
 }

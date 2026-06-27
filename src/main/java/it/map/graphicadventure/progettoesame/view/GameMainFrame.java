@@ -4,6 +4,8 @@
  */
 package it.map.graphicadventure.progettoesame.view;
 
+import it.map.graphicadventure.progettoesame.controller.GameController;
+import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -16,12 +18,27 @@ import javax.swing.BorderFactory;
 public class GameMainFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GameMainFrame.class.getName());
+    private GameController controller;
+    private EsameGame model;
+    private GamePanel gamePanel;
 
     /**
      * Creates new form GameMainFrame
      */
     public GameMainFrame() {
-        initComponents();
+            // 1. Questo generato da NetBeans deve stare SEMPRE per primo
+        initComponents(); 
+
+        // 2. CREIAMO IL MODEL PER PRIMO (La memoria dei dati)
+        // Assicurati che ci sia il "new" e che venga salvato nella variabile della classe
+        this.model = new EsameGame(); 
+
+        // 3. Creiamo il pannello di gioco
+        this.gamePanel = new GamePanel();
+
+        // 4. CREIAMO IL CONTROLLER PASSANDO IL MODEL APPENA INIZIALIZZATO
+        // Nota che passiamo 'this.model' (che ora non è più null!) e 'this' (il frame)
+        this.controller = new GameController(this.model, this);
         
       
         try {
@@ -103,6 +120,10 @@ public class GameMainFrame extends javax.swing.JFrame {
             System.out.println("Impossibile caricare la font pixel art: " + e.getMessage());
             // Se fallisce, Swing userà automaticamente la font di default senza crashare
         }
+    }
+    
+    public GamePanel getGamePanel() {
+        return this.gamePanel;
     }
 
     /**
@@ -194,12 +215,21 @@ public class GameMainFrame extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jbQuitActionPerformed
 
+    public void showGamePanel() {
+        // 1. Sostituisce completamente il menu con il pannello di gioco
+        this.setContentPane(gamePanel);
+
+        // 2. Forza Java a ricalcolare la disposizione dei componenti e a ridisegnare la finestra
+        this.revalidate();
+        this.repaint();
+
+        // 3. Sposta l'attenzione del programma sul nuovo pannello (utile per i tasti)
+        gamePanel.requestFocusInWindow(); 
+    }
+    
     private void jbNewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbNewGameActionPerformed
 
-        this.dispose(); 
-
-        GameplayFrame finestraGioco = new GameplayFrame();
-        finestraGioco.setVisible(true);
+        controller.startNewGame();
     }//GEN-LAST:event_jbNewGameActionPerformed
 
     /**

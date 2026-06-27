@@ -4,12 +4,14 @@
  */
 package it.map.graphicadventure.progettoesame.controller;
 
+import it.map.graphicadventure.progettoesame.MapBuilder;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.interfaces.Openable;
 import it.map.graphicadventure.progettoesame.type.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
+import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 
 /**
  *
@@ -17,12 +19,34 @@ import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
  */
 public class GameController {
     private final EsameGame model;
+    private final GameMainFrame view;
 
     // Potremmo passare anche un riferimento alla View (es. GameFrame)
     // se il controller deve dirgli di aggiornare l'interfaccia o mostrare un popup.
 
-    public GameController(EsameGame model) {
+    public GameController(EsameGame model, GameMainFrame view) {
         this.model = model;
+        this.view = view;
+    }
+    
+    public void startNewGame() {
+        MapBuilder mb = new MapBuilder();
+        Room initialRoom = mb.buildWorld();
+        
+        if (initialRoom != null) {
+            // 1. Salva la stanza nel modello
+            model.setCurrentRoom(initialRoom);
+
+            // 2. Mostra il pannello di gioco sul Frame
+            view.showGamePanel();
+
+            // 3. PASSA LA STANZA ALLA GRAFICA PER DISEGNARLA!
+            view.getGamePanel().renderRoom(initialRoom);
+        } else {
+            System.err.println("Errore: la stanza iniziale è null. Controlla mappa.txt");
+        }
+        
+        view.showGamePanel();
     }
 
     /**

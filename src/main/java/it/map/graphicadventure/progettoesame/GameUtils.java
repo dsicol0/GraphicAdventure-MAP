@@ -39,16 +39,25 @@ public class GameUtils {
                 // Elabora la riga in base alla sezione in cui si trova
                 switch (currentSection) {
                     case "[ROOMS]":
-                        // Formato atteso: id;nome;descrizione
-                        String[] roomParts = line.split(";", 3);
-                        if (roomParts.length == 3) {
-                            int id = Integer.parseInt(roomParts[0].trim());
-                            String name = roomParts[1].trim();
-                            String description = roomParts[2].trim();
+                        String[] parts = line.split(";");
+                        if (parts.length >= 3) {
+                            int id = Integer.parseInt(parts[0].trim());
+                            String name = parts[1].trim();
+                            String description = parts[2].trim();
 
-                            Room room = new Room(id, name, description);
+                            // 🟩 1. AGGIUNGI QUESTE RIGHE QUI:
+                            // Controlliamo se nella riga del file c'è anche il quarto pezzo (l'immagine)
+                            String backgroundPath = "";
+                            if (parts.length >= 4) {
+                                backgroundPath = parts[3].trim(); // Legge "/background.png"
+                            }
+
+                            // 🟩 2. MODIFICA LA CREAZIONE DELLA STANZA:
+                            // Passiamo anche 'backgroundPath' al costruttore aggiornato!
+                            Room room = new Room(id, name, description, backgroundPath);
+
+                            // ... qui ci sarà il tuo codice per aggiungere la stanza alla lista/mappa ...
                             rooms.add(room);
-                            roomMap.put(id, room); // Mappa di supporto per i collegamenti successivi
                         }
                         break;
 
