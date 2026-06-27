@@ -55,12 +55,49 @@ public class GameMainFrame extends javax.swing.JFrame {
             jtfTitle.setFont(fontTitolo);
             jtfTitle.setOpaque(false);
             jtfTitle.setBackground(new Color(0, 0, 0, 0));
+            
+            Color verde = new Color(102, 255, 0);
+            Color rosso = new Color(255,51,51);
+            Color rossoHover = new Color(199, 38, 38);
+            
             jbNewGame.setFont(fontBottoni);
-            jbContinue.setFont(fontBottoni);
-            jbQuit.setFont(fontBottoni);
+            jbNewGame.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                jbNewGame.setForeground(verde);
+                jbNewGame.setBorder(BorderFactory.createLineBorder(verde, 2));
+            }
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                jbNewGame.setForeground(Color.WHITE);
+                jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+            }
+             });
             jbNewGame.setForeground(Color.WHITE); // Fa diventare il testo bianco (o Color.GREEN se lo vuoi verde!)
             jbNewGame.setContentAreaFilled(false); // Rende lo sfondo del bottone trasparente (addio rettangolo grigio!)
             jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2)); // Opzionale: un bel bordo bianco di 2 pixel
+            
+            jbContinue.setFont(fontBottoni);
+            jbContinue.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                jbContinue.setForeground(verde);
+                jbContinue.setBorder(BorderFactory.createLineBorder(verde, 2));
+            }
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                jbContinue.setForeground(Color.WHITE);
+                jbContinue.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+            }
+             });
+            
+            jbQuit.setFont(fontBottoni);
+            jbQuit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                jbQuit.setForeground(rossoHover);
+                jbQuit.setBorder(BorderFactory.createLineBorder(rossoHover, 2));
+            }
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                jbQuit.setForeground(rosso);
+                jbQuit.setBorder(BorderFactory.createLineBorder(rosso, 2));
+            }
+             });
 
         } catch (Exception e) {
             System.out.println("Impossibile caricare la font pixel art: " + e.getMessage());
@@ -92,12 +129,13 @@ public class GameMainFrame extends javax.swing.JFrame {
         jpMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jbNewGame.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jbNewGame.setText("NUOVA PARTITA");
         jbNewGame.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
         jbNewGame.setContentAreaFilled(false);
-        jbNewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbNewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbNewGame.setFocusPainted(false);
         jbNewGame.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jbNewGame.setLabel("▶ NUOVA PARTITA");
+        jbNewGame.addActionListener(this::jbNewGameActionPerformed);
         jpMenu.add(jbNewGame, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 320, 240, 40));
 
         jtfTitle.setEditable(false);
@@ -112,21 +150,22 @@ public class GameMainFrame extends javax.swing.JFrame {
 
         jbContinue.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jbContinue.setForeground(new java.awt.Color(255, 255, 255));
-        jbContinue.setText("CONTINUA");
+        jbContinue.setText(">> CONTINUA");
         jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
         jbContinue.setContentAreaFilled(false);
-        jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbContinue.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jpMenu.add(jbContinue, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 380, 240, 40));
 
         jbQuit.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jbQuit.setForeground(new java.awt.Color(204, 0, 0));
-        jbQuit.setText("ESCI");
+        jbQuit.setForeground(new java.awt.Color(255, 51, 51));
+        jbQuit.setText("X ESCI");
+        jbQuit.setActionCommand("X ESCI");
         jbQuit.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 0, 0), 2));
         jbQuit.setContentAreaFilled(false);
-        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbQuit.addActionListener(this::jbQuitActionPerformed);
-        jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 440, 220, 50));
+        jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 440, 240, 40));
 
         jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main_menu_background.png"))); // NOI18N
@@ -154,6 +193,14 @@ public class GameMainFrame extends javax.swing.JFrame {
     private void jbQuitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbQuitActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jbQuitActionPerformed
+
+    private void jbNewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbNewGameActionPerformed
+
+        this.dispose(); 
+
+        GameplayFrame finestraGioco = new GameplayFrame();
+        finestraGioco.setVisible(true);
+    }//GEN-LAST:event_jbNewGameActionPerformed
 
     /**
      * @param args the command line arguments
