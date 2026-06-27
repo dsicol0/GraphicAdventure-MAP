@@ -1,11 +1,11 @@
-# 🧟 Survival Horror University — Roadmap
+# Final Exam — Roadmap
 
 ---
 
 ## Fase 1 — Design del gioco
 
-- [ ] Scegliere il nome del gioco e del gruppo
-- [ ] Scrivere la descrizione dell'avventura (trama, obiettivo, ambientazione)
+- [x] Scegliere il nome del gioco e del gruppo
+- [x] Scrivere la descrizione dell'avventura (trama, obiettivo, ambientazione)
 - [ ] Definire le stanze dell'edificio (corridoi, aule, laboratori, ufficio del direttore, ecc.)
 - [ ] Definire le connessioni tra stanze (quali porte portano dove)
 - [ ] Disegnare/raccogliere le immagini di sfondo per ogni stanza
@@ -14,9 +14,9 @@
 
 ## Fase 2 — Oggetti e interazioni
 
-- [ ] Creare gli oggetti raccoglibili (chiavi, armi, oggetti generici)
-- [ ] Creare i contenitori (casse, armadietti) che nascondono oggetti
-- [ ] Creare il badge del Direttore (oggetto obiettivo finale)
+- [x] Creare gli oggetti raccoglibili (chiavi, armi, oggetti generici)
+- [x] Creare i contenitori (casse, armadietti) che nascondono oggetti
+- [x] Creare il badge del Direttore (oggetto obiettivo finale)
 - [ ] Implementare le interazioni: raccogliere, aprire, usare
 - [ ] Implementare la saracinesca di uscita (si sblocca solo col badge)
 
@@ -24,7 +24,7 @@
 
 ## Fase 3 — Interfaccia grafica (SWING)
 
-- [ ] Creare il menu principale
+- [x] Creare il menu principale
 - [ ] Creare la finestra di gioco principale
 - [ ] Creare il pannello stanza (immagine di sfondo + aree cliccabili sugli oggetti)
 - [ ] Creare il pannello inventario (mostra gli oggetti raccolti)
