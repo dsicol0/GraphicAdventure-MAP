@@ -12,6 +12,7 @@ import it.map.graphicadventure.progettoesame.type.interfaces.Openable;
 import it.map.graphicadventure.progettoesame.type.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
+import java.util.List;
 
 /**
  *
@@ -118,5 +119,36 @@ public class GameController {
         }
 
         return response.toString();
+    }
+    
+    /**
+     * Recupera l'inventario dal Model e lo formatta come testo per la View.
+     */
+    public String showInventory() {
+        // Recuperiamo la lista degli oggetti dal Model (EsameGame)
+        java.util.List<GameObject> inventory = model.getInventory();
+        
+        // Se è vuoto, diamo un feedback immediato
+        if (inventory == null || inventory.isEmpty()) {
+            return "Il tuo zaino è vuoto.";
+        }
+        
+        // Altrimenti, costruiamo una stringa con l'elenco degli oggetti
+        StringBuilder sb = new StringBuilder();
+        sb.append("--- INVENTARIO ---\n");
+        
+        for (GameObject obj : inventory) {
+            sb.append("> ").append(obj.getName()).append("\n");
+        }
+        
+        return sb.toString();
+    }
+    
+    /**
+     * Apre l'interfaccia dell'inventario.
+     */
+    public void handleInventoryToggle() {
+        List<GameObject> inventoryItems = model.getInventory();
+        view.getGamePanel().toggleInventory(inventoryItems);
     }
 }

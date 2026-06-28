@@ -40,6 +40,8 @@ public class GameMainFrame extends javax.swing.JFrame {
         // Nota che passiamo 'this.model' (che ora non è più null!) e 'this' (il frame)
         this.controller = new GameController(this.model, this);
         
+        this.gamePanel.setController(this.controller);
+        
       
         try {
             javax.swing.ImageIcon iconaOriginale = (javax.swing.ImageIcon) jlBackground.getIcon();
