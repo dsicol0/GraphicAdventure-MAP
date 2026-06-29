@@ -32,6 +32,19 @@ public class GamePanel extends javax.swing.JPanel {
      */
     public GamePanel() {
         initComponents();
+        
+        // 1. Stacchiamo i controlli dal layout standard a blocchi
+        this.remove(jpControls);
+        
+        // 2. Rendiamo lo sfondo dell'HUD invisibile (si vedranno solo i bottoni!)
+        jbInventory.setOpaque(true);
+        jbInventory.setContentAreaFilled(true);
+        jbInventory.setBackground(new java.awt.Color(10, 10, 10));
+        jbInventory.setForeground(new java.awt.Color(50, 255, 50));
+        jbInventory.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 2));
+        jbInventory.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16));
+        jbInventory.setFocusPainted(false);
+        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
     
     private void animatedText(String testo) {
@@ -206,6 +219,28 @@ public class GamePanel extends javax.swing.JPanel {
                 jpExits.add(new javax.swing.JLabel());
             }
         }
+        
+        // Aggiungiamo l'HUD galleggiante in modalità Absolute sopra lo sfondo
+        // ==========================================
+        // HUD GALLEGGIANTE (Posizionamento e Dimensioni)
+        // ==========================================
+        
+        // Assicuriamoci che anche il pannello del D-Pad sia trasparente
+       jpControls.setOpaque(false);
+        jpControls.setBackground(new java.awt.Color(0, 0, 0, 0));
+        
+        jpExits.setOpaque(true);
+        jpExits.setBackground(new java.awt.Color(0, 0, 0, 200));
+        jpExits.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 2));
+        
+        // 2. Layout
+        jpControls.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 150, 10));
+        
+        int w = jlBackground.getWidth() > 0 ? jlBackground.getWidth() : 800;
+        int h = jlBackground.getHeight() > 0 ? jlBackground.getHeight() : 450;
+        
+        jpControls.setBounds(0, h - 120, w, 120);
+        jlBackground.add(jpControls);
 
         // 3. Forza il ridisegno
         jpPlayingArea.revalidate();
@@ -217,40 +252,93 @@ public class GamePanel extends javax.swing.JPanel {
     
     
     public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.type.GameObject> items) {
-        // 1. Forziamo il pannello centrale a usare un BorderLayout (se non lo fa già)
+        // 1. Forziamo il pannello centrale a usare un BorderLayout
         if (jpPlayingArea.getLayout() instanceof javax.swing.GroupLayout) {
              jpPlayingArea.setLayout(new java.awt.BorderLayout());
         }
 
         if (isInventoryVisible) {
+            // ==========================================
             // CHIUSURA INVENTARIO
+            // ==========================================
             if (jpInventoryView != null) {
                 jpPlayingArea.remove(jpInventoryView);
             }
             jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
             isInventoryVisible = false;
+            
         } else {
+            // ==========================================
             // APERTURA INVENTARIO
+            // ==========================================
             jpPlayingArea.remove(jlBackground); // Nascondiamo la stanza
 
             if (jpInventoryView == null) {
                 jpInventoryView = new javax.swing.JPanel();
-                jpInventoryView.setBackground(new java.awt.Color(15, 15, 15));
             }
+            
+            // Svuotiamo tutto il pannello per ricostruirlo aggiornato
             jpInventoryView.removeAll();
-            jpInventoryView.setLayout(new java.awt.GridLayout(0, 4, 10, 10)); // Griglia 4 colonne
-            jpInventoryView.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            jpInventoryView.setLayout(new java.awt.BorderLayout());
+            jpInventoryView.setBackground(new java.awt.Color(15, 15, 15));
+
+            // --- 1. BARRA SUPERIORE CON LA "X" ---
+            javax.swing.JPanel topBar = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+            topBar.setOpaque(false); // Sfondo trasparente
+            
+            javax.swing.JButton btnClose = new javax.swing.JButton("X CHIUDI");
+            btnClose.setUI(new javax.swing.plaf.basic.BasicButtonUI()); // Disattiva lo stile Mac
+            btnClose.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16));
+            btnClose.setForeground(new java.awt.Color(255, 50, 50));
+            btnClose.setBackground(new java.awt.Color(10, 10, 10));
+            btnClose.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 50, 50), 2));
+            btnClose.setFocusPainted(false);
+            btnClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            
+            // Effetto Hover del tasto X
+            btnClose.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    btnClose.setBackground(new java.awt.Color(255, 50, 50));
+                    btnClose.setForeground(java.awt.Color.BLACK);
+                }
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    btnClose.setBackground(new java.awt.Color(10, 10, 10));
+                    btnClose.setForeground(new java.awt.Color(255, 50, 50));
+                }
+            });
+            
+            btnClose.addActionListener(e -> toggleInventory(null));
+            topBar.add(btnClose);
+            
+            // Aggiungiamo la barra al NORD dell'inventario
+            jpInventoryView.add(topBar, java.awt.BorderLayout.NORTH);
+
+            // --- 2. GRIGLIA DEGLI OGGETTI AL CENTRO ---
+            javax.swing.JPanel gridPanel = new javax.swing.JPanel();
+            gridPanel.setOpaque(false); // Fa vedere il colore di fondo scuro
+            gridPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
             if (items == null || items.isEmpty()) {
-                javax.swing.JLabel jlEmpty = new javax.swing.JLabel("Your backpack is empty.", javax.swing.SwingConstants.CENTER);
+                // Inventario Vuoto
+                gridPanel.setLayout(new java.awt.BorderLayout());
+                javax.swing.JLabel jlEmpty = new javax.swing.JLabel("Il tuo zaino è vuoto.", javax.swing.SwingConstants.CENTER);
+                jlEmpty.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 18));
                 jlEmpty.setForeground(java.awt.Color.WHITE);
-                jpInventoryView.add(jlEmpty);
+                gridPanel.add(jlEmpty, java.awt.BorderLayout.CENTER);
             } else {
+                // Inventario con Oggetti (Griglia 4 colonne)
+                gridPanel.setLayout(new java.awt.GridLayout(0, 4, 10, 10)); 
                 for (it.map.graphicadventure.progettoesame.type.GameObject item : items) {
-                    jpInventoryView.add(createItemSlot(item));
+                    gridPanel.add(createItemSlot(item));
                 }
             }
 
+            // Aggiungiamo la griglia al CENTRO dell'inventario
+            jpInventoryView.add(gridPanel, java.awt.BorderLayout.CENTER);
+            
+            // Mostriamo l'inventario sulla schermata di gioco
             jpPlayingArea.add(jpInventoryView, java.awt.BorderLayout.CENTER);
             isInventoryVisible = true;
         }
@@ -327,22 +415,25 @@ public class GamePanel extends javax.swing.JPanel {
     /**
      * Crea un bottone direzionale stilizzato per il D-Pad.
      */
-    private javax.swing.JButton directionButton(String comand, String symbol, boolean enabled) {
+    private javax.swing.JButton directionButton(String command, String symbol, boolean isOpen) {
         javax.swing.JButton btn = new javax.swing.JButton(symbol);
         
-        // Font più piccola (16 invece di 22) per non occupare troppo spazio
-        btn.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16)); 
-        btn.setBackground(new java.awt.Color(15, 15, 15));
+        // Font in stile terminale
+        btn.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 18));
+        
+        // FORZIAMO IL QUADRATINO NERO
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
+        btn.setBackground(new java.awt.Color(10, 10, 10)); // Nero puro
         btn.setFocusPainted(false);
         
-        if (enabled) {
-            // STILE ATTIVO (Cliccabile)
+        if (isOpen) {
+            // STILE ATTIVO (Bordi e testo verdi)
             btn.setForeground(new java.awt.Color(50, 255, 50)); 
             btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 1));
             btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            btn.setToolTipText("Vai a " + comand);
             
-            // L'effetto hover si attiva solo se il bottone funziona
+            // Effetto hover: si inverte quando passi il mouse
             btn.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -351,17 +442,18 @@ public class GamePanel extends javax.swing.JPanel {
                 }
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent e) {
-                    btn.setBackground(new java.awt.Color(15, 15, 15));
+                    btn.setBackground(new java.awt.Color(10, 10, 10));
                     btn.setForeground(new java.awt.Color(50, 255, 50));
                 }
             });
             
-            btn.addActionListener(e -> movePlayer(comand));
+            // L'azione di movimento
+            btn.addActionListener(e -> movePlayer(command)); // Assicurati di usare il nome corretto del tuo metodo (es. movePlayer)
         } else {
-            // STILE DISATTIVATO (Non cliccabile, finto "spento")
-            btn.setForeground(new java.awt.Color(30, 60, 30)); // Verde molto scuro/spento
-            btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(30, 60, 30), 1));
-            btn.setEnabled(false); // Disabilita nativamente i click
+            // STILE DISABILITATO (Il quadratino c'è, ma è spento)
+            btn.setForeground(new java.awt.Color(40, 40, 40)); // Grigio scuro
+            btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(30, 30, 30), 1));
+            btn.setEnabled(false);
         }
         
         return btn;
