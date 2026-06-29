@@ -30,6 +30,14 @@ public class GameController {
         this.view = view;
     }
     
+    /**
+     * Restituisce la stanza attualmente salvata nel Model.
+     * Serve alla View per sapere cosa disegnare dopo un movimento.
+     */
+    public Room getCurrentRoom() {
+        return model.getCurrentRoom();
+    }
+    
     public void startNewGame() {
         try {
             // 1. Chiediamo al MODEL di preparare tutto (leggere il txt, mettere gli oggetti, ecc.)

@@ -83,6 +83,13 @@ public class Room {
                 .findFirst()
                 .orElse(null);
     }
+    
+    /**
+     * Restituisce un Set con i nomi di tutte le direzioni disponibili da questa stanza.
+     */
+    public java.util.Set<String> getAvailableDirections() {
+        return this.exits.keySet(); // Sostituisci 'exits' con il nome reale della tua mappa interna
+    }
 
     @Override
     public boolean equals(Object o) {

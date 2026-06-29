@@ -161,6 +161,51 @@ public class GamePanel extends javax.swing.JPanel {
                 jlBackground.add(objectLabel);
             }
         }
+        
+        // 1. Svuotiamo il pannello dalle vecchie uscite della stanza precedente
+        jpExits.removeAll();
+        
+        // Impostiamo una griglia 3x3 rigida, con 5 pixel di spazio tra un bottone e l'altro
+        jpExits.setLayout(new java.awt.GridLayout(3, 3, 2, 2));
+        
+        jpExits.setPreferredSize(new java.awt.Dimension(110, 110));
+        
+        java.util.Set<String> directions = new java.util.HashSet<>();
+        if (room.getAvailableDirections() != null) {
+            for (String dir : room.getAvailableDirections()) {
+                if (dir != null) {
+                    directions.add(dir.trim().toUpperCase());
+                }
+            }
+        }
+        
+        // Generiamo SEMPRE i 4 bottoni direzionali, ma controlliamo se sono abilitati
+        for (int i = 0; i < 9; i++) {
+            if (i == 1) {
+                // NORD
+                boolean isOpen = directions.contains("NORD");
+                jpExits.add(directionButton("NORD", "▲", isOpen));
+            } 
+            else if (i == 3) {
+                // OVEST
+                boolean isOpen = directions.contains("OVEST");
+                jpExits.add(directionButton("OVEST", "◄", isOpen));
+            } 
+            else if (i == 5) {
+                // EST
+                boolean isOpen = directions.contains("EST");
+                jpExits.add(directionButton("EST", "►", isOpen));
+            } 
+            else if (i == 7) {
+                // SUD
+                boolean isOpen = directions.contains("SUD");
+                jpExits.add(directionButton("SUD", "▼", isOpen));
+            } 
+            else {
+                // Cella vuota per formare la croce
+                jpExits.add(new javax.swing.JLabel());
+            }
+        }
 
         // 3. Forza il ridisegno
         jpPlayingArea.revalidate();
@@ -168,6 +213,8 @@ public class GamePanel extends javax.swing.JPanel {
         this.revalidate();
         this.repaint();
     }
+    
+    
     
     public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.type.GameObject> items) {
         // 1. Forziamo il pannello centrale a usare un BorderLayout (se non lo fa già)
@@ -258,6 +305,67 @@ public class GamePanel extends javax.swing.JPanel {
 
         return itemSlot;
     }
+    
+    /**
+     * Gestisce il tentativo di movimento in una direzione specifica.
+     */
+    private void movePlayer(String direction) {
+        if (controller != null) {
+            // 1. Diciamo al controller di provare a muovere il giocatore e ci facciamo dare il testo di risposta
+            String response = controller.handleMovement(direction);
+            
+            // 2. Stampiamo la risposta nel terminale in basso ("Ti sposti..." oppure "Non puoi...")
+            animatedText(response);
+            
+            // 3. Ridisegniamo la stanza. 
+            // Se il controller ha cambiato la stanza, renderRoom caricherà la nuova immagine e i nuovi oggetti!
+            // Se il movimento è fallito, renderRoom semplicemente non farà nulla di nuovo.
+            renderRoom(controller.getCurrentRoom());
+        }
+    }
+    
+    /**
+     * Crea un bottone direzionale stilizzato per il D-Pad.
+     */
+    private javax.swing.JButton directionButton(String comand, String symbol, boolean enabled) {
+        javax.swing.JButton btn = new javax.swing.JButton(symbol);
+        
+        // Font più piccola (16 invece di 22) per non occupare troppo spazio
+        btn.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16)); 
+        btn.setBackground(new java.awt.Color(15, 15, 15));
+        btn.setFocusPainted(false);
+        
+        if (enabled) {
+            // STILE ATTIVO (Cliccabile)
+            btn.setForeground(new java.awt.Color(50, 255, 50)); 
+            btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 1));
+            btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            btn.setToolTipText("Vai a " + comand);
+            
+            // L'effetto hover si attiva solo se il bottone funziona
+            btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    btn.setBackground(new java.awt.Color(50, 255, 50));
+                    btn.setForeground(java.awt.Color.BLACK);
+                }
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    btn.setBackground(new java.awt.Color(15, 15, 15));
+                    btn.setForeground(new java.awt.Color(50, 255, 50));
+                }
+            });
+            
+            btn.addActionListener(e -> movePlayer(comand));
+        } else {
+            // STILE DISATTIVATO (Non cliccabile, finto "spento")
+            btn.setForeground(new java.awt.Color(30, 60, 30)); // Verde molto scuro/spento
+            btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(30, 60, 30), 1));
+            btn.setEnabled(false); // Disabilita nativamente i click
+        }
+        
+        return btn;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -274,6 +382,7 @@ public class GamePanel extends javax.swing.JPanel {
         jlBackground = new javax.swing.JLabel();
         jpControls = new javax.swing.JPanel();
         jbInventory = new javax.swing.JButton();
+        jpExits = new javax.swing.JPanel();
 
         setMaximumSize(new java.awt.Dimension(850, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
@@ -292,6 +401,11 @@ public class GamePanel extends javax.swing.JPanel {
 
         add(jScrollPane1, java.awt.BorderLayout.PAGE_START);
 
+        jpPlayingArea.setLayout(new java.awt.BorderLayout());
+        jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
+
+        add(jpPlayingArea, java.awt.BorderLayout.CENTER);
+
         jbInventory.setText("[ INVENTARIO ]");
         jbInventory.addActionListener(this::jbInventoryActionPerformed);
 
@@ -302,34 +416,22 @@ public class GamePanel extends javax.swing.JPanel {
             .addGroup(jpControlsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jbInventory)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jpExits, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jpControlsLayout.setVerticalGroup(
             jpControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpControlsLayout.createSequentialGroup()
-                .addContainerGap(41, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jbInventory)
                 .addGap(36, 36, 36))
+            .addGroup(jpControlsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jpExits, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout jpPlayingAreaLayout = new javax.swing.GroupLayout(jpPlayingArea);
-        jpPlayingArea.setLayout(jpPlayingAreaLayout);
-        jpPlayingAreaLayout.setHorizontalGroup(
-            jpPlayingAreaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpPlayingAreaLayout.createSequentialGroup()
-                .addComponent(jpControls, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlBackground, javax.swing.GroupLayout.DEFAULT_SIZE, 664, Short.MAX_VALUE))
-        );
-        jpPlayingAreaLayout.setVerticalGroup(
-            jpPlayingAreaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jlBackground, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-            .addGroup(jpPlayingAreaLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jpControls, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        add(jpPlayingArea, java.awt.BorderLayout.CENTER);
+        add(jpControls, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbInventoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbInventoryActionPerformed
@@ -344,6 +446,7 @@ public class GamePanel extends javax.swing.JPanel {
     private javax.swing.JButton jbInventory;
     private javax.swing.JLabel jlBackground;
     private javax.swing.JPanel jpControls;
+    private javax.swing.JPanel jpExits;
     private javax.swing.JPanel jpPlayingArea;
     private javax.swing.JTextArea jtaDialogs;
     // End of variables declaration//GEN-END:variables

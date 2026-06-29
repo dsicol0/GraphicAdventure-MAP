@@ -1,55 +1,86 @@
-# File di configurazione del mondo di gioco
+# File di configurazione del mondo di gioco: FINAL EXAM
 
 [ROOMS]
-# === PRIMO PIANO ===
+# === PIANO TERRA ===
 # id ; nome ; descrizione ; immagine
-1; Corridoio Primo Piano; Conosci bene questo posto ma sai bene che devi scappare il prima possibile. L'aria è pesante. Vedi le luci sfarfallare. Ti chiedi che cosa sia successo...; /aula_4.png
-2; Aula 2; Una normale aula scolastica con i banchi rovesciati. Senti dei passi trascinati in fondo...; /aula_4.png
-3; Aula di Biologia; Sulla lavagna vedi scritte delle formule incomprensibili. In un ampolla al primo banco c'è una sostanza verde. Inizi a sentire dei passi provenienti dal piano superiore...; /aula_4.png
-4; Segreteria; Vedi il cadavere del custode della segreteria seduto alla sua scrivania. Hai paura anche al solo pensiero di avvicinarti.; /aula_4.png
-5; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.; /aula_4.png
+1; Aula Studio; La stanza è in disordine. Appunti sparsi ovunque. La porta verso il corridoio a NORD è aperta. Sulla cattedra c'è uno zaino abbandonato.; /aula_4.png
+2; Corridoio Principale; Conosci bene questo posto ma sai bene che devi scappare. L'aria è pesante. Vedi le luci sfarfallare. Ti chiedi che cosa sia successo...; /aula_4.png
+3; Atrio Principale; Le grandi porte a vetri dell'uscita sono sbarrate da una saracinesca di metallo. Accanto c''è un lettore di badge con una spia rossa lampeggiante. Serve la tessera del Direttore e c'è un calo di tensione.; /aula_4.png
+4; Bagni; I lavandini perdono acqua e lo specchio è in frantumi. L'odore di caffè stantio e sangue si mescola nell'aria.; /aula_4.png
+5; Vano Ascensore; L'ascensore è guasto. Sulla parete c'è il quadro elettrico principale, il pannello è socchiuso ma i cavi sembrano intatti.; /aula_4.png
+6; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.; /aula_4.png
 
-# === SECONDO PIANO ===
-6; Corridoio Secondo Piano; Il corridoio del piano superiore è completamente immerso nel silenzio. Le plafoniere pendono dal soffitto. A SUD ci sono le scale per scendere.; /aula_4.png
-7; Laboratorio Chimico; Banconi pieni di fiale distrutte e vetri infranti. L'odore di zolfo qui è insopportabile.; /aula_4.png
-8; Presidenza; La lussuosa porta di legno è semiaperta. All'interno regna il caos più totale, scartoffie ovunque.; /aula_4.png
+# === PRIMO PIANO ===
+7; Corridoio Primo Piano; Il corridoio del piano superiore è completamente immerso nel silenzio. Le plafoniere pendono dal soffitto. A SUD ci sono le scale per scendere.; /aula_4.png
+8; Aula Magna; L'aula più grande del dipartimento. Senti dei versi disumani e bofonchii raggelanti provenire dai banchi in fondo: è piena di zombie.; /aula_4.png
+9; Segreteria Studenti; Vedi il cadavere del custode seduto alla scrivania. Hai paura ad avvicinarti, ma ci sono degli zaini abbandonati e degli armadietti.; /aula_4.png
+10; Stanza del Direttore; La lussuosa porta di legno è semiaperta. All'interno regna il caos più totale, scartoffie ovunque. Il Boss finale deve essere qui vicino...; /aula_4.png
+
 
 [EXITS]
 # idStanzaPartenza ; direzione ; idStanzaDestinazione
 
 # ==========================================
-# PRIMO PIANO (Il Corridoio 1 si collega a TUTTI)
+# PIANO TERRA (Il Corridoio 2 fa da HUB centrale)
 # ==========================================
+# Dall'Aula Studio esci a Nord nel Corridoio
 1; NORD; 2
 2; SUD; 1
 
-1; OVEST; 3
-3; EST; 1
+# Dal Corridoio vai a Est nell'Atrio (Uscita bloccata)
+2; EST; 3
+3; OVEST; 2
 
-1; EST; 4
-4; OVEST; 1
+# Dal Corridoio vai a Ovest nei Bagni
+2; OVEST; 4
+4; EST; 2
 
-1; SUD; 5
-5; NORD; 1
+# Dal Corridoio vai a Nord verso l'Ascensore (Quadro Elettrico)
+2; NORD; 5
+5; SUD; 2
+
+# Dall'Atrio puoi accedere al Vano Scale per salire
+3; NORD; 6
+6; SUD; 3
 
 # ==========================================
-# COLLEGAMENTO TRA I PIANI (Il trucco delle scale)
+# COLLEGAMENTO TRA I PIANI
 # ==========================================
-# Quando sei nel Vano Scale (5), andando ancora a NORD sali al secondo piano (6)
-5; NORD; 6
-6; SUD; 5
-
-# ==========================================
-# SECONDO PIANO (Il Corridoio 6 fa da Hub sopra)
-# ==========================================
+# Dal Vano Scale (6) sali al Primo Piano (7)
 6; NORD; 7
 7; SUD; 6
 
-6; EST; 8
-8; OVEST; 6
+# ==========================================
+# PRIMO PIANO (Il Corridoio 7 fa da HUB superiore)
+# ==========================================
+# Dal Corridoio vai a Ovest nell'Aula Magna (Zombie)
+7; OVEST; 8
+8; EST; 7
+
+# Dal Corridoio vai a Est in Segreteria (Loot box)
+7; EST; 9
+9; OVEST; 7
+
+# Dal Corridoio vai a Nord nella Stanza del Direttore (Boss)
+7; NORD; 10
+10; SUD; 7
+
 
 [OBJECTS]
 # idStanza; idOggetto; TipoClasse; Nome; Descrizione; PathImmagine; X; Y; Larghezza; Altezza
-1;10;ObjectContainer;Baule Segreto;Una cassa chiusa.;/closedChest.png;200;150;100;80
-1;11;Key;Badge Insanguinato;Il pass di un professore. È sporco, ma dovrebbe funzionare.;/closed_elevator.png;400;300;50;50
-1;12;Weapon;Tubo di Ferro;Un pezzo di tubatura divelta, perfetto per difendersi.;/key.png;600;250;90;90
+
+# -- Oggetti in Aula Studio (Stanza 1) --
+1;10;ObjectContainer;Zaino Abbandonato;Uno zainetto logoro lasciato sulla cattedra. Chissà se contiene qualcosa di utile.;/closedChest.png;350;250;100;100
+
+# -- Oggetti nei Bagni (Stanza 4) --
+4;11;Weapon;Righello di Metallo;Un pesante righello di metallo da architetto. Un'arma improvvisata perfetta per difendersi.;/pipe.png;200;300;80;80
+
+# -- Oggetti nel Vano Ascensore (Stanza 5) --
+5;12;Usable;Quadro Elettrico;Il pannello centrale dell'edificio. Se abbassi la leva potresti ripristinare la corrente per il lettore badge.;/electrical_panel.png;400;150;120;150
+
+# -- Oggetti in Segreteria Studenti (Stanza 9) --
+9;13;ObjectContainer;Armadietto Aperto;Un armadietto per i dipendenti, la classica loot box che ti salverà la vita.;/locker.png;500;100;90;180
+9;14;Weapon;Caffè Bollente;Un termos del custode. È ancora bollente. Da lanciare in faccia ai tesisti zombie.;/coffee.png;250;280;40;60
+
+# -- Oggetti nella Stanza del Direttore (Stanza 10) --
+10;15;Key;Badge del Direttore;Una tessera magnetica dorata e insanguinata. È l'unica via d'uscita.;/badge.png;400;300;50;50
