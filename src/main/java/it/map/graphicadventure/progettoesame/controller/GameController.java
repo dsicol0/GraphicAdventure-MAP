@@ -7,6 +7,7 @@ package it.map.graphicadventure.progettoesame.controller;
 import it.map.graphicadventure.progettoesame.MapBuilder;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.type.GameObject;
+import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.interfaces.Openable;
 import it.map.graphicadventure.progettoesame.type.interfaces.Takeable;
@@ -21,6 +22,7 @@ import java.util.List;
 public class GameController {
     private final EsameGame model;
     private final GameMainFrame view;
+    private Player player;
 
     // Potremmo passare anche un riferimento alla View (es. GameFrame)
     // se il controller deve dirgli di aggiornare l'interfaccia o mostrare un popup.
@@ -36,6 +38,10 @@ public class GameController {
      */
     public Room getCurrentRoom() {
         return model.getCurrentRoom();
+    }
+    
+    public Player getPlayer() {
+        return this.player;
     }
     
     public void startNewGame() {

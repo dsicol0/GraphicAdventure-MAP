@@ -12,12 +12,12 @@ import java.util.List;
 public class EsameGame extends GameDescription {
 
     // Aggiungiamo il nostro Player alla struttura del prof
-    private Player studente;
+    private Player player;
 
     @Override
     public void init() throws Exception {
         // 1. INIZIALIZZA IL GIOCATORE
-        studente = new Player("Matricola Disperata", 100);
+        player = new Player("Matricola Disperata", 100);
 
         // 2. CARICAMENTO DINAMICO DA FILE
         String pathMappa = "src/main/resources/map/map.txt";
@@ -39,7 +39,7 @@ public class EsameGame extends GameDescription {
 
     // Un getter per recuperare facilmente il giocatore durante la partita
     public Player getPlayer() {
-        return studente;
+        return player;
     }
 
     @Override
