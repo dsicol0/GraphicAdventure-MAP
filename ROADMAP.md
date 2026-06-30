@@ -17,7 +17,7 @@
 - [x] Creare gli oggetti raccoglibili (chiavi, armi, oggetti generici)
 - [x] Creare i contenitori (casse, armadietti) che nascondono oggetti
 - [x] Creare il badge del Direttore (oggetto obiettivo finale)
-- [ ] Implementare le interazioni: raccogliere, aprire, usare
+- [x] Implementare le interazioni: raccogliere, aprire, usare
 - [ ] Implementare la saracinesca di uscita (si sblocca solo col badge)
 
 ---
@@ -25,11 +25,10 @@
 ## Fase 3 — Interfaccia grafica (SWING)
 
 - [x] Creare il menu principale
-- [ ] Creare la finestra di gioco principale
-- [ ] Creare il pannello stanza (immagine di sfondo + aree cliccabili sugli oggetti)
-- [ ] Creare il pannello inventario (mostra gli oggetti raccolti)
+- [x] Creare la finestra di gioco principale
+- [x] Creare il pannello stanza (immagine di sfondo + aree cliccabili sugli oggetti)
+- [x] Creare il pannello inventario (mostra gli oggetti raccolti)
 - [ ] Creare il box testo (descrizioni e risultati delle azioni)
-- [ ] Applicare l'estetica cupa (colori scuri, font custom, effetti visivi)
 
 ---
 
@@ -43,7 +42,7 @@
 
 ## Fase 5 — Salvataggio e caricamento (File + Database)
 
-- [ ] Caricare la mappa e gli oggetti da file esterni (no dati hardcoded)
+- [x] Caricare la mappa e gli oggetti da file esterni (no dati hardcoded)
 - [ ] Implementare il salvataggio della partita su database
 - [ ] Implementare il caricamento di una partita salvata
 - [ ] Tenere un log degli eventi (oggetti raccolti, stanze visitate, zombie incontrati)
