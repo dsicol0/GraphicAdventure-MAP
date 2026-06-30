@@ -472,7 +472,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbInventory.setForeground(new java.awt.Color(210, 195, 160));
         jbInventory.setText("[ INVENTARIO ]");
         jbInventory.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
-        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbInventory.setFocusPainted(false);
         jbInventory.setPreferredSize(new java.awt.Dimension(124, 5));
         jbInventory.addActionListener(this::jbInventoryActionPerformed);
@@ -489,7 +489,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbNorth.setText("▲");
         jbNorth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbNorth.setBorderPainted(false);
-        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbNorth.setFocusPainted(false);
         jbNorth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbNorth.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -503,7 +503,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbWest.setText("◄");
         jbWest.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbWest.setBorderPainted(false);
-        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbWest.setFocusPainted(false);
         jbWest.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbWest.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -517,7 +517,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbEast.setText("►");
         jbEast.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbEast.setBorderPainted(false);
-        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbEast.setFocusPainted(false);
         jbEast.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbEast.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -531,7 +531,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbSouth.setText("▼");
         jbSouth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbSouth.setBorderPainted(false);
-        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jbSouth.setFocusPainted(false);
         jbSouth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbSouth.setMargin(new java.awt.Insets(0, 0, 0, 0));

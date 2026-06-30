@@ -32,7 +32,7 @@
 
 # Dal Corridoio vai a Ovest nei Bagni
 2; OVEST; 4
-4; EST; 2
+4; SUD; 1
 
 # Dal Corridoio vai a Nord verso l'Ascensore (Quadro Elettrico)
 2; NORD; 5
