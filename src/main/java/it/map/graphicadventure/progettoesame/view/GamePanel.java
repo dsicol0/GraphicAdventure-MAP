@@ -264,15 +264,21 @@ public class GamePanel extends javax.swing.JPanel {
                 jlEmpty.setForeground(java.awt.Color.WHITE);
                 gridPanel.add(jlEmpty, java.awt.BorderLayout.CENTER);
             } else {
-                // Inventario con Oggetti (Griglia 4 colonne)
-                gridPanel.setLayout(new java.awt.GridLayout(0, 4, 10, 10)); 
+                // Inventario con Oggetti (Griglia fissa a 4 colonne)
+                gridPanel.setLayout(new java.awt.GridLayout(0, 4, 15, 15)); 
                 for (it.map.graphicadventure.progettoesame.type.GameObject item : items) {
                     gridPanel.add(createItemSlot(item));
                 }
+                
+                // 🟩 IL TRUCCO DEFINITIVO: Il pannello "Gabbia" con FlowLayout
+                // Allinea a SINISTRA (LEFT) e costringe Java a rispettare larghezza e altezza reali!
+                javax.swing.JPanel flowWrapper = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 30, 30));
+                flowWrapper.setOpaque(false);
+                flowWrapper.add(gridPanel); // Infiliamo la griglia qui dentro
+                
+                // Aggiungiamo questo contenitore al centro della schermata dell'inventario
+                jpInventoryView.add(flowWrapper, java.awt.BorderLayout.CENTER);
             }
-
-            // Aggiungiamo la griglia al CENTRO dell'inventario
-            jpInventoryView.add(gridPanel, java.awt.BorderLayout.CENTER);
             
             // Mostriamo l'inventario sulla schermata di gioco
             jpPlayingArea.add(jpInventoryView, java.awt.BorderLayout.CENTER);
@@ -288,6 +294,11 @@ public class GamePanel extends javax.swing.JPanel {
         javax.swing.JPanel itemSlot = new javax.swing.JPanel(new java.awt.BorderLayout());
         itemSlot.setBackground(new java.awt.Color(30, 30, 30));
         itemSlot.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 1));
+        
+        // 🟩 BLOCCHIAMO LE MISURE DA TUTTI I LATI (Minima, Massima e Preferita):
+        itemSlot.setPreferredSize(new java.awt.Dimension(110, 110));
+        itemSlot.setMinimumSize(new java.awt.Dimension(110, 110));
+        itemSlot.setMaximumSize(new java.awt.Dimension(110, 110));
 
         javax.swing.JLabel jlIcon = new javax.swing.JLabel("", javax.swing.SwingConstants.CENTER);
         if (item.getImagePath() != null && !item.getImagePath().isEmpty()) {
@@ -323,7 +334,7 @@ public class GamePanel extends javax.swing.JPanel {
             }
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                System.out.println("Selected item: " + item.getName());
+                animatedText("> Zaino: " + item.getName().toUpperCase() + ".\n" + item.getDescription());
             }
         });
 

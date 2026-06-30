@@ -46,27 +46,41 @@ public class GameController {
     
     public void startNewGame() {
         try {
-            // 1. Chiediamo al MODEL di preparare tutto (leggere il txt, mettere gli oggetti, ecc.)
-            model.init(); 
+            // 1. Inizializza il gioco normalmente
+            model.init();
 
-            // 2. Recuperiamo la stanza iniziale che il Model ha appena preparato
+            // =======================================================================
+            // 🧪 INIEZIONE OGGETTO DI PROVA PER IL TEST DELL'INVENTARIO
+            // =======================================================================
+            // NOTA: Se GameObject è una classe astratta, usa una tua classe concreta (es. Weapon, Key, ecc.)
+            // Qui inseriamo i parametri richiesti dal tuo costruttore (es: ID, Nome, Descrizione)
+            it.map.graphicadventure.progettoesame.type.GameObject chiaveFinta
+                   = new it.map.graphicadventure.progettoesame.type.GameObject(1, "Chiave Rustica", "Apre la porta sul retro.", "/key.png"){
+                // Se la classe è astratta, questo trucco crea un'istanza al volo senza creare un nuovo file!
+            };
+            model.getInventory().add(chiaveFinta);
+
+            // OGGETTO 2: Una tessera magnetica per i lettori di badge
+            it.map.graphicadventure.progettoesame.type.GameObject caffeCaldo = 
+                new it.map.graphicadventure.progettoesame.type.GameObject(2, "Badge di Sicurezza", "Livello di accesso 3.", "/coffe.png") {};
+            model.getInventory().add(caffeCaldo);
+
+            // OGGETTO 3: Un classico delle avventure grafiche
+            it.map.graphicadventure.progettoesame.type.GameObject zaino = 
+                new it.map.graphicadventure.progettoesame.type.GameObject(3, "Piede di Porco", "Utile per forzare serrature bloccate.", "/studentBackpack.png") {};
+            model.getInventory().add(zaino);
+            // =======================================================================
+
+            // 2. Continua il caricamento della stanza iniziale
             Room initialRoom = model.getCurrentRoom();
-            
-            System.out.println("[DEBUG] Stanza iniziale: " + initialRoom.getName() + " | Oggetti dentro: " + initialRoom.getObjects().size());
-            
             if (initialRoom != null) {
-                // 3. Mostra il pannello di gioco sul Frame
                 view.showGamePanel();
-
-                // 4. PASSA LA STANZA ALLA GRAFICA PER DISEGNARLA!
                 view.getGamePanel().renderRoom(initialRoom);
-            } else {
-                System.err.println("Errore: la stanza iniziale dal Model è null!");
             }
         } catch (Exception ex) {
-            System.err.println("Errore durante l'inizializzazione del gioco: " + ex.getMessage());
             ex.printStackTrace();
         }
+    
     }
 
     /**
