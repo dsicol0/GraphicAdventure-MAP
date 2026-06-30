@@ -424,8 +424,6 @@ public class GamePanel extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jtaDialogs = new javax.swing.JTextArea();
-        jpPlayingArea = new javax.swing.JPanel();
-        jlBackground = new javax.swing.JLabel();
         jpControls = new javax.swing.JPanel();
         jlHealth = new javax.swing.JLabel();
         jbInventory = new javax.swing.JButton();
@@ -439,6 +437,8 @@ public class GamePanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jbSouth = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        jpPlayingArea = new javax.swing.JPanel();
+        jlBackground = new javax.swing.JLabel();
 
         setMaximumSize(new java.awt.Dimension(850, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
@@ -457,12 +457,6 @@ public class GamePanel extends javax.swing.JPanel {
 
         add(jScrollPane1, java.awt.BorderLayout.PAGE_START);
 
-        jpPlayingArea.setPreferredSize(new java.awt.Dimension(800, 450));
-        jpPlayingArea.setLayout(new java.awt.BorderLayout());
-
-        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
-
         jpControls.setBackground(new java.awt.Color(51, 25, 4, 70));
         jpControls.setPreferredSize(new java.awt.Dimension(800, 80));
 
@@ -478,7 +472,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbInventory.setForeground(new java.awt.Color(210, 195, 160));
         jbInventory.setText("[ INVENTARIO ]");
         jbInventory.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
-        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbInventory.setFocusPainted(false);
         jbInventory.setPreferredSize(new java.awt.Dimension(124, 5));
         jbInventory.addActionListener(this::jbInventoryActionPerformed);
@@ -495,7 +489,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbNorth.setText("▲");
         jbNorth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbNorth.setBorderPainted(false);
-        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbNorth.setFocusPainted(false);
         jbNorth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbNorth.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -509,7 +503,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbWest.setText("◄");
         jbWest.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbWest.setBorderPainted(false);
-        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbWest.setFocusPainted(false);
         jbWest.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbWest.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -523,7 +517,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbEast.setText("►");
         jbEast.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbEast.setBorderPainted(false);
-        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbEast.setFocusPainted(false);
         jbEast.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbEast.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -537,7 +531,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbSouth.setText("▼");
         jbSouth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbSouth.setBorderPainted(false);
-        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbSouth.setFocusPainted(false);
         jbSouth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbSouth.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -567,7 +561,13 @@ public class GamePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jpPlayingArea.add(jpControls, java.awt.BorderLayout.SOUTH);
+        add(jpControls, java.awt.BorderLayout.SOUTH);
+
+        jpPlayingArea.setPreferredSize(new java.awt.Dimension(800, 450));
+        jpPlayingArea.setLayout(new java.awt.BorderLayout());
+
+        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
 
         add(jpPlayingArea, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
