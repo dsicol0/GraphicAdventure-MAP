@@ -47,21 +47,24 @@ public class GameUtils {
                             int id = Integer.parseInt(parts[0].trim());
                             String name = parts[1].trim();
                             String description = parts[2].trim();
-
-                            // 🟩 1. AGGIUNGI QUESTE RIGHE QUI:
-                            // Controlliamo se nella riga del file c'è anche il quarto pezzo (l'immagine)
+                            
+                            // Controlliamo se nella riga del file c'è anche il quarto parametro
                             String backgroundPath = "";
                             if (parts.length >= 4) {
-                                backgroundPath = parts[3].trim(); // Legge "/background.png"
+                                backgroundPath = parts[3].trim();
                             }
-
-                            // 🟩 2. MODIFICA LA CREAZIONE DELLA STANZA:
-                            // Passiamo anche 'backgroundPath' al costruttore aggiornato!
-                            Room room = new Room(id, name, description, backgroundPath);
-
-                            // ... qui ci sarà il tuo codice per aggiungere la stanza alla lista/mappa ...
-                            rooms.add(room);
                             
+                            Room room = new Room(id, name, description, backgroundPath);
+                            
+                           
+                            // Se nel TXT specifichiamo "true" come quinto parametro, blocca la stanza
+                            if (parts.length >= 5) {
+                                boolean isLocked = Boolean.parseBoolean(parts[4].trim());
+                                room.setLocked(isLocked);
+                            }
+                            
+                            
+                            rooms.add(room);
                             roomMap.put(id, room);
                         }
                         break;
