@@ -3,10 +3,9 @@
 [ROOMS]
 # === PIANO TERRA ===
 # id ; nome ; descrizione ; immagine
-1; Aula Studio; La stanza è in disordine. Appunti sparsi ovunque. La porta verso il corridoio a NORD è aperta. Sulla cattedra c'è uno zaino abbandonato.; /aula_4.png
-2; Corridoio Principale; Conosci bene questo posto ma sai bene che devi scappare. L'aria è pesante. Vedi le luci sfarfallare. Ti chiedi che cosa sia successo...; /aula_4.png
+1; Corridoio 1° piano; Conosci bene questo posto, ma sai che devi scappare il prima possibile. L'aria è pesante, quasi irrespirabile, e sopra di te le luci al neon sfarfallano emettendo un ronzio sinistro. Ti chiedi che cosa sia successo in questo edificio... Il quadro elettrico sembra aver subito gravi danni, isolando la zona: le porte dei Bagni a NORD e del Laboratorio di Biologia a EST sono completamente sbarrate. L'unica via d'accesso rimasta praticabile è l'Aula 2 a OVEST. Devi esplorarla per cercare indizi, trovare strumenti utili o una via d'uscita prima che sia troppo tardi; /background.png; false
 3; Atrio Principale; Le grandi porte a vetri dell'uscita sono sbarrate da una saracinesca di metallo. Accanto c''è un lettore di badge con una spia rossa lampeggiante. Serve la tessera del Direttore e c'è un calo di tensione.; /aula_4.png
-4; Bagni; I lavandini perdono acqua e lo specchio è in frantumi. L'odore di caffè stantio e sangue si mescola nell'aria.; /aula_4.png
+4; Bagni; I lavandini perdono acqua e lo specchio è in frantumi. L'odore di caffè stantio e sangue si mescola nell'aria.; /bathroom.png; false
 5; Vano Ascensore; L'ascensore è guasto. Sulla parete c'è il quadro elettrico principale, il pannello è socchiuso ma i cavi sembrano intatti.; /aula_4.png
 6; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.; /aula_4.png
 
@@ -24,7 +23,7 @@
 # PIANO TERRA (Il Corridoio 2 fa da HUB centrale)
 # ==========================================
 # Dall'Aula Studio esci a Nord nel Corridoio
-1; NORD; 2
+1; NORD; 4
 2; SUD; 1
 
 # Dal Corridoio vai a Est nell'Atrio (Uscita bloccata)

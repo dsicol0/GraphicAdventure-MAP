@@ -48,6 +48,29 @@ public class GameController {
         try {
             // 1. Inizializza il gioco normalmente
             model.init();
+            
+            // =======================================================================
+            // 🧪 AREA TEST AGGIORNATA: INIETTIAMO 4 OGGETTI REALI NELL'INVENTARIO
+            // =======================================================================
+            // 1. Una Chiave (Usa la tua classe Key)
+            it.map.graphicadventure.progettoesame.type.items.Key chiaveTest
+                    = new it.map.graphicadventure.progettoesame.type.items.Key(1, "Chiave Rustica", "Una vecchia chiave arrugginita. Potrebbe aprire la porta di un'aula.", "/key.png");
+            model.getInventory().add(chiaveTest);
+
+            // 2. Un Badge (Usa la tua classe Badge)
+            it.map.graphicadventure.progettoesame.type.items.Badge badgeTest
+                    = new it.map.graphicadventure.progettoesame.type.items.Badge(2, "Badge di Sicurezza", "Tessera magnetica per i lettori d'accesso del personale. Livello 1.", "/coke.png");
+            model.getInventory().add(badgeTest);
+
+            // 3. Un'Arma (Usa la tua classe Weapon - richiede il danno, es. 15)
+            it.map.graphicadventure.progettoesame.type.items.Weapon armaTest
+                    = new it.map.graphicadventure.progettoesame.type.items.Weapon(3, "Caffè Bollente", "Un termos pieno di caffè bollente. Ottimo per essere lanciato contro i pericoli.", "/coffe.png", 15);
+            model.getInventory().add(armaTest);
+
+            // 4. Il nuovo Oggetto Usabile (Usa la tua nuova classe UsableObject!)
+            it.map.graphicadventure.progettoesame.type.items.UsableObject usableTest
+                    = new it.map.graphicadventure.progettoesame.type.items.UsableObject(4, "Fusibile Bruciato", "Un vecchio componente elettrico. È completamente fuso e inservibile.", "/electronicBoard.png");
+            model.getInventory().add(usableTest);
 
             // 2. Continua il caricamento della stanza iniziale
             Room initialRoom = model.getCurrentRoom();
