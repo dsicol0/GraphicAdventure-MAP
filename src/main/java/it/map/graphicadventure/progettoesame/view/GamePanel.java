@@ -209,7 +209,7 @@ public class GamePanel extends javax.swing.JPanel {
             }
             
             // 🟩 CORREZIONE: Usiamo la sintassi di NetBeans invece di BorderLayout.CENTER
-            jpPlayingArea.add(jlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, w, h));
+            jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
             isInventoryVisible = false;
             
         } else {
@@ -288,7 +288,7 @@ public class GamePanel extends javax.swing.JPanel {
             }
             
             // 🟩 CORREZIONE: Sintassi corretta per inserire l'inventario nell'Absolute Layout
-            jpPlayingArea.add(jpInventoryView, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, w, h));
+            jpPlayingArea.add(jpInventoryView, java.awt.BorderLayout.CENTER);
             isInventoryVisible = true;
         }
 
@@ -425,6 +425,7 @@ public class GamePanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtaDialogs = new javax.swing.JTextArea();
         jpPlayingArea = new javax.swing.JPanel();
+        jlBackground = new javax.swing.JLabel();
         jpControls = new javax.swing.JPanel();
         jlHealth = new javax.swing.JLabel();
         jbInventory = new javax.swing.JButton();
@@ -438,7 +439,6 @@ public class GamePanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jbSouth = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jlBackground = new javax.swing.JLabel();
 
         setMaximumSize(new java.awt.Dimension(850, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
@@ -458,7 +458,10 @@ public class GamePanel extends javax.swing.JPanel {
         add(jScrollPane1, java.awt.BorderLayout.PAGE_START);
 
         jpPlayingArea.setPreferredSize(new java.awt.Dimension(800, 450));
-        jpPlayingArea.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jpPlayingArea.setLayout(new java.awt.BorderLayout());
+
+        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
 
         jpControls.setBackground(new java.awt.Color(51, 25, 4, 70));
         jpControls.setPreferredSize(new java.awt.Dimension(800, 80));
@@ -563,10 +566,7 @@ public class GamePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jpPlayingArea.add(jpControls, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 810, -1));
-
-        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jpPlayingArea.add(jlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 812, 470));
+        jpPlayingArea.add(jpControls, java.awt.BorderLayout.SOUTH);
 
         add(jpPlayingArea, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
