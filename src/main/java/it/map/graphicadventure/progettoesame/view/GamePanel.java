@@ -195,10 +195,10 @@ public class GamePanel extends javax.swing.JPanel {
     }
     
     public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.type.GameObject> items) {
-        // 1. Forziamo il pannello centrale a usare un BorderLayout
-        if (jpPlayingArea.getLayout() instanceof javax.swing.GroupLayout) {
-             jpPlayingArea.setLayout(new java.awt.BorderLayout());
-        }
+        
+        // Calcoliamo larghezza e altezza per passarla alle AbsoluteConstraints
+        int w = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
+        int h = jpPlayingArea.getHeight() > 0 ? jpPlayingArea.getHeight() : 450;
 
         if (isInventoryVisible) {
             // ==========================================
@@ -207,7 +207,9 @@ public class GamePanel extends javax.swing.JPanel {
             if (jpInventoryView != null) {
                 jpPlayingArea.remove(jpInventoryView);
             }
-            jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
+            
+            // 🟩 CORREZIONE: Usiamo la sintassi di NetBeans invece di BorderLayout.CENTER
+            jpPlayingArea.add(jlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, w, h));
             isInventoryVisible = false;
             
         } else {
@@ -277,18 +279,16 @@ public class GamePanel extends javax.swing.JPanel {
                     gridPanel.add(createItemSlot(item));
                 }
                 
-                // 🟩 IL TRUCCO DEFINITIVO: Il pannello "Gabbia" con FlowLayout
-                // Allinea a SINISTRA (LEFT) e costringe Java a rispettare larghezza e altezza reali!
+                // Il tuo trucco definitivo con il FlowLayout
                 javax.swing.JPanel flowWrapper = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 30, 30));
                 flowWrapper.setOpaque(false);
-                flowWrapper.add(gridPanel); // Infiliamo la griglia qui dentro
+                flowWrapper.add(gridPanel);
                 
-                // Aggiungiamo questo contenitore al centro della schermata dell'inventario
                 jpInventoryView.add(flowWrapper, java.awt.BorderLayout.CENTER);
             }
             
-            // Mostriamo l'inventario sulla schermata di gioco
-            jpPlayingArea.add(jpInventoryView, java.awt.BorderLayout.CENTER);
+            // 🟩 CORREZIONE: Sintassi corretta per inserire l'inventario nell'Absolute Layout
+            jpPlayingArea.add(jpInventoryView, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, w, h));
             isInventoryVisible = true;
         }
 
