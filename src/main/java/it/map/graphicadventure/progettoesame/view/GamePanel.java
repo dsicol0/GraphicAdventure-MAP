@@ -33,6 +33,13 @@ public class GamePanel extends javax.swing.JPanel {
      */
     public GamePanel() {
         initComponents();
+        
+        // NECESSARI PER NON AVERE IL BRUTTO DESIGN DEL SISTEMA OPERATIVO (NON TOGLIERE)
+        jbNorth.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        jbSouth.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        jbEast.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        jbWest.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        jbInventory.setUI(new javax.swing.plaf.basic.BasicButtonUI());
     }
     
     private void animatedText(String testo) {
@@ -418,7 +425,6 @@ public class GamePanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         jtaDialogs = new javax.swing.JTextArea();
         jpPlayingArea = new javax.swing.JPanel();
-        jlBackground = new javax.swing.JLabel();
         jpControls = new javax.swing.JPanel();
         jlHealth = new javax.swing.JLabel();
         jbInventory = new javax.swing.JButton();
@@ -432,6 +438,7 @@ public class GamePanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jbSouth = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        jlBackground = new javax.swing.JLabel();
 
         setMaximumSize(new java.awt.Dimension(850, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
@@ -451,15 +458,9 @@ public class GamePanel extends javax.swing.JPanel {
         add(jScrollPane1, java.awt.BorderLayout.PAGE_START);
 
         jpPlayingArea.setPreferredSize(new java.awt.Dimension(800, 450));
-        jpPlayingArea.setLayout(new java.awt.BorderLayout());
+        jpPlayingArea.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
-
-        add(jpPlayingArea, java.awt.BorderLayout.CENTER);
-
-        jpControls.setBackground(new java.awt.Color(204, 204, 204));
-        jpControls.setBorder(javax.swing.BorderFactory.createMatteBorder(2, 1, 1, 1, new java.awt.Color(0, 0, 0)));
+        jpControls.setBackground(new java.awt.Color(51, 25, 4, 70));
         jpControls.setPreferredSize(new java.awt.Dimension(800, 80));
 
         jlHealth.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
@@ -469,60 +470,72 @@ public class GamePanel extends javax.swing.JPanel {
         jlHealth.setText("100");
         jlHealth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
-        jbInventory.setBackground(new java.awt.Color(0, 0, 0));
+        jbInventory.setBackground(new java.awt.Color(85, 70, 50));
         jbInventory.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
-        jbInventory.setForeground(new java.awt.Color(51, 255, 0));
+        jbInventory.setForeground(new java.awt.Color(210, 195, 160));
         jbInventory.setText("[ INVENTARIO ]");
-        jbInventory.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 255, 0), 2, true));
+        jbInventory.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbInventory.setFocusPainted(false);
         jbInventory.setPreferredSize(new java.awt.Dimension(124, 5));
         jbInventory.addActionListener(this::jbInventoryActionPerformed);
 
         jpExits.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 18));
+        jpExits.setOpaque(false);
         jpExits.setPreferredSize(new java.awt.Dimension(110, 110));
         jpExits.setLayout(new java.awt.GridLayout(3, 3, 2, 2));
         jpExits.add(jLabel1);
 
+        jbNorth.setBackground(new java.awt.Color(85, 70, 50));
         jbNorth.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
-        jbNorth.setForeground(new java.awt.Color(0, 255, 0));
+        jbNorth.setForeground(new java.awt.Color(210, 195, 160));
         jbNorth.setText("▲");
-        jbNorth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jbNorth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbNorth.setBorderPainted(false);
-        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbNorth.setFocusPainted(false);
+        jbNorth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbNorth.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jbNorth.addActionListener(this::jbNorthActionPerformed);
         jpExits.add(jbNorth);
         jpExits.add(jLabel2);
 
+        jbWest.setBackground(new java.awt.Color(85, 70, 50));
         jbWest.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
-        jbWest.setForeground(new java.awt.Color(0, 255, 0));
+        jbWest.setForeground(new java.awt.Color(210, 195, 160));
         jbWest.setText("◄");
-        jbWest.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jbWest.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbWest.setBorderPainted(false);
-        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbWest.setFocusPainted(false);
+        jbWest.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbWest.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jbWest.addActionListener(this::jbWestActionPerformed);
         jpExits.add(jbWest);
         jpExits.add(jLabel3);
 
+        jbEast.setBackground(new java.awt.Color(85, 70, 50));
         jbEast.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
-        jbEast.setForeground(new java.awt.Color(0, 255, 0));
+        jbEast.setForeground(new java.awt.Color(210, 195, 160));
         jbEast.setText("►");
-        jbEast.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jbEast.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbEast.setBorderPainted(false);
-        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbEast.setFocusPainted(false);
+        jbEast.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbEast.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jbEast.addActionListener(this::jbEastActionPerformed);
         jpExits.add(jbEast);
         jpExits.add(jLabel4);
 
+        jbSouth.setBackground(new java.awt.Color(85, 70, 50));
         jbSouth.setFont(new java.awt.Font("Monospaced", 1, 18)); // NOI18N
-        jbSouth.setForeground(new java.awt.Color(0, 255, 0));
+        jbSouth.setForeground(new java.awt.Color(210, 195, 160));
         jbSouth.setText("▼");
-        jbSouth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jbSouth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbSouth.setBorderPainted(false);
-        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbSouth.setFocusPainted(false);
+        jbSouth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbSouth.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jbSouth.addActionListener(this::jbSouthActionPerformed);
         jpExits.add(jbSouth);
@@ -550,7 +563,12 @@ public class GamePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        add(jpControls, java.awt.BorderLayout.SOUTH);
+        jpPlayingArea.add(jpControls, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 350, 810, -1));
+
+        jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jpPlayingArea.add(jlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 812, 470));
+
+        add(jpPlayingArea, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbInventoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbInventoryActionPerformed
@@ -560,8 +578,20 @@ public class GamePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jbInventoryActionPerformed
 
     private void jbSouthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSouthActionPerformed
-        // TODO add your handling code here:
+        movePlayer("SUD");
     }//GEN-LAST:event_jbSouthActionPerformed
+
+    private void jbNorthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbNorthActionPerformed
+        movePlayer("NORD");
+    }//GEN-LAST:event_jbNorthActionPerformed
+
+    private void jbWestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbWestActionPerformed
+        movePlayer("OVEST");
+    }//GEN-LAST:event_jbWestActionPerformed
+
+    private void jbEastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEastActionPerformed
+        movePlayer("EST");
+    }//GEN-LAST:event_jbEastActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
