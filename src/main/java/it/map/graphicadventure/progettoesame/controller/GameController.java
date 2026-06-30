@@ -49,28 +49,6 @@ public class GameController {
             // 1. Inizializza il gioco normalmente
             model.init();
 
-            // =======================================================================
-            // 🧪 INIEZIONE OGGETTO DI PROVA PER IL TEST DELL'INVENTARIO
-            // =======================================================================
-            // NOTA: Se GameObject è una classe astratta, usa una tua classe concreta (es. Weapon, Key, ecc.)
-            // Qui inseriamo i parametri richiesti dal tuo costruttore (es: ID, Nome, Descrizione)
-            it.map.graphicadventure.progettoesame.type.GameObject chiaveFinta
-                   = new it.map.graphicadventure.progettoesame.type.GameObject(1, "Chiave Rustica", "Apre la porta sul retro.", "/key.png"){
-                // Se la classe è astratta, questo trucco crea un'istanza al volo senza creare un nuovo file!
-            };
-            model.getInventory().add(chiaveFinta);
-
-            // OGGETTO 2: Una tessera magnetica per i lettori di badge
-            it.map.graphicadventure.progettoesame.type.GameObject caffeCaldo = 
-                new it.map.graphicadventure.progettoesame.type.GameObject(2, "Badge di Sicurezza", "Livello di accesso 3.", "/coffe.png") {};
-            model.getInventory().add(caffeCaldo);
-
-            // OGGETTO 3: Un classico delle avventure grafiche
-            it.map.graphicadventure.progettoesame.type.GameObject zaino = 
-                new it.map.graphicadventure.progettoesame.type.GameObject(3, "Piede di Porco", "Utile per forzare serrature bloccate.", "/studentBackpack.png") {};
-            model.getInventory().add(zaino);
-            // =======================================================================
-
             // 2. Continua il caricamento della stanza iniziale
             Room initialRoom = model.getCurrentRoom();
             if (initialRoom != null) {
@@ -94,6 +72,9 @@ public class GameController {
 
         if (nextRoom != null) {
             model.setCurrentRoom(nextRoom);
+            if (nextRoom.isLocked()) {
+                return "Questa stanza è bloccata. Forse ti serve una chiave per aprirla..."; 
+            }
             return "Ti sposti verso " + direction.toUpperCase() + "...\nSei in: " + nextRoom.getName();
         } else {
             return "Non puoi andare in quella direzione.";

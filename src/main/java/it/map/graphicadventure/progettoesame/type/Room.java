@@ -10,7 +10,8 @@ public class Room {
     private final int id;
     private String name;
     private String description;
-    private String backgroundPath; // 1. Cambiato il nome in backgroundPath per allinearsi al GamePanel
+    private String backgroundPath; 
+    private boolean locked;
 
     // Mappa delle uscite: la chiave è la direzione ("nord"), il valore è la Stanza di destinazione
     private final Map<String, Room> exits = new HashMap<>();
@@ -89,6 +90,14 @@ public class Room {
      */
     public java.util.Set<String> getAvailableDirections() {
         return this.exits.keySet(); // Sostituisci 'exits' con il nome reale della tua mappa interna
+    }
+    
+    public boolean isLocked() {
+        return this.locked;
+    }
+    
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     @Override

@@ -70,7 +70,6 @@
 # idStanza; idOggetto; TipoClasse; Nome; Descrizione; PathImmagine; X; Y; Larghezza; Altezza
 
 # -- Oggetti in Aula Studio (Stanza 1) --
-1;10;ObjectContainer;Zaino Abbandonato;Uno zainetto logoro lasciato sulla cattedra. Chissà se contiene qualcosa di utile.;/closedChest.png;350;250;100;100
 
 # -- Oggetti nei Bagni (Stanza 4) --
 4;11;Weapon;Righello di Metallo;Un pesante righello di metallo da architetto. Un'arma improvvisata perfetta per difendersi.;/pipe.png;200;300;80;80
