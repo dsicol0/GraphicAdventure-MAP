@@ -8,10 +8,8 @@ package it.map.graphicadventure.progettoesame.type.interfaces;
  *
  * @author David
  */
-public interface Openable {
+public interface Lockable {
     
-    void open();
-    void close();
-    boolean isOpen();
-
+    boolean isLocked();
+    void setLocked(boolean locked);
 }
