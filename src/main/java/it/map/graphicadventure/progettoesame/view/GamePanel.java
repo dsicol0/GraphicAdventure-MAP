@@ -42,7 +42,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbInventory.setUI(new javax.swing.plaf.basic.BasicButtonUI());
     }
     
-    private void animatedText(String testo) {
+    public void animatedText(String testo) {
         // 1. Se c'è un'altra frase che sta ancora scorrendo, la fermiamo
         if (timerText != null && timerText.isRunning()) {
             timerText.stop();

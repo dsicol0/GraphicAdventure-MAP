@@ -47,11 +47,11 @@ public class ConfirmDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
+        setPreferredSize(new java.awt.Dimension(400, 180));
         setResizable(false);
 
         jlMessage.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         jlMessage.setForeground(new java.awt.Color(255, 255, 255));
-        jlMessage.setText("Prova");
         jlMessage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         getContentPane().add(jlMessage, java.awt.BorderLayout.CENTER);
 

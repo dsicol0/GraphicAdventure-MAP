@@ -4,75 +4,36 @@
  */
 package it.map.graphicadventure.progettoesame.controller;
 
-import it.map.graphicadventure.progettoesame.MapBuilder;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.interfaces.Openable;
-import it.map.graphicadventure.progettoesame.type.interfaces.Takeable;
-import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
+import it.map.graphicadventure.progettoesame.factory.GameDataInitializer;
+import it.map.graphicadventure.progettoesame.type.Player;
 import java.util.List;
 
 /**
  *
  * @author David
  */
-public class GameController {
-    private final EsameGame model;
-    private final GameMainFrame view;
-    private Player player;
-
-    // Potremmo passare anche un riferimento alla View (es. GameFrame)
-    // se il controller deve dirgli di aggiornare l'interfaccia o mostrare un popup.
+public class GameController extends BaseController {
+    // Riferimenti ai due sotto-controller
+    private final MovementController movementController;
+    private final ObjInteractionController interactionController;
 
     public GameController(EsameGame model, GameMainFrame view) {
-        this.model = model;
-        this.view = view;
+        super(model, view);
+        // Li inizializziamo passandogli il modello e la view
+        this.movementController = new MovementController(model, view);
+        this.interactionController = new ObjInteractionController(model, view);
     }
-    
-    /**
-     * Restituisce la stanza attualmente salvata nel Model.
-     * Serve alla View per sapere cosa disegnare dopo un movimento.
-     */
-    public Room getCurrentRoom() {
-        return model.getCurrentRoom();
-    }
-    
-    public Player getPlayer() {
-        return this.player;
-    }
-    
+
     public void startNewGame() {
         try {
-            // 1. Inizializza il gioco normalmente
             model.init();
             
-            // =======================================================================
-            // 🧪 AREA TEST AGGIORNATA: INIETTIAMO 4 OGGETTI REALI NELL'INVENTARIO
-            // =======================================================================
-            // 1. Una Chiave (Usa la tua classe Key)
-            it.map.graphicadventure.progettoesame.type.items.Key chiaveTest
-                    = new it.map.graphicadventure.progettoesame.type.items.Key(1, "Chiave Rustica", "Una vecchia chiave arrugginita. Potrebbe aprire la porta di un'aula.", "/key.png");
-            model.getInventory().add(chiaveTest);
-
-            // 2. Un Badge (Usa la tua classe Badge)
-            it.map.graphicadventure.progettoesame.type.items.Badge badgeTest
-                    = new it.map.graphicadventure.progettoesame.type.items.Badge(2, "Badge di Sicurezza", "Tessera magnetica per i lettori d'accesso del personale. Livello 1.", "/coke.png");
-            model.getInventory().add(badgeTest);
-
-            // 3. Un'Arma (Usa la tua classe Weapon - richiede il danno, es. 15)
-            it.map.graphicadventure.progettoesame.type.items.Weapon armaTest
-                    = new it.map.graphicadventure.progettoesame.type.items.Weapon(3, "Caffè Bollente", "Un termos pieno di caffè bollente. Ottimo per essere lanciato contro i pericoli.", "/coffe.png", 15);
-            model.getInventory().add(armaTest);
-
-            // 4. Il nuovo Oggetto Usabile (Usa la tua nuova classe UsableObject!)
-            it.map.graphicadventure.progettoesame.type.items.UsableObject usableTest
-                    = new it.map.graphicadventure.progettoesame.type.items.UsableObject(4, "Fusibile Bruciato", "Un vecchio componente elettrico. È completamente fuso e inservibile.", "/electronicBoard.png");
-            model.getInventory().add(usableTest);
-
-            // 2. Continua il caricamento della stanza iniziale
+            GameDataInitializer.setUpGameData(model);
+            
             Room initialRoom = model.getCurrentRoom();
             if (initialRoom != null) {
                 view.showGamePanel();
@@ -81,104 +42,39 @@ public class GameController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    
     }
 
-    /**
-     * Gestisce il movimento del giocatore tra le stanze.
-     * @param direction "nord", "sud", "est", "ovest"
-     * @return un messaggio di testo con l'esito del movimento (es. per aggiornare la UI)
-     */
+    public Room getCurrentRoom() {
+        return model.getCurrentRoom();
+    }
+    
+    public Player getPlayer() {
+        return model.getPlayer(); // Oppure "return this.player;" a seconda di come lo avevi inizializzato
+    }
+
+    // 🟩 Passa l'azione direttamente al controller dei movimenti
     public String handleMovement(String direction) {
-        Room current = model.getCurrentRoom();
-        Room nextRoom = current.getExit(direction);
-
-        if (nextRoom != null) {
-            model.setCurrentRoom(nextRoom);
-            if (nextRoom.isLocked()) {
-                return "Questa stanza è bloccata. Forse ti serve una chiave per aprirla..."; 
-            }
-            return "Ti sposti verso " + direction.toUpperCase() + "...\nSei in: " + nextRoom.getName();
-        } else {
-            return "Non puoi andare in quella direzione.";
-        }
+        return movementController.handleMovement(direction);
     }
 
-    /**
-     * Gestisce il clic su un oggetto all'interno della stanza.
-     * Viene chiamato dal RoomPanel quando la Hitbox intercetta il mouse.
-     */
+    // 🟩 Passa l'azione direttamente al controller delle interazioni
     public String handleObjectInteraction(GameObject clickedObject) {
-        if (clickedObject == null) {
-            return "Non c'è niente di interessante qui.";
-        }
-
-        StringBuilder response = new StringBuilder();
-        response.append("Esamini: ").append(clickedObject.getName()).append(". \n");
-
-        // 1. Controllo se l'oggetto si può raccogliere
-        if (clickedObject instanceof Takeable) {
-            if (((Takeable) clickedObject).isTakeable()) {
-                model.getInventory().add(clickedObject);
-                model.getCurrentRoom().removeObject(clickedObject);
-                response.append("Hai raccolto ").append(clickedObject.getName()).append("!");
-                return response.toString(); // Termina qui, l'oggetto è nell'inventario
-            }
-        }
-
-        // 2. Controllo se l'oggetto si può aprire (es. Chest/Baule)
-        if (clickedObject instanceof Openable) {
-            Openable openableObj = (Openable) clickedObject;
-            if (openableObj.isOpen()) {
-                response.append("È già aperto.");
-            } else if (openableObj.isLocked()) {
-                response.append("È chiuso a chiave. Serve qualcosa per aprirlo.");
-            } else {
-                openableObj.setOpen(true);
-                response.append("Lo hai aperto!");
-                // Qui potresti estrarre gli oggetti dal contenitore e metterli nella stanza
-            }
-        }
-
-        // 3. Controllo se l'oggetto è usabile sul posto (es. Lettore Badge)
-        if (clickedObject instanceof Usable) {
-            response.append("\nPremi per usare l'oggetto... (logica da implementare)");
-        }
-
-        // Se non è raccoglibile, né apribile, restituiamo solo la sua descrizione base
-        if (response.toString().equals("Esamini: " + clickedObject.getName() + ". \n")) {
-            response.append(clickedObject.getDescription());
-        }
-
-        return response.toString();
+        return interactionController.handleObjectInteraction(clickedObject);
     }
-    
-    /**
-     * Recupera l'inventario dal Model e lo formatta come testo per la View.
-     */
+
     public String showInventory() {
-        // Recuperiamo la lista degli oggetti dal Model (EsameGame)
-        java.util.List<GameObject> inventory = model.getInventory();
-        
-        // Se è vuoto, diamo un feedback immediato
+        List<GameObject> inventory = model.getInventory();
         if (inventory == null || inventory.isEmpty()) {
             return "Il tuo zaino è vuoto.";
         }
-        
-        // Altrimenti, costruiamo una stringa con l'elenco degli oggetti
         StringBuilder sb = new StringBuilder();
         sb.append("--- INVENTARIO ---\n");
-        
         for (GameObject obj : inventory) {
             sb.append("> ").append(obj.getName()).append("\n");
         }
-        
         return sb.toString();
     }
-    
-    /**
-     * Apre l'interfaccia dell'inventario.
-     */
+
     public void handleInventoryToggle() {
         List<GameObject> inventoryItems = model.getInventory();
         view.getGamePanel().toggleInventory(inventoryItems);
