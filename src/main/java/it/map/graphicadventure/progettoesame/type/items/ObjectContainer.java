@@ -56,19 +56,3 @@ public class ObjectContainer extends GameObject implements Openable {
         this.open = open;
     }
 }
-
-// consigliato da gemini!!!
-/*
-Dato che all'inizio mi hai detto che la Programmazione Generica è un requisito obbligatorio per passare l'esame, questa classe è il candidato perfetto per smarcarlo con zero sforzo e fare un'ottima figura.
-
-Invece di lasciare che ObjectContainer contenga una normale lista di GameObject misti, potresti trasformare l'intera classe in un generico: public class ObjectContainer<T extends GameObject> extends GameObject implements Openable.
-
-In questo modo:
-
-Un armadietto del pronto soccorso diventerebbe ObjectContainer<Medicikit>.
-
-Una cassetta degli attrezzi diventerebbe ObjectContainer<Weapon>.
-
-Il professore vedrebbe che sai usare i Generics per garantire la "Type Safety" (sicurezza dei tipi) nel tuo codice.
-
- */

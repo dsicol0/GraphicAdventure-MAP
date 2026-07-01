@@ -1,10 +1,11 @@
 # File di configurazione del mondo di gioco: FINAL EXAM
 
 [ROOMS]
-# === PIANO TERRA ===
-# id ; nome ; descrizione ; immagine
-1; Corridoio 1° piano; Conosci bene questo posto, ma sai che devi scappare il prima possibile. L'aria è pesante, quasi irrespirabile, e sopra di te le luci al neon sfarfallano emettendo un ronzio sinistro. Ti chiedi che cosa sia successo in questo edificio... Il quadro elettrico sembra aver subito gravi danni, isolando la zona: le porte dei Bagni a NORD e del Laboratorio di Biologia a EST sono completamente sbarrate. L'unica via d'accesso rimasta praticabile è l'Aula 2 a OVEST. Devi esplorarla per cercare indizi, trovare strumenti utili o una via d'uscita prima che sia troppo tardi; /background.png; false
-3; Atrio Principale; Le grandi porte a vetri dell'uscita sono sbarrate da una saracinesca di metallo. Accanto c''è un lettore di badge con una spia rossa lampeggiante. Serve la tessera del Direttore e c'è un calo di tensione.; /aula_4.png
+# **** PIANO TERRA ****
+# id ; nome ; descrizione ; immagine; aperta/chiusa
+1; Corridoio 1° piano; Conosci bene questo posto, ma sai che devi scappare il prima possibile. L'aria è pesante, quasi irrespirabile, e sopra di te le luci al neon sfarfallano emettendo un ronzio sinistro. Ti chiedi che cosa sia successo in questo edificio... Il quadro elettrico sembra aver subito gravi danni, isolando la zona: le porte dei Bagni a NORD e del Laboratorio di Biologia a EST sono completamente sbarrate. L'unica via d'accesso rimasta praticabile è l'Aula 2 a OVEST. Devi esplorarla per cercare indizi, trovare strumenti utili o una via d'uscita prima che sia troppo tardi...; /secondFloor.png; false
+2; Aula 2;  Non c'è nessuno ed è tutto in grande disordine, con banchi e sedie per terra. Fa un po' impressione... Vedi che la porta dell'uscita è chiusa da una pesante saracinesca che ne impedisce l'utilizzo: probabilmente i sistemi di sicurezza sono scattati automaticante quando è avvenuto il blackout. Per terra vedi anche uno zaino, sicuramente lasciato lì da uno studente. Le luci sfarfallano perché manca la corrente, ma sul display del lettore lì accanto si legge chiaramente una scritta: 'Richiesto Badge Direzione; /aula_4.png; false
+3; Aula di Biologia; 
 4; Bagni; I lavandini perdono acqua e lo specchio è in frantumi. L'odore di caffè stantio e sangue si mescola nell'aria.; /bathroom.png; false
 5; Vano Ascensore; L'ascensore è guasto. Sulla parete c'è il quadro elettrico principale, il pannello è socchiuso ma i cavi sembrano intatti.; /aula_4.png
 6; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Le porte d'emergenza cigolano.; /aula_4.png
@@ -18,16 +19,11 @@
 
 [EXITS]
 # idStanzaPartenza ; direzione ; idStanzaDestinazione
-
-# ==========================================
-# PIANO TERRA (Il Corridoio 2 fa da HUB centrale)
-# ==========================================
-# Dall'Aula Studio esci a Nord nel Corridoio
 1; NORD; 4
-2; SUD; 1
+1; OVEST; 2
 
 # Dal Corridoio vai a Est nell'Atrio (Uscita bloccata)
-2; EST; 3
+2; EST; 1
 3; OVEST; 2
 
 # Dal Corridoio vai a Ovest nei Bagni
@@ -67,14 +63,15 @@
 
 [OBJECTS]
 # idStanza; idOggetto; TipoClasse; Nome; Descrizione; PathImmagine; X; Y; Larghezza; Altezza
-
-# -- Oggetti in Aula Studio (Stanza 1) --
+# Oggetti in Aula 2
+# -- Oggetti in Aula 2 (Stanza 2) --
+2;16;ObjectContainer;Zaino dello Studente;Uno zainetto abbandonato in fretta e furia sul pavimento. È parzialmente aperto, forse c'è qualcosa dentro.;/studentBackpack.png;530;250;100;100 
 
 # -- Oggetti nei Bagni (Stanza 4) --
-4;11;Weapon;Righello di Metallo;Un pesante righello di metallo da architetto. Un'arma improvvisata perfetta per difendersi.;/pipe.png;200;300;80;80
+4;11;Weapon;Righello di Metallo;Un pesante righello di metallo da architetto. Un'arma improvvisata perfetta per difendersi.;/pipe.png;200;300;100;100
 
 # -- Oggetti nel Vano Ascensore (Stanza 5) --
-5;12;Usable;Quadro Elettrico;Il pannello centrale dell'edificio. Se abbassi la leva potresti ripristinare la corrente per il lettore badge.;/electrical_panel.png;400;150;120;150
+5;12;Usable;Quadro Elettrico;Il pannello centrale dell'edificio. Se abbassi la leva potresti ripristinare la corrente per il lettore badge.;/electrical_panel.png;400;200;120;150
 
 # -- Oggetti in Segreteria Studenti (Stanza 9) --
 9;13;ObjectContainer;Armadietto Aperto;Un armadietto per i dipendenti, la classica loot box che ti salverà la vita.;/locker.png;500;100;90;180
