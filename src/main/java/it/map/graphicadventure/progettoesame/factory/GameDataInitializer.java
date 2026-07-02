@@ -24,7 +24,8 @@ public class GameDataInitializer {
         
         // Nella stanza iniziale, dentro lo Zaino (ID 16), nascondi la Chiave dell'Esame (ID 17)
         // 1. Stanza 2 (Aula 2) -> Zaino (ID 16) -> Chiave d'Oro (ID 17)
-        hideObject(model, 2, 16, new Key(17, "Chiave d'Oro dell'Esame", "Una chiave luccicante.", "/key.png"));
+        hideObject(model, 2, 16, new Key(17, "Una semplice Chiave", "Una chiave luccicante. Potrebbe servire per aprire qualcosa...", "/items/key.png"));
+        hideObject(model, 2, 16, new Weapon(11, "Accendino", "Un'accendino zippo. Probabilmente funziona ancora...", "/items/lighter.png", 10));
         
         // Esempi futuri di quanto sarà facile aggiungere roba:
         // nascondiOggetto(aulaInformatica, 20, new Badge(21, "Badge Amministratore", "Livello 3", "/badge.png"));
@@ -36,23 +37,23 @@ public class GameDataInitializer {
         if (model == null || model.getRooms() == null) return;
 
         // FASE 1: Cerca la stanza tramite il suo ID numerico
-        Room stanzaTrovata = null;
+        Room room = null;
         for (Room r : model.getRooms()) {
             if (r.getId() == idStanza) { // 🟩 Confronto numerico ultra-sicuro
-                stanzaTrovata = r;
+                room = r;
                 break; 
             }
         }
 
         // FASE 2: Se la stanza esiste, cerca il contenitore al suo interno per ID
-        if (stanzaTrovata != null && stanzaTrovata.getObjects() != null) {
-            for (GameObject obj : stanzaTrovata.getObjects()) {
+        if (room != null && room.getObjects() != null) {
+            for (GameObject obj : room.getObjects()) {
                 
                 if (obj.getId() == idContenitore && obj instanceof ObjectContainer<?>) {
-                    ObjectContainer<GameObject> contenitore = (ObjectContainer<GameObject>) obj;
+                    ObjectContainer<GameObject> container = (ObjectContainer<GameObject>) obj;
                     
                     // Inserisce l'oggetto nascosto
-                    contenitore.getInsideItems().add(oggettoDaNascondere);
+                    container.getInsideItems().add(oggettoDaNascondere);
                     return; // Oggetto nascosto con successo, chiudiamo il metodo
                 }
             }

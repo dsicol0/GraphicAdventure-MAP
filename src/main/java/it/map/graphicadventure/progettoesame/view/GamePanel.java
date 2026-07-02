@@ -7,6 +7,7 @@ package it.map.graphicadventure.progettoesame.view;
 import it.map.graphicadventure.progettoesame.controller.GameController;
 import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.type.items.Weapon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -132,7 +133,19 @@ public class GamePanel extends javax.swing.JPanel {
                 // Click sull'oggetto con richiesta di conferma modale
                 objectButton.addActionListener(e -> {
                     java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-                    ConfirmDialog cd = new ConfirmDialog(parentFrame, true, "Vuoi davvero raccogliere " + obj.getName() + "?");
+                    
+                    String message;
+                    if (obj instanceof it.map.graphicadventure.progettoesame.type.interfaces.Openable) {
+                        message = "Vuoi davvero aprire " + obj.getName() + "?";
+                    } else if (obj instanceof it.map.graphicadventure.progettoesame.type.interfaces.Takeable) {
+                        message = "Vuoi davvero raccogliere " + obj.getName() + "?";
+                    } else if (obj instanceof it.map.graphicadventure.progettoesame.type.interfaces.Usable) {
+                        message = "Vuoi davvero usare " + obj.getName() + "?";
+                    } else {
+                        message = "Vuoi interagire con " + obj.getName() + "?";
+                    }
+
+                    ConfirmDialog cd = new ConfirmDialog(parentFrame, true, message);
                     cd.setVisible(true);
 
                     if (cd.isConfirmed()) {
@@ -340,7 +353,16 @@ public class GamePanel extends javax.swing.JPanel {
             }
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
-                animatedText("> Zaino: " + item.getName().toUpperCase() + ".\n" + item.getDescription());
+                StringBuilder sb = new StringBuilder();
+                sb.append("> Inventario: ").append(item.getName().toUpperCase()).append(".\n");
+                sb.append(item.getDescription());
+                
+                // Se l'oggetto è un'istanza di Weapon stampiamo anche il danno
+                if (item instanceof Weapon) {
+                    Weapon weapon = (Weapon) item;
+                    sb.append("\nPotenza d'attacco: ").append(weapon.getDamage()).append(" PT");
+                }
+                animatedText(sb.toString());
             }
         });
 
@@ -355,12 +377,16 @@ public class GamePanel extends javax.swing.JPanel {
             // 1. Diciamo al controller di provare a muovere il giocatore e ci facciamo dare il testo di risposta
             String response = controller.handleMovement(direction);
             
-            // 2. Stampiamo la risposta nel terminale in basso ("Ti sposti..." oppure "Non puoi...")
-            animatedText(response);
+            // Stampiamo la risposta SOLO se è un messaggio di errore/blocco (non null e non vuoto)
+            if (response != null && !response.trim().isEmpty()) {
+                animatedText(response);
+            }
             
-            // 3. Ridisegniamo la stanza. 
-            // Se il controller ha cambiato la stanza, renderRoom caricherà la nuova immagine e i nuovi oggetti!
-            // Se il movimento è fallito, renderRoom semplicemente non farà nulla di nuovo.
+            /* 
+               Ridisegniamo la stanza. 
+               Se il controller ha cambiato la stanza, renderRoom caricherà la nuova immagine e i nuovi oggetti!
+               Se il movimento è fallito, renderRoom semplicemente non farà nulla di nuovo.
+            */
             renderRoom(controller.getCurrentRoom());
         }
     }

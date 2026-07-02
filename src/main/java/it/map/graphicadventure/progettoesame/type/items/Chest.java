@@ -44,7 +44,7 @@ public class Chest<T extends GameObject> extends ObjectContainer<T> implements L
         return false; // Chiave sbagliata
     }
     
-    // 🟩 OVERRIDE: Modifichiamo il comportamento di apertura inserendo il vincolo della serratura
+    // Modifichiamo il comportamento di apertura inserendo il vincolo della serratura
     @Override
     public void open() {
         if (!locked) {

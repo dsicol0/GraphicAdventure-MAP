@@ -4,6 +4,7 @@ import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.items.Key;
 import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.type.items.UsableObject;
 import it.map.graphicadventure.progettoesame.type.items.Weapon;
 
 import java.io.BufferedReader;
@@ -118,10 +119,20 @@ public class GameUtils {
                                         newObj = new Key(objId, objName, objDesc, objImg);
                                         break;
                                     case "Weapon":
-                                        // Nota: per ora supponiamo che le armi abbiano danno 10 di default
-                                        newObj = new Weapon(objId, objName, objDesc, objImg, 10);
+                                        // Come default un'arma fa almeno 10 danni
+                                        int damage = 10;
+                                        // Se la riga ha l'11° parametro (indice 10), leggiamo il danno dal file
+                                        if (objParts.length >= 11) {
+                                            damage = Integer.parseInt(objParts[10].trim());
+                                        }
+                                        // Istanziamo l'ogetto di tipo arma con il relativo danno
+                                        newObj = new Weapon(objId, objName, objDesc, objImg, damage);
                                         break;
-                                    // Aggiungi qui altre classi (Badge, ecc.) man mano che le crei
+                                    case "UsableObject": 
+                                        // Presumendo che la classe si chiami UsableObject 
+                                        // e che il suo costruttore accetti i 4 parametri standard
+                                        newObj = new UsableObject(objId, objName, objDesc, objImg);
+                                        break;
                                 }
 
                                 // 3. Se l'oggetto è stato creato, applichiamo le coordinate e lo salviamo nella stanza
@@ -144,11 +155,10 @@ public class GameUtils {
         return rooms;
     }
 
-    public static GameObject getObjectFromInventory(List<GameObject> inventory, int id) {
-        return inventory.stream()
-                .filter(o -> o.getId() == id)
-                .findFirst()
-                .orElse(null);
+    public static boolean hasObject(List<GameObject> inventory, int idObject) {
+        if (inventory == null) return false;
+        
+        return inventory.stream().anyMatch(obj -> obj.getId() == idObject);
     }
 
 }
