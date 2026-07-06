@@ -9,7 +9,9 @@ import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import it.map.graphicadventure.progettoesame.factory.GameDataInitializer;
+import it.map.graphicadventure.progettoesame.service.DatabaseManager;
 import it.map.graphicadventure.progettoesame.type.Player;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,12 +22,16 @@ public class GameController extends BaseController {
     // Riferimenti ai due sotto-controller
     private final MovementController movementController;
     private final ObjInteractionController interactionController;
+    private final DatabaseManager dbManager;
 
     public GameController(EsameGame model, GameMainFrame view) {
         super(model, view);
         // Li inizializziamo passandogli il modello e la view
         this.movementController = new MovementController(model, view);
         this.interactionController = new ObjInteractionController(model, view);
+        this.dbManager = new DatabaseManager();
+        
+        this.view.setContinueButtonEnabled(dbManager.hasSavedGame());
     }
 
     public void startNewGame() {
@@ -38,6 +44,8 @@ public class GameController extends BaseController {
             if (initialRoom != null) {
                 view.showGamePanel();
                 view.getGamePanel().renderRoom(initialRoom);
+                
+                dbManager.logEvent("SYSTEM", "Iniziata nuova partita. Stanza iniziale: " + initialRoom.getName());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -54,12 +62,29 @@ public class GameController extends BaseController {
 
     // 🟩 Passa l'azione direttamente al controller dei movimenti
     public String handleMovement(String direction) {
-        return movementController.handleMovement(direction);
+        String response = movementController.handleMovement(direction);
+        
+        // Dopo il movimento, registriamo la stanza in cui si trova il giocatore
+        Room currentRoom = model.getCurrentRoom();
+        if (currentRoom != null) {
+            dbManager.logEvent("VISITED", "Il giocatore si è mosso a " + direction + " entrando in: " + currentRoom.getName());
+        }
+        
+        silentAutosave();
+        
+        return response;
     }
 
     // 🟩 Passa l'azione direttamente al controller delle interazioni
     public String handleObjectInteraction(GameObject clickedObject) {
-        return interactionController.handleObjectInteraction(clickedObject);
+        String response = interactionController.handleObjectInteraction(clickedObject);
+        
+        // Registra l'interazione con l'oggetto
+        dbManager.logEvent("INTERACTED", "Il giocatore ha interagito con l'oggetto: " + clickedObject.getName());
+        
+        silentAutosave();
+        
+        return response;
     }
 
     public String showInventory() {
@@ -78,5 +103,106 @@ public class GameController extends BaseController {
     public void handleInventoryToggle() {
         List<GameObject> inventoryItems = model.getInventory();
         view.getGamePanel().toggleInventory(inventoryItems);
+    }
+    
+    public void saveCurrentGame() {
+        String currentRoomName = model.getCurrentRoom().getName();
+        
+        // Assicurati che Player abbia un metodo per ottenere la salute, altrimenti adattalo al tuo codice
+        // (es. getPlayer().getHp() o getPlayerHealth())
+        int health = model.getPlayer().getHp(); 
+        
+        List<String> itemIds = new ArrayList<>();
+        for (GameObject obj : model.getInventory()) {
+            itemIds.add(String.valueOf(obj.getId())); // Presupponendo che getId() restituisca un identificatore univoco
+        }
+
+        boolean success = dbManager.saveGame(currentRoomName, health, itemIds);
+        if (success) {
+            view.getGamePanel().animatedText("Salvataggio completato con successo nel database.");
+        } else {
+            view.getGamePanel().animatedText("[ERRORE] Impossibile salvare la partita.");
+        }
+    }
+
+    public void loadSavedGame() {
+        DatabaseManager.SaveData data = dbManager.loadLatestGame();
+        
+        if (data != null) {
+            // 1. Ripristina salute
+            model.getPlayer().setHp(data.getHealth());
+            
+            // 2. Ripristina stanza in modo BLINDATO (ignora spazi extra e differenze maiuscole)
+            Room savedRoom = null;
+            for (Room r : model.getRooms()) {
+                if (r.getName().trim().equalsIgnoreCase(data.getRoomName().trim())) {
+                    savedRoom = r;
+                    break;
+                }
+            }
+            
+            // 🟩 IL SALVAGENTE: Impostiamo la stanza solo se l'abbiamo trovata!
+            if (savedRoom != null) {
+                model.setCurrentRoom(savedRoom);
+            } else {
+                System.err.println("[WARNING] Stanza salvata '" + data.getRoomName() + "' non trovata. Resto nella stanza iniziale.");
+            }
+            
+            // 3. Ripristina Inventario
+            model.getInventory().clear();
+            for (String itemId : data.getItemIds()) {
+                for (GameObject obj : model.getAllObjects()) {
+                    if (String.valueOf(obj.getId()).equals(itemId)) {
+                        model.getInventory().add(obj);
+                        
+                        // Rimuoviamo l'oggetto dalla stanza di origine per evitare cloni!
+                        for (Room r : model.getRooms()) {
+                            r.getObjects().remove(obj);
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Aggiorna la vista
+            view.getGamePanel().renderRoom(model.getCurrentRoom());
+            view.getGamePanel().animatedText("Salvataggio caricato. Bentornato nella sessione.");
+        } else {
+            view.getGamePanel().animatedText("Nessun salvataggio trovato nel database.");
+        }
+    }
+    
+    public void continueSavedGame() {
+        try {
+            // 1. Costruiamo il mondo di gioco base (legge il file .txt e crea mappa/oggetti)
+            model.init();
+            GameDataInitializer.setUpGameData(model);
+            
+            // 2. Passiamo dalla schermata del Menù a quella di Gioco
+            view.showGamePanel();
+            
+            // 3. Invece di far partire il render della stanza iniziale (Aula Studio),
+            // invochiamo il caricamento dal Database!
+            loadSavedGame();
+            
+        } catch (Exception ex) {
+            System.err.println("[ERRORE CRITICO] Fallimento durante il caricamento del mondo di gioco.");
+            ex.printStackTrace();
+        }
+    }
+    
+    private void silentAutosave() {
+        if (model.getCurrentRoom() == null || model.getPlayer() == null) return;
+        
+        String currentRoomName = model.getCurrentRoom().getName();
+        int health = model.getPlayer().getHp(); 
+        
+        java.util.List<String> itemIds = new java.util.ArrayList<>();
+        for (GameObject obj : model.getInventory()) {
+            itemIds.add(String.valueOf(obj.getId()));
+        }
+
+        // Salva direttamente sul database senza stampare messaggi a schermo
+        dbManager.saveGame(currentRoomName, health, itemIds);
     }
 }

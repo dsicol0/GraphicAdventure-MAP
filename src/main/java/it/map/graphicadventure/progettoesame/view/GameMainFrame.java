@@ -97,12 +97,19 @@ public class GameMainFrame extends javax.swing.JFrame {
             jbContinue.setFont(fontBottoni);
             jbContinue.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                jbContinue.setForeground(verde);
-                jbContinue.setBorder(BorderFactory.createLineBorder(verde, 2));
+                if (jbContinue.isEnabled()) {
+                        jbContinue.setForeground(verde);
+                        jbContinue.setBorder(BorderFactory.createLineBorder(verde, 2));
+                    }
             }
             public void mouseExited(java.awt.event.MouseEvent e) {
-                jbContinue.setForeground(Color.WHITE);
-                jbContinue.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+                if (jbContinue.isEnabled()) {
+                        // Nota: qui stai usando Color.WHITE. Se vuoi che torni al colore
+                        // "sabbia" di setContinueButtonEnabled, puoi usare:
+                        // new java.awt.Color(210, 195, 160) al posto di Color.WHITE!
+                        jbContinue.setForeground(Color.WHITE); 
+                        jbContinue.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+                    }
             }
              });
             
@@ -127,6 +134,19 @@ public class GameMainFrame extends javax.swing.JFrame {
     public GamePanel getGamePanel() {
         return this.gamePanel;
     }
+    
+    public void setContinueButtonEnabled(boolean enabled) {
+        if (jbContinue != null) {
+            jbContinue.setEnabled(enabled);
+            
+            if (enabled) {
+            //jbContinue.setBackground(new java.awt.Color(85, 70, 50));     // Marrone chiaro
+            jbContinue.setForeground(new java.awt.Color(255, 255, 255));  // Sabbia lucido
+            jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
+            jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -146,7 +166,6 @@ public class GameMainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Final Exam");
-        setPreferredSize(new java.awt.Dimension(800, 600));
         setResizable(false);
 
         jpMenu.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -171,19 +190,21 @@ public class GameMainFrame extends javax.swing.JFrame {
         jtfTitle.setFocusable(false);
         jpMenu.add(jtfTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 40, 590, 70));
 
+        jbContinue.setBackground(new java.awt.Color(35, 30, 25));
         jbContinue.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jbContinue.setForeground(new java.awt.Color(255, 255, 255));
+        jbContinue.setForeground(new java.awt.Color(90, 85, 75));
         jbContinue.setText(">> CONTINUA");
-        jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
+        jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204), 2));
         jbContinue.setContentAreaFilled(false);
-        jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jbContinue.setEnabled(false);
         jbContinue.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jbContinue.addActionListener(this::jbContinueActionPerformed);
         jpMenu.add(jbContinue, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 380, 240, 40));
 
         jbQuit.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jbQuit.setForeground(new java.awt.Color(255, 51, 51));
         jbQuit.setText("X ESCI");
-        jbQuit.setActionCommand("X ESCI");
         jbQuit.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 0, 0), 2));
         jbQuit.setContentAreaFilled(false);
         jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -233,6 +254,15 @@ public class GameMainFrame extends javax.swing.JFrame {
 
         controller.startNewGame();
     }//GEN-LAST:event_jbNewGameActionPerformed
+
+    private void jbContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbContinueActionPerformed
+        if (controller != null) {
+            // Deleghiamo tutta la logica complessa al GameController
+            controller.continueSavedGame();
+        } else {
+            System.err.println("Attenzione: Controller non collegato alla View!");
+        }
+    }//GEN-LAST:event_jbContinueActionPerformed
 
     /**
      * @param args the command line arguments
