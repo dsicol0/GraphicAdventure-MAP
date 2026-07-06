@@ -11,11 +11,15 @@ import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import it.map.graphicadventure.progettoesame.factory.GameDataInitializer;
 import it.map.graphicadventure.progettoesame.service.DatabaseManager;
 import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
+import it.map.graphicadventure.progettoesame.type.GameNPC;
 import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.SaveData;
+import it.map.graphicadventure.progettoesame.view.CombatDialog;
+import java.awt.Frame;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -31,19 +35,13 @@ public class GameController extends BaseController {
 
     public GameController(EsameGame model, GameMainFrame view) {
         super(model, view);
-        // Li inizializziamo passandogli il modello e la view
         this.movementController = new MovementController(model, view);
         this.interactionController = new ObjInteractionController(model, view);
         
         try {
-            // 1. Inizializza il DB e ottiene la connessione persistente
             this.dbManager = new DatabaseManager(); 
             java.sql.Connection conn = dbManager.getConnection();
-            
-            // 2. Inizializza il DAO passando la connessione (Stile Prof!)
             this.saveDao = new GameSaveDAO(conn);
-            
-            // 3. Controlla il tasto continua
             this.view.setContinueButtonEnabled(saveDao.hasSavedGame());
             
         } catch (SQLException ex) {
@@ -55,7 +53,6 @@ public class GameController extends BaseController {
     public void startNewGame() {
         try {
             model.init();
-            
             GameDataInitializer.setUpGameData(model);
             
             Room initialRoom = model.getCurrentRoom();
@@ -63,7 +60,6 @@ public class GameController extends BaseController {
                 view.showGamePanel();
                 view.getGamePanel().renderRoom(initialRoom);
                 
-                // Nuovo Log con DAO e try-catch
                 try {
                     saveDao.logEvent("SYSTEM", "Iniziata nuova partita. Stanza iniziale: " + initialRoom.getName());
                 } catch (SQLException e) {
@@ -80,41 +76,74 @@ public class GameController extends BaseController {
     }
     
     public Player getPlayer() {
-        return model.getPlayer(); // Oppure "return this.player;" a seconda di come lo avevi inizializzato
+        return model.getPlayer();
     }
 
-    // 🟩 Passa l'azione direttamente al controller dei movimenti
+    // Gestione movimento pulita (senza imboscate automatiche dello zombie)
     public String handleMovement(String direction) {
         String response = movementController.handleMovement(direction);
-        
-        // Dopo il movimento, registriamo la stanza in cui si trova il giocatore
         Room currentRoom = model.getCurrentRoom();
+        
         if (currentRoom != null) {
             try {
                 saveDao.logEvent("VISITED", "Il giocatore si è mosso a " + direction + " entrando in: " + currentRoom.getName());
-            } catch (SQLException e) {
-                System.err.println("Errore durante il logging del movimento: " + e.getMessage());
+            } catch (java.sql.SQLException e) {
+                System.err.println("Errore: " + e.getMessage());
             }
+
+            silentAutosave();
         }
-        
-        silentAutosave();
         
         return response;
     }
 
-    // 🟩 Passa l'azione direttamente al controller delle interazioni
+    // Gestione interazione: il combattimento parte SOLO quando clicchi fisicamente lo zombie
     public String handleObjectInteraction(GameObject clickedObject) {
+        
+        if (clickedObject instanceof GameNPC) {
+            GameNPC enemy = (GameNPC) clickedObject;
+            Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(view.getGamePanel());
+            
+            CombatDialog dialog = new CombatDialog(parentFrame, true, enemy, model.getPlayer(), model.getInventory());
+            dialog.setVisible(true);
+            
+            if (dialog.isCombatWon()) {
+                // 1. Lo togliamo dalla stanza corrente nella sessione attuale
+                model.getCurrentRoom().getObjects().remove(enemy);
+                
+                // 2. 🟩 REGISTRIAMO L'ID NELLA LISTA DEI MORTI DEL MODELLO
+                if (!model.getDeadZombies().contains(String.valueOf(enemy.getId()))) {
+                    model.getDeadZombies().add(String.valueOf(enemy.getId()));
+                }
+                
+                // 3. Logghiamo l'evento nel DB
+                try {
+                    saveDao.logEvent("KILLED", "Il giocatore ha sconfitto lo zombie: " + enemy.getName());
+                } catch (java.sql.SQLException e) {
+                    System.err.println("Errore nel salvataggio dell'uccisione nel DB: " + e.getMessage());
+                }
+                
+                // 4. Autosave immediato per blindare il salvataggio
+                silentAutosave();
+                return "Hai sconfitto " + enemy.getName() + "!";
+            } else if (dialog.hasFled()) {
+                return "Sei fuggito dal combattimento in preda al panico!";
+            } else if (model.getPlayer().getHp() <= 0) {
+                return "Sei morto... Ricarica un salvataggio dal menù principale.";
+            }
+            return "Combattimento interrotto.";
+        }
+        
+        // Se non è un nemico, prosegui con la normale interazione oggetti
         String response = interactionController.handleObjectInteraction(clickedObject);
         
-        // Registra l'interazione con l'oggetto
         try {
             saveDao.logEvent("INTERACTED", "Il giocatore ha interagito con l'oggetto: " + clickedObject.getName());
-        } catch (SQLException e) {
+        } catch (java.sql.SQLException e) {
             System.err.println("Errore durante il logging dell'interazione: " + e.getMessage());
         }
         
         silentAutosave();
-        
         return response;
     }
 
@@ -138,7 +167,6 @@ public class GameController extends BaseController {
     
     public void saveCurrentGame() {
         String currentRoomName = model.getCurrentRoom().getName();
-        
         int health = model.getPlayer().getHp(); 
         
         List<String> itemIds = new ArrayList<>();
@@ -147,8 +175,8 @@ public class GameController extends BaseController {
         }
 
         try {
-            // Il nuovo DAO lancia eccezione se fallisce
-            saveDao.saveGame(currentRoomName, health, itemIds);
+            // Passiamo anche la lista dei nemici morti al DAO (4 parametri)
+            saveDao.saveGame(currentRoomName, health, itemIds, model.getDeadZombies());
             view.getGamePanel().animatedText("Salvataggio completato con successo nel database.");
         } catch (SQLException e) {
             view.getGamePanel().animatedText("[ERRORE] Impossibile salvare la partita.");
@@ -159,7 +187,6 @@ public class GameController extends BaseController {
     public void loadSavedGame() {
         SaveData data = null;
         try {
-            // Chiamata aggiornata al metodo del DAO
             data = saveDao.getLatestSave();
         } catch (SQLException e) {
             System.err.println("Errore durante il recupero del salvataggio: " + e.getMessage());
@@ -169,7 +196,7 @@ public class GameController extends BaseController {
             // 1. Ripristina salute
             model.getPlayer().setHp(data.getHealth());
             
-            // 2. Ripristina stanza in modo BLINDATO (ignora spazi extra e differenze maiuscole)
+            // 2. Ripristina stanza
             Room savedRoom = null;
             for (Room r : model.getRooms()) {
                 if (r.getName().trim().equalsIgnoreCase(data.getRoomName().trim())) {
@@ -178,11 +205,10 @@ public class GameController extends BaseController {
                 }
             }
             
-            // 🟩 IL SALVAGENTE: Impostiamo la stanza solo se l'abbiamo trovata!
             if (savedRoom != null) {
                 model.setCurrentRoom(savedRoom);
             } else {
-                System.err.println("[WARNING] Stanza salvata '" + data.getRoomName() + "' non trovata. Resto nella stanza iniziale.");
+                System.err.println("[WARNING] Stanza salvata '" + data.getRoomName() + "' non trovata.");
             }
             
             // 3. Ripristina Inventario
@@ -191,8 +217,6 @@ public class GameController extends BaseController {
                 for (GameObject obj : model.getAllObjects()) {
                     if (String.valueOf(obj.getId()).equals(itemId)) {
                         model.getInventory().add(obj);
-                        
-                        // Rimuoviamo l'oggetto dalla stanza di origine per evitare cloni!
                         for (Room r : model.getRooms()) {
                             r.getObjects().remove(obj);
                         }
@@ -201,7 +225,17 @@ public class GameController extends BaseController {
                 }
             }
             
-            // Aggiorna la vista
+            // 4. 🟩 RIPRISTINA LA LISTA DEI MORTI E CANCELLALI DAL MONDO RIGENERATO
+            model.getDeadZombies().clear();
+            model.getDeadZombies().addAll(data.getKilledEnemyIds());
+            
+            for (String deadId : model.getDeadZombies()) {
+                for (Room r : model.getRooms()) {
+                    r.getObjects().removeIf(obj -> String.valueOf(obj.getId()).equals(deadId));
+                }
+            }
+            
+            // Aggiorna la vista grafico
             view.getGamePanel().renderRoom(model.getCurrentRoom());
             view.getGamePanel().animatedText("Salvataggio caricato. Bentornato nella sessione.");
         } else {
@@ -211,19 +245,13 @@ public class GameController extends BaseController {
     
     public void continueSavedGame() {
         try {
-            // 1. Costruiamo il mondo di gioco base (legge il file .txt e crea mappa/oggetti)
             model.init();
             GameDataInitializer.setUpGameData(model);
-            
-            // 2. Passiamo dalla schermata del Menù a quella di Gioco
             view.showGamePanel();
-            
-            // 3. Invece di far partire il render della stanza iniziale (Aula Studio),
-            // invochiamo il caricamento dal Database!
-            loadSavedGame();
+            loadSavedGame(); // Innesca il caricamento e la pulizia dei nemici morti
             
         } catch (Exception ex) {
-            System.err.println("[ERRORE CRITICO] Fallimento durante il caricamento del mondo di gioco.");
+            System.err.println("[ERRORE CRITICO] Fallimento durante il caricamento del mondo.");
             ex.printStackTrace();
         }
     }
@@ -232,15 +260,16 @@ public class GameController extends BaseController {
         if (model.getCurrentRoom() == null || model.getPlayer() == null) return;
         
         String currentRoomName = model.getCurrentRoom().getName();
-        int health = model.getPlayer().getHp(); // Uniformato a getHp() come sopra
+        int health = model.getPlayer().getHp(); 
         
-        java.util.List<String> itemIds = new java.util.ArrayList<>();
+        List<String> itemIds = new java.util.ArrayList<>();
         for (GameObject obj : model.getInventory()) {
             itemIds.add(String.valueOf(obj.getId()));
         }
 
         try {
-            saveDao.saveGame(currentRoomName, health, itemIds);
+            // Passiamo anche la lista dei nemici morti al DAO (4 parametri)
+            saveDao.saveGame(currentRoomName, health, itemIds, model.getDeadZombies());
         } catch (SQLException e) {
             System.err.println("Autosave fallito: " + e.getMessage());
         }

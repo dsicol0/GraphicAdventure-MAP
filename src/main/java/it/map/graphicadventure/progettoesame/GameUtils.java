@@ -6,6 +6,7 @@ import it.map.graphicadventure.progettoesame.type.items.Key;
 import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.type.items.UsableObject;
 import it.map.graphicadventure.progettoesame.type.items.Weapon;
+import it.map.graphicadventure.progettoesame.type.GameNPC;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -133,6 +134,11 @@ public class GameUtils {
                                         // e che il suo costruttore accetti i 4 parametri standard
                                         newObj = new UsableObject(objId, objName, objDesc, objImg);
                                         break;
+                                        
+                                    // 🟩 REGOLA AGGIUNTA PER IL NEMICO!
+                                    case "GameNPC":
+                                        newObj = new GameNPC(objId, objName, objDesc, objImg);
+                                        break;
                                 }
 
                                 // 3. Se l'oggetto è stato creato, applichiamo le coordinate e lo salviamo nella stanza
@@ -148,7 +154,7 @@ public class GameUtils {
                                 }
                             }
                         }
-                        break;    
+                        break;   
                 }
             }
         }

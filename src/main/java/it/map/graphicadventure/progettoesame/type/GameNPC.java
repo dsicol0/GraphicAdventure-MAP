@@ -21,8 +21,8 @@ public class GameNPC extends GameObject {
         Random rand = new Random();
         // Vita casuale tra 50 e 100
         this.life = rand.nextInt(51) + 50;
-        // Danno casuale tra 15 e 35
-        this.damage = rand.nextInt(21) + 15;
+        // Danno casuale tra 6 e 15
+        this.damage = rand.nextInt(10) + 6;
     }
 
     // --- Getter e Setter ---

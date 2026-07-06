@@ -66,3 +66,5 @@
 
 # -- Oggetti nell'Aula 4 (Stanza 10) --
 10;15;Key;Badge del Direttore;Una tessera magnetica dorata e insanguinata. È l'unica via d'uscita.;/badge.png;400;300;50;50
+
+1;99;GameNPC;Prof. di Analisi 1;Gira a vuoto mormorando teoremi incomprensibili...;/zombie.png;300;200;150;150

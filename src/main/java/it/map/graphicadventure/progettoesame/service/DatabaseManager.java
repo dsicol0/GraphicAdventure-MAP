@@ -30,6 +30,12 @@ public class DatabaseManager {
             + "event_type TEXT NOT NULL, "
             + "description TEXT NOT NULL)";
 
+    // 🟩 NUOVA COSTANTE PER LA TABELLA DEI NEMICI SCONFITTI
+    private static final String TABLE_KILLED_ENEMIES = "CREATE TABLE IF NOT EXISTS killed_enemies_saves ("
+            + "game_id INTEGER, "
+            + "enemy_id TEXT NOT NULL, "
+            + "FOREIGN KEY(game_id) REFERENCES games(id) ON DELETE CASCADE)";
+
     private Connection conn = null;
 
     public Connection getConnection() throws SQLException {
@@ -38,12 +44,13 @@ public class DatabaseManager {
         } else {
             // Il prof usa Properties, lo manteniamo per coerenza formale
             Properties dbprops = new Properties();
-            conn = DriverManager.getConnection("jdbc:sqlite:sessione_mortale.db", dbprops);
+            conn = DriverManager.getConnection("jdbc:sqlite:final_exam.db", dbprops);
             
             Statement stm = conn.createStatement();
             stm.executeUpdate(TABLE_GAMES);
             stm.executeUpdate(TABLE_INVENTORY);
             stm.executeUpdate(TABLE_LOG);
+            stm.executeUpdate(TABLE_KILLED_ENEMIES); // 🟩 CREAZIONE DELLA NUOVA TABELLA
             stm.close(); // Chiusura esplicita
             
             return conn;

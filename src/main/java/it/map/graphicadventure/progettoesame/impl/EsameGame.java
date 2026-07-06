@@ -15,6 +15,7 @@ public class EsameGame extends GameDescription {
     // Aggiungiamo il nostro Player alla struttura del prof
     private Player player;
     private List<GameObject> allObjects = new ArrayList<>();
+    private List<String> deadZombies = new ArrayList<>();
 
     @Override
     public void init() throws Exception {
@@ -53,6 +54,10 @@ public class EsameGame extends GameDescription {
     // GETTER PER L'ANAGRAFE GLOBALE
     public List<GameObject> getAllObjects() {
         return allObjects;
+    }
+    
+    public List<String> getDeadZombies() {
+        return deadZombies;
     }
 
     @Override

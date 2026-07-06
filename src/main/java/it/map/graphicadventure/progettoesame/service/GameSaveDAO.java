@@ -25,7 +25,7 @@ public class GameSaveDAO {
         this.connection = connection;
     }
 
-    public void saveGame(String roomName, int health, List<String> itemIds) throws SQLException {
+    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds) throws SQLException {
         connection.setAutoCommit(false); 
 
         PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -41,6 +41,7 @@ public class GameSaveDAO {
         keys.close();
         stmGame.close();
 
+        // Salva inventario
         PreparedStatement stmInv = connection.prepareStatement("INSERT INTO inventory_saves(game_id, item_id) VALUES (?, ?)");
         for (String itemId : itemIds) {
             stmInv.setInt(1, gameId);
@@ -49,6 +50,16 @@ public class GameSaveDAO {
         }
         stmInv.executeBatch();
         stmInv.close();
+
+        // 🟩 SALVA I NEMICI SCONFITTI NELLA NUOVA TABELLA
+        PreparedStatement stmKilled = connection.prepareStatement("INSERT INTO killed_enemies_saves(game_id, enemy_id) VALUES (?, ?)");
+        for (String enemyId : killedEnemyIds) {
+            stmKilled.setInt(1, gameId);
+            stmKilled.setString(2, enemyId);
+            stmKilled.addBatch();
+        }
+        stmKilled.executeBatch();
+        stmKilled.close();
 
         connection.commit();
         connection.setAutoCommit(true); 
@@ -65,13 +76,14 @@ public class GameSaveDAO {
             gameId = rs.getInt("id");
             String room = rs.getString("current_room");
             int health = rs.getInt("health");
-            data = new SaveData(room, health, new ArrayList<>());
+            // 🟩 INIZIALIZZA ANCHE LA LISTA DEI NEMICI
+            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>());
         }
         rs.close();
         stm.close();
 
-        // Se abbiamo trovato un salvataggio, recuperiamo l'inventario associato
         if (data != null && gameId != -1) {
+            // Recupera inventario
             PreparedStatement pstm = connection.prepareStatement("SELECT item_id FROM inventory_saves WHERE game_id = ?");
             pstm.setInt(1, gameId);
             ResultSet rsInv = pstm.executeQuery();
@@ -80,6 +92,16 @@ public class GameSaveDAO {
             }
             rsInv.close();
             pstm.close();
+
+            // 🟩 RECUPERA I NEMICI SCONFITTI
+            PreparedStatement pstmKilled = connection.prepareStatement("SELECT enemy_id FROM killed_enemies_saves WHERE game_id = ?");
+            pstmKilled.setInt(1, gameId);
+            ResultSet rsKilled = pstmKilled.executeQuery();
+            while (rsKilled.next()) {
+                data.getKilledEnemyIds().add(rsKilled.getString("enemy_id"));
+            }
+            rsKilled.close();
+            pstmKilled.close();
         }
         return data;
     }

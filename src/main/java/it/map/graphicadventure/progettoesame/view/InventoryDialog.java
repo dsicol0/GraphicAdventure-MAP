@@ -12,6 +12,7 @@ import java.util.List;
 public class InventoryDialog extends JDialog {
     
     private JPanel jpItemsContainer;
+    private GameObject selectedItem = null;
 
     public InventoryDialog(Frame parentFrame, List<GameObject> items) {
         // "true" rende il dialog modale (blocca i click sul gioco sottostante finché non si chiude)
@@ -104,9 +105,15 @@ public class InventoryDialog extends JDialog {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 // Per ora stampiamo solo il log. Qui poi aggiungeremo l'uso dell'oggetto!
                 System.out.println("Selected item: " + item.getName());
+                InventoryDialog.this.selectedItem = item; // Salva l'oggetto cliccato
+                dispose(); // Chiude la finestra
             }
         });
 
         return itemSlot;
     }
+    
+    public GameObject getSelectedItem() {
+    return selectedItem;
+}
 }
