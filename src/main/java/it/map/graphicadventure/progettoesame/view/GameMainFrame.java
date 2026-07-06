@@ -162,6 +162,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         jtfTitle = new javax.swing.JTextField();
         jbContinue = new javax.swing.JButton();
         jbQuit = new javax.swing.JButton();
+        jbClassifica = new javax.swing.JButton();
         jlBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -211,6 +212,15 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbQuit.addActionListener(this::jbQuitActionPerformed);
         jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 440, 240, 40));
 
+        jbClassifica.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jbClassifica.setForeground(new java.awt.Color(102, 255, 0));
+        jbClassifica.setText("CLASSIFICA");
+        jbClassifica.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 255, 0), 2));
+        jbClassifica.setContentAreaFilled(false);
+        jbClassifica.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbClassifica.addActionListener(this::jbClassificaActionPerformed);
+        jpMenu.add(jbClassifica, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 220, 240, 40));
+
         jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main_menu_background.png"))); // NOI18N
         jlBackground.setToolTipText("");
@@ -250,6 +260,18 @@ public class GameMainFrame extends javax.swing.JFrame {
         gamePanel.requestFocusInWindow(); 
     }
     
+    public void showMainMenu() {
+        // 1. Sostituisce il pannello di gioco rimettendo il menu iniziale
+        this.setContentPane(jpMenu);
+
+        // 2. Disabilita il pulsante "Continua" perché la partita è terminata (Vittoria o Game Over)
+        this.setContinueButtonEnabled(false);
+
+        // 3. Forza Java a ricalcolare e ridisegnare la finestra col nuovo contenuto
+        this.revalidate();
+        this.repaint();
+    }
+    
     private void jbNewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbNewGameActionPerformed
 
         controller.startNewGame();
@@ -263,6 +285,14 @@ public class GameMainFrame extends javax.swing.JFrame {
             System.err.println("Attenzione: Controller non collegato alla View!");
         }
     }//GEN-LAST:event_jbContinueActionPerformed
+
+    private void jbClassificaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClassificaActionPerformed
+        String classifica = controller.fetchOnlyLeaderboard(); 
+        
+        // Apre la tua nuova finestra grafica
+        LeaderboardDialog dialog = new LeaderboardDialog(this, true, classifica);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_jbClassificaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -290,6 +320,7 @@ public class GameMainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jbClassifica;
     private javax.swing.JButton jbContinue;
     private javax.swing.JButton jbNewGame;
     private javax.swing.JButton jbQuit;
