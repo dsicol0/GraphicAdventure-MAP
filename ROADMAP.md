@@ -28,7 +28,7 @@
 - [x] Creare la finestra di gioco principale
 - [x] Creare il pannello stanza (immagine di sfondo + aree cliccabili sugli oggetti)
 - [x] Creare il pannello inventario (mostra gli oggetti raccolti)
-- [ ] Creare il box testo (descrizioni e risultati delle azioni)
+- [x] Creare il box testo (descrizioni e risultati delle azioni)
 
 ---
 
@@ -78,6 +78,7 @@
   - [ ] SWING
   - [ ] Thread e programmazione concorrente
   - [ ] Socket e/o REST
+- [ ] RIMUOVERE TUTTI I COMMENTI DI AI
 - [ ] Documentare il codice (Javadoc sui metodi principali)
 
 ---
