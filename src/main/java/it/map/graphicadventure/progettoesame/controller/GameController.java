@@ -10,7 +10,10 @@ import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import it.map.graphicadventure.progettoesame.factory.GameDataInitializer;
 import it.map.graphicadventure.progettoesame.service.DatabaseManager;
+import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
 import it.map.graphicadventure.progettoesame.type.Player;
+import it.map.graphicadventure.progettoesame.type.SaveData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,16 +25,31 @@ public class GameController extends BaseController {
     // Riferimenti ai due sotto-controller
     private final MovementController movementController;
     private final ObjInteractionController interactionController;
-    private final DatabaseManager dbManager;
+    
+    private DatabaseManager dbManager;
+    private GameSaveDAO saveDao;
 
     public GameController(EsameGame model, GameMainFrame view) {
         super(model, view);
         // Li inizializziamo passandogli il modello e la view
         this.movementController = new MovementController(model, view);
         this.interactionController = new ObjInteractionController(model, view);
-        this.dbManager = new DatabaseManager();
         
-        this.view.setContinueButtonEnabled(dbManager.hasSavedGame());
+        try {
+            // 1. Inizializza il DB e ottiene la connessione persistente
+            this.dbManager = new DatabaseManager(); 
+            java.sql.Connection conn = dbManager.getConnection();
+            
+            // 2. Inizializza il DAO passando la connessione (Stile Prof!)
+            this.saveDao = new GameSaveDAO(conn);
+            
+            // 3. Controlla il tasto continua
+            this.view.setContinueButtonEnabled(saveDao.hasSavedGame());
+            
+        } catch (SQLException ex) {
+            System.err.println("Errore di inizializzazione Database: " + ex.getMessage());
+            this.view.setContinueButtonEnabled(false);
+        }
     }
 
     public void startNewGame() {
@@ -45,7 +63,12 @@ public class GameController extends BaseController {
                 view.showGamePanel();
                 view.getGamePanel().renderRoom(initialRoom);
                 
-                dbManager.logEvent("SYSTEM", "Iniziata nuova partita. Stanza iniziale: " + initialRoom.getName());
+                // Nuovo Log con DAO e try-catch
+                try {
+                    saveDao.logEvent("SYSTEM", "Iniziata nuova partita. Stanza iniziale: " + initialRoom.getName());
+                } catch (SQLException e) {
+                    System.err.println("Errore durante il logging: " + e.getMessage());
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -67,7 +90,11 @@ public class GameController extends BaseController {
         // Dopo il movimento, registriamo la stanza in cui si trova il giocatore
         Room currentRoom = model.getCurrentRoom();
         if (currentRoom != null) {
-            dbManager.logEvent("VISITED", "Il giocatore si è mosso a " + direction + " entrando in: " + currentRoom.getName());
+            try {
+                saveDao.logEvent("VISITED", "Il giocatore si è mosso a " + direction + " entrando in: " + currentRoom.getName());
+            } catch (SQLException e) {
+                System.err.println("Errore durante il logging del movimento: " + e.getMessage());
+            }
         }
         
         silentAutosave();
@@ -80,7 +107,11 @@ public class GameController extends BaseController {
         String response = interactionController.handleObjectInteraction(clickedObject);
         
         // Registra l'interazione con l'oggetto
-        dbManager.logEvent("INTERACTED", "Il giocatore ha interagito con l'oggetto: " + clickedObject.getName());
+        try {
+            saveDao.logEvent("INTERACTED", "Il giocatore ha interagito con l'oggetto: " + clickedObject.getName());
+        } catch (SQLException e) {
+            System.err.println("Errore durante il logging dell'interazione: " + e.getMessage());
+        }
         
         silentAutosave();
         
@@ -108,25 +139,31 @@ public class GameController extends BaseController {
     public void saveCurrentGame() {
         String currentRoomName = model.getCurrentRoom().getName();
         
-        // Assicurati che Player abbia un metodo per ottenere la salute, altrimenti adattalo al tuo codice
-        // (es. getPlayer().getHp() o getPlayerHealth())
         int health = model.getPlayer().getHp(); 
         
         List<String> itemIds = new ArrayList<>();
         for (GameObject obj : model.getInventory()) {
-            itemIds.add(String.valueOf(obj.getId())); // Presupponendo che getId() restituisca un identificatore univoco
+            itemIds.add(String.valueOf(obj.getId())); 
         }
 
-        boolean success = dbManager.saveGame(currentRoomName, health, itemIds);
-        if (success) {
+        try {
+            // Il nuovo DAO lancia eccezione se fallisce
+            saveDao.saveGame(currentRoomName, health, itemIds);
             view.getGamePanel().animatedText("Salvataggio completato con successo nel database.");
-        } else {
+        } catch (SQLException e) {
             view.getGamePanel().animatedText("[ERRORE] Impossibile salvare la partita.");
+            System.err.println("Errore nel salvataggio esplicito: " + e.getMessage());
         }
     }
 
     public void loadSavedGame() {
-        DatabaseManager.SaveData data = dbManager.loadLatestGame();
+        SaveData data = null;
+        try {
+            // Chiamata aggiornata al metodo del DAO
+            data = saveDao.getLatestSave();
+        } catch (SQLException e) {
+            System.err.println("Errore durante il recupero del salvataggio: " + e.getMessage());
+        }
         
         if (data != null) {
             // 1. Ripristina salute
@@ -195,14 +232,17 @@ public class GameController extends BaseController {
         if (model.getCurrentRoom() == null || model.getPlayer() == null) return;
         
         String currentRoomName = model.getCurrentRoom().getName();
-        int health = model.getPlayer().getHp(); 
+        int health = model.getPlayer().getHp(); // Uniformato a getHp() come sopra
         
         java.util.List<String> itemIds = new java.util.ArrayList<>();
         for (GameObject obj : model.getInventory()) {
             itemIds.add(String.valueOf(obj.getId()));
         }
 
-        // Salva direttamente sul database senza stampare messaggi a schermo
-        dbManager.saveGame(currentRoomName, health, itemIds);
+        try {
+            saveDao.saveGame(currentRoomName, health, itemIds);
+        } catch (SQLException e) {
+            System.err.println("Autosave fallito: " + e.getMessage());
+        }
     }
 }
