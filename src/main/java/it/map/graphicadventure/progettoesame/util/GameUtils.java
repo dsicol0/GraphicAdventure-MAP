@@ -1,12 +1,12 @@
-package it.map.graphicadventure.progettoesame;
+package it.map.graphicadventure.progettoesame.util;
 
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.items.Key;
-import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
-import it.map.graphicadventure.progettoesame.type.items.UsableObject;
-import it.map.graphicadventure.progettoesame.type.items.Weapon;
-import it.map.graphicadventure.progettoesame.type.GameNPC;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.items.Key;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.model.items.UsableObject;
+import it.map.graphicadventure.progettoesame.model.items.Weapon;
+import it.map.graphicadventure.progettoesame.model.GameNPC;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

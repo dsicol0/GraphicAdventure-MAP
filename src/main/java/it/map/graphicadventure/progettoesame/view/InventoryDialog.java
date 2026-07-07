@@ -4,7 +4,7 @@
  */
 package it.map.graphicadventure.progettoesame.view;
 
-import it.map.graphicadventure.progettoesame.type.GameObject;
+import it.map.graphicadventure.progettoesame.model.GameObject;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;

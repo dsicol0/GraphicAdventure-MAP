@@ -1,4 +1,4 @@
-package it.map.graphicadventure.progettoesame.type;
+package it.map.graphicadventure.progettoesame.model;
 
 public class Player {
 

@@ -4,7 +4,7 @@
  */
 package it.map.graphicadventure.progettoesame.service;
 
-import it.map.graphicadventure.progettoesame.type.SaveData;
+import it.map.graphicadventure.progettoesame.model.SaveData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

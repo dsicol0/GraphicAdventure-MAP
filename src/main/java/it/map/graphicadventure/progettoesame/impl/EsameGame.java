@@ -1,10 +1,10 @@
 package it.map.graphicadventure.progettoesame.impl;
 import it.map.graphicadventure.progettoesame.GameDescription;
-import it.map.graphicadventure.progettoesame.GameUtils;
-import it.map.graphicadventure.progettoesame.type.Player;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.util.GameUtils;
+import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

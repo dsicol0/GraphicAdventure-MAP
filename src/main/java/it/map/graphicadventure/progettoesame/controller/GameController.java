@@ -5,18 +5,15 @@
 package it.map.graphicadventure.progettoesame.controller;
 
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import it.map.graphicadventure.progettoesame.factory.GameDataInitializer;
 import it.map.graphicadventure.progettoesame.service.DatabaseManager;
 import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
-import it.map.graphicadventure.progettoesame.type.GameNPC;
-import it.map.graphicadventure.progettoesame.type.Player;
-import it.map.graphicadventure.progettoesame.type.SaveData;
-import it.map.graphicadventure.progettoesame.view.CombatDialog;
-import it.map.graphicadventure.progettoesame.view.LeaderboardDialog;
-import java.awt.Frame;
+import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.model.SaveData;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -25,7 +22,6 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -109,12 +105,13 @@ public class GameController extends BaseController {
 
         if (clickedObject instanceof GameNPC) {
             GameNPC enemy = (GameNPC) clickedObject;
-            Frame parentFrame = (Frame) SwingUtilities.getWindowAncestor(view.getGamePanel());
+            
+            // MVC PURO: Chiediamo alla View di gestire la finestra di combattimento
+            // e ci facciamo restituire un semplice intero che rappresenta l'esito:
+            // 1 = Vittoria, 2 = Fuga, 3 = Morte/Sconfitta
+            int combatResult = view.showCombatWindow(enemy, model.getPlayer(), model.getInventory());
 
-            CombatDialog dialog = new CombatDialog(parentFrame, true, enemy, model.getPlayer(), model.getInventory());
-            dialog.setVisible(true);
-
-            if (dialog.isCombatWon()) {
+            if (combatResult == 1) {
                 // 1. Lo togliamo dalla stanza corrente nella sessione attuale
                 model.getCurrentRoom().getObjects().remove(enemy);
 
@@ -134,35 +131,28 @@ public class GameController extends BaseController {
                 silentAutosave();
 
                 // 5. FINE PARTITA - VITTORIA
-                // Calcoliamo il punteggio e lo inviamo al server
                 int punteggio = calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
                 String classifica = sendAndGetLeaderboard("Antonio", punteggio);
 
-                // Mostriamo la LeaderboardDialog al posto del JOptionPane
-                LeaderboardDialog leadDialog = new LeaderboardDialog(parentFrame, true, classifica);
-                leadDialog.setTitle("ESAME SUPERATO!");
-                leadDialog.setVisible(true); // Il gioco si blocca qui finché non chiudi la classifica
+                // MVC PURO: Deleghiamo la visualizzazione della classifica alla View
+                view.showLeaderboardDialog(classifica, "ESAME SUPERATO!");
 
                 // Quando chiudi la classifica, torniamo al menù principale
                 view.showMainMenu(); 
                 
                 return "Hai sconfitto " + enemy.getName() + "!";
                 
-            } else if (dialog.hasFled()) {
+            } else if (combatResult == 2) {
                 return "Sei fuggito dal combattimento in preda al panico!";
                 
-            } else if (model.getPlayer().getHp() <= 0) {
+            } else if (combatResult == 3 || model.getPlayer().getHp() <= 0) {
                 // 5. FINE PARTITA - SCONFITTA (GAME OVER)
-                // Invia un punteggio penalizzato (es. diviso per 2)
                 int punteggio = calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
                 String classifica = sendAndGetLeaderboard("Matricola_Bocciata", punteggio / 2);
 
-                // Mostriamo la LeaderboardDialog
-                LeaderboardDialog leadDialog = new LeaderboardDialog(parentFrame, true, classifica);
-                leadDialog.setTitle("GAME OVER - BOCCIATO");
-                leadDialog.setVisible(true);
+                // MVC PURO: Deleghiamo la visualizzazione alla View
+                view.showLeaderboardDialog(classifica, "GAME OVER - BOCCIATO");
 
-                // Quando chiudi la classifica, torniamo al menù principale
                 view.showMainMenu();
                 
                 return "Sei morto... Ricarica un salvataggio dal menù principale.";

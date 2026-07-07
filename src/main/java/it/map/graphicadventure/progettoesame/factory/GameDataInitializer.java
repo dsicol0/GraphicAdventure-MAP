@@ -5,12 +5,12 @@
 package it.map.graphicadventure.progettoesame.factory;
 
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.items.Key;
-import it.map.graphicadventure.progettoesame.type.items.Badge;
-import it.map.graphicadventure.progettoesame.type.items.Weapon;
-import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.items.Key;
+import it.map.graphicadventure.progettoesame.model.items.Badge;
+import it.map.graphicadventure.progettoesame.model.items.Weapon;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 
 /**
  *

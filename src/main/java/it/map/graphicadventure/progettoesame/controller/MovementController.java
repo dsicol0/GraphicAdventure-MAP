@@ -4,9 +4,9 @@
  */
 package it.map.graphicadventure.progettoesame.controller;
 
-import it.map.graphicadventure.progettoesame.GameUtils;
+import it.map.graphicadventure.progettoesame.util.GameUtils;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
-import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.view.ConfirmDialog;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 
@@ -15,6 +15,10 @@ import it.map.graphicadventure.progettoesame.view.GameMainFrame;
  * @author David
  */
 public class MovementController extends BaseController {
+    
+    public static final int ID_AULA_2 = 2;
+    public static final int ID_CHIAVE_AULA_2 = 35;
+    
 
     public MovementController(EsameGame model, GameMainFrame view) {
         super(model, view);
@@ -29,7 +33,7 @@ public class MovementController extends BaseController {
             if (nextRoom.isLocked()) {
 
                 // Controlliamo se è l'Aula 2 (ID 2) e se il giocatore ha la chiave (ID 35)
-                if (nextRoom.getId() == 2 && GameUtils.hasObject(model.getInventory(), 8)) {
+                if (nextRoom.getId() == ID_AULA_2 && GameUtils.hasObject(model.getInventory(), 8)) {
                     
                     ConfirmDialog cd = new ConfirmDialog(view, true, "Hai la Chiave dell'Aula 2. Vuoi usarla per aprire la porta?");
                     cd.setVisible(true);
@@ -38,7 +42,7 @@ public class MovementController extends BaseController {
                         nextRoom.setLocked(false);
 
                         // Consumiamo la chiave dall'inventario
-                        model.getInventory().removeIf(obj -> obj.getId() == 35);
+                        model.getInventory().removeIf(obj -> obj.getId() == ID_CHIAVE_AULA_2);
 
                         // Spostiamo il giocatore
                         model.setCurrentRoom(nextRoom);

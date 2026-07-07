@@ -6,6 +6,9 @@ package it.map.graphicadventure.progettoesame.view;
 
 import it.map.graphicadventure.progettoesame.controller.GameController;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
+import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Player;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -133,6 +136,29 @@ public class GameMainFrame extends javax.swing.JFrame {
     
     public GamePanel getGamePanel() {
         return this.gamePanel;
+    }
+    
+    public int showCombatWindow(GameNPC enemy, Player player, java.util.List<GameObject> inventory) {
+        // 'this' fa riferimento al GameMainFrame (la View principale)
+        CombatDialog dialog = new CombatDialog(this, true, enemy, player, inventory);
+        dialog.setVisible(true); // Il gioco si blocca qui finché l'utente non chiude la finestra
+
+        // Controlliamo l'esito interrogando il Dialog appena prima che venga distrutto
+        if (dialog.isCombatWon()) {
+            return 1; // 1 = Vittoria
+        } else if (dialog.hasFled()) {
+            return 2; // 2 = Fuga
+        } else if (player.getHp() <= 0) {
+            return 3; // 3 = Sconfitta (morto)
+        }
+        return 0; // 0 = Annullato/Altro
+    }
+    
+    public void showLeaderboardDialog(String classifica, String title) {
+        // 'this' fa riferimento al GameMainFrame stesso, che fa da parent per il Dialog
+        LeaderboardDialog leadDialog = new LeaderboardDialog(this, true, classifica);
+        leadDialog.setTitle(title);
+        leadDialog.setVisible(true); // L'esecuzione del gioco si blocca qui finché l'utente non chiude il Dialog
     }
     
     public void setContinueButtonEnabled(boolean enabled) {

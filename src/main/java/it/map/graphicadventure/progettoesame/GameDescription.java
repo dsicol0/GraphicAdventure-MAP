@@ -1,7 +1,7 @@
 package it.map.graphicadventure.progettoesame;
 
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Room;
 
 import java.util.ArrayList;
 import java.util.List;

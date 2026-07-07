@@ -4,9 +4,9 @@
  */
 package it.map.graphicadventure.progettoesame.view;
 
-import it.map.graphicadventure.progettoesame.type.GameNPC;
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Player;
+import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Player;
 import java.awt.Frame;
 import java.util.List;
 import javax.swing.SwingUtilities;

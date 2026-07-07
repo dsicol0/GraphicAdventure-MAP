@@ -5,9 +5,9 @@
 package it.map.graphicadventure.progettoesame.view;
 
 import it.map.graphicadventure.progettoesame.controller.GameController;
-import it.map.graphicadventure.progettoesame.type.Player;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.items.Weapon;
+import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.items.Weapon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -111,7 +111,7 @@ public class GamePanel extends javax.swing.JPanel {
 
         // 3. DISEGNO DEI BOTTONI DEGLI OGGETTI (Cassa, Chiave, ecc.)
         if (room.getObjects() != null) {
-            for (it.map.graphicadventure.progettoesame.type.GameObject obj : room.getObjects()) {
+            for (it.map.graphicadventure.progettoesame.model.GameObject obj : room.getObjects()) {
 
                 javax.swing.JButton objectButton = new javax.swing.JButton();
                 objectButton.setOpaque(false);
@@ -135,11 +135,11 @@ public class GamePanel extends javax.swing.JPanel {
                     java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
                     
                     String message;
-                    if (obj instanceof it.map.graphicadventure.progettoesame.type.interfaces.Openable) {
+                    if (obj instanceof it.map.graphicadventure.progettoesame.model.interfaces.Openable) {
                         message = "Vuoi davvero aprire " + obj.getName() + "?";
-                    } else if (obj instanceof it.map.graphicadventure.progettoesame.type.interfaces.Takeable) {
+                    } else if (obj instanceof it.map.graphicadventure.progettoesame.model.interfaces.Takeable) {
                         message = "Vuoi davvero raccogliere " + obj.getName() + "?";
-                    } else if (obj instanceof it.map.graphicadventure.progettoesame.type.interfaces.Usable) {
+                    } else if (obj instanceof it.map.graphicadventure.progettoesame.model.interfaces.Usable) {
                         message = "Vuoi davvero usare " + obj.getName() + "?";
                     } else {
                         message = "Vuoi interagire con " + obj.getName() + "?";
@@ -206,7 +206,7 @@ public class GamePanel extends javax.swing.JPanel {
         }
     }
     
-    public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.type.GameObject> items) {
+    public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.model.GameObject> items) {
         
         // Calcoliamo larghezza e altezza per passarla alle AbsoluteConstraints
         int w = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
@@ -287,7 +287,7 @@ public class GamePanel extends javax.swing.JPanel {
             } else {
                 // Inventario con Oggetti (Griglia fissa a 4 colonne)
                 gridPanel.setLayout(new java.awt.GridLayout(0, 4, 15, 15)); 
-                for (it.map.graphicadventure.progettoesame.type.GameObject item : items) {
+                for (it.map.graphicadventure.progettoesame.model.GameObject item : items) {
                     gridPanel.add(createItemSlot(item));
                 }
                 
@@ -309,7 +309,7 @@ public class GamePanel extends javax.swing.JPanel {
         jpPlayingArea.repaint();
     }
 
-    private javax.swing.JPanel createItemSlot(it.map.graphicadventure.progettoesame.type.GameObject item) {
+    private javax.swing.JPanel createItemSlot(it.map.graphicadventure.progettoesame.model.GameObject item) {
         javax.swing.JPanel itemSlot = new javax.swing.JPanel(new java.awt.BorderLayout());
         itemSlot.setBackground(new java.awt.Color(30, 30, 30));
         itemSlot.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 1));
