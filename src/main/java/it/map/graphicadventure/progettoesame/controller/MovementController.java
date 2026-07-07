@@ -41,12 +41,8 @@ public class MovementController extends BaseController {
                     if (cd.isConfirmed()) {
                         nextRoom.setLocked(false);
 
-                        // Consumiamo la chiave dall'inventario
-<<<<<<< HEAD
-                        model.getInventory().removeIf(obj -> obj.getId() == 8);
-=======
                         model.getInventory().removeIf(obj -> obj.getId() == ID_CHIAVE_AULA_2);
->>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4
+
 
                         // Spostiamo il giocatore
                         model.setCurrentRoom(nextRoom);

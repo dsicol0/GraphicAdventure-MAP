@@ -1,22 +1,13 @@
 package it.map.graphicadventure.progettoesame.util;
 
-<<<<<<< HEAD:src/main/java/it/map/graphicadventure/progettoesame/GameUtils.java
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.items.Chest;
-import it.map.graphicadventure.progettoesame.type.items.Key;
-import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
-import it.map.graphicadventure.progettoesame.type.items.UsableObject;
-import it.map.graphicadventure.progettoesame.type.items.Weapon;
-=======
+import it.map.graphicadventure.progettoesame.model.GameNPC;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.items.Chest;
 import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.model.items.UsableObject;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
-import it.map.graphicadventure.progettoesame.model.GameNPC;
->>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4:src/main/java/it/map/graphicadventure/progettoesame/util/GameUtils.java
 
 import java.io.BufferedReader;
 import java.io.FileReader;

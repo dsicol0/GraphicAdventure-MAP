@@ -5,17 +5,11 @@
 package it.map.graphicadventure.progettoesame.view;
 
 import it.map.graphicadventure.progettoesame.controller.GameController;
-<<<<<<< HEAD
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.Player;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.items.Weapon;
+import it.map.graphicadventure.progettoesame.model.GameObject;
 import java.util.List;
-=======
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
->>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -213,12 +207,8 @@ public class GamePanel extends javax.swing.JPanel {
             }
         }
     }
-    
-<<<<<<< HEAD
+
     public void toggleInventory(List<GameObject> items) {
-=======
-    public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.model.GameObject> items) {
->>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4
         
         // Calcoliamo larghezza e altezza per passarla alle AbsoluteConstraints
         int w = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
