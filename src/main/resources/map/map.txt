@@ -3,15 +3,15 @@
 [ROOMS]
 # **** PIANO TERRA ****
 # id ; nome ; descrizione ; immagine; aperta/chiusa
-1; Corridoio 1° piano; Conosci bene questo posto, ma sai che devi scappare il prima possibile. L'aria è pesante, quasi irrespirabile, e sopra di te le luci al neon sfarfallano emettendo un ronzio sinistro. Il quadro elettrico ha subito gravi danni. Inoltre, la porta dell'Aula 2 è chiusa a chiave mentre i Bagni a NORD e l'Aula di Biologia a EST sono aperte. Devi esplorare la zona per cercare indizi, trovare strumenti utili o una via d'uscita prima che sia troppo tardi...; /rooms/firstFloor.png; false
-2; Aula 2;  Non c'è nessuno ed è tutto in grande disordine, con banchi e sedie per terra. Ricordi di esserci già stato e provi una strana sensazione... Vedi che la porta dell'uscita è chiusa da una pesante saracinesca che ne impedisce l'utilizzo: probabilmente i sistemi di sicurezza sono scattati automaticante quando è avvenuto il blackout. Per terra vedi anche uno zaino, sicuramente lasciato lì da uno studente. Le luci sfarfallano perché manca la corrente, ma sul display del lettore lì accanto si legge chiaramente una scritta: 'Richiesto Badge Direzione; /rooms/room4.png; true
-3; Aula di Biologia; Provette, microscopi e banchi da lavoro sono coperti di polvere, ma qui l'aria sembra più respirabile. A un certo punto senti dei passi provenienti dal piano di sopra. Non sai se andare a controllare o no...; /rooms/biologyRoom.png; false;
-4; Bagni; I lavandini perdono acqua a ritmi regolari e lo specchio sopra di essi è ridotto in frantumi. L'odore di sangue si mescola a quello di caffè stantio proveniente da una tazza rovesciata a terra. Tra i calcinacci e le tubature divelte sul pavimento scivoloso, noti il riflesso metallico di un pesante attrezzo da lavoro dimenticato lì vicino. Potrebbe rivelarsi fondamentale se dovessi riparare o scassinare qualcosa o, ancora peggio, combattere con QUALCUNO.; /rooms/bathrooms.png; false
-5; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Il rumore di passi si fa sempre più forte...; /rooms/stairs.png; false
+1; Corridoio 1° piano; Conosci bene questo posto, ma sai che devi scappare il prima possibile. L'aria è pesante, quasi irrespirabile, e sopra di te le luci al neon sfarfallano emettendo un ronzio sinistro. Il quadro elettrico ha subito gravi danni. Inoltre, la porta dell'Aula 2 è chiusa a chiave mentre i Bagni a NORD e l'Aula di Biologia a EST sono aperte. Devi esplorare la zona per cercare indizi, trovare strumenti utili o una via d'uscita prima che sia troppo tardi...; /rooms/firstFloor.png; 
+2; Aula 2;  Non c'è nessuno ed è tutto in grande disordine, con banchi e sedie per terra. Ricordi di esserci già stato e provi una strana sensazione... Vedi che la porta dell'uscita è chiusa da una pesante saracinesca che ne impedisce l'utilizzo: probabilmente i sistemi di sicurezza sono scattati automaticante quando è avvenuto il blackout. Per terra vedi anche uno zaino, sicuramente lasciato lì da uno studente. Le luci sfarfallano perché manca la corrente, ma sul display del lettore lì accanto si legge chiaramente una scritta: 'Richiesto Badge Direzione; /rooms/room4.png; 
+3; Aula di Biologia; Provette, microscopi e banchi da lavoro sono coperti di polvere, ma qui l'aria sembra più respirabile. A un certo punto senti dei passi provenienti dal piano di sopra. Non sai se andare a controllare o no...; /rooms/biologyRoom.png; 
+4; Bagni; I lavandini perdono acqua a ritmi regolari e lo specchio sopra di essi è ridotto in frantumi. L'odore di sangue si mescola a quello di caffè stantio proveniente da una tazza rovesciata a terra. Tra i calcinacci e le tubature divelte sul pavimento scivoloso, noti il riflesso metallico di un pesante attrezzo da lavoro dimenticato lì vicino. Potrebbe rivelarsi fondamentale se dovessi riparare o scassinare qualcosa o, ancora peggio, combattere con QUALCUNO.; /rooms/bathrooms.png; 
+5; Vano Scale; Una rampa di scale polverosa e buia che conduce ai piani superiori. Il rumore di passi si fa sempre più forte...; /rooms/stairs.png; 
 
 # **** SECONDO PIANO ****
 6; Corridoio 2° Piano; Il corridoio del piano superiore è completamente immerso nel silenzio. Le plafoniere pendono dal soffitto, dondolando impercettibilmente. In un angolo, la luce intermittente delle macchinette dei distributori automatici proietta ombre sinistre sulle pareti scrostate. Si intravedono ancora lattine e caffè pronti all'uso, testimoni dell'improvviso abbandono dell'edificio...; /rooms/secondFloor.png; false
-7; Aula 4; L'aula più ; /aula_4.png
+7; Aula 4; 
 8; Segreteria; Vedi il cadavere del custode seduto alla scrivania. Hai paura ad avvicinarti, l'istinto ti dice di scappare. Ma vicino a lui vedi qualcosa che potrebbe darti una speranza. Nelle sue mani, noti il riflesso fioco di una chiave d'ottone legata a una targhetta sbiadita, su cui è inciso il numero "2". Per quanto l'idea di avvicinarti a quel tavolo ti terrorizzi, sai che senza quella chiave il tuo viaggio finirà prima ancora di iniziare....; /rooms/office.png; false
 
 
@@ -53,23 +53,19 @@
 # idStanza; idOggetto; TipoClasse; Nome; Descrizione; PathImmagine; X; Y; Larghezza; Altezza
 # Oggetti in Aula 2
 # -- Oggetti in Aula 2 --
-2;16;ObjectContainer;Zaino abbandonato;Uno zainetto abbandonato in fretta e furia sul pavimento. È parzialmente aperto, forse c'è qualcosa dentro.;/items/studentBackpack.png;530;250;100;100 
+2;16;ObjectContainer;Zaino abbandonato;Uno zainetto abbandonato in fretta e furia sul pavimento. È parzialmente aperto, forse c'è qualcosa dentro.;/items/studentBackpack.png;530;290;110;110 
 
 # -- Oggetti nei Bagni --
-4;6;Weapon;Attrezzo da Lavoro;Una pesante chiave inglese d'acciaio, sporca di grasso e ruggine. Sembra solida.;/items/tool.png;400;270;75;75;35
+4;6;Weapon;Attrezzo da Lavoro;Una pesante chiave inglese d'acciaio, sporca di grasso e ruggine. Sembra solida.;/items/tool.png;400;305;75;75;35
 
 # -- Oggetti nell'Aula di biologia --
-3;7;Weapon;Ampolla;Un'ampolla di vetro spesso e rinforzato. All'interno si muove un liquido denso e luminescente che emette una debole luce verdastra, illuminando debolmente la polvere circostante..;/items/biologyLiquid.png;240;160;55;55; 25
+3;7;Weapon;Ampolla;Un'ampolla di vetro spesso e rinforzato. All'interno si muove un liquido denso e luminescente che emette una debole luce verdastra, illuminando debolmente la polvere circostante..;/items/biologyLiquid.png;245;160;55;55; 25
 
 # -- Oggetti nella Segreteria --
-8;8;Key;Chiave dell'Aula 2; Una chiave d'ottone leggermente ossidata. La targhetta di plastica consunta riporta il numero '2' scritto a pennarello.;/items/room2Keys.png;410;272;27;27
+8;8;Key;Chiave dell'Aula 2; Una chiave d'ottone leggermente ossidata. La targhetta di plastica consunta riporta il numero '2' scritto a pennarello.;/items/room2Keys.png;415;305;27;27
 
-<<<<<<< HEAD
 # -- Oggetto nel Corridoio del 2 piano --
-6; 15;Chest;Forziere; Una pesante cassa in legno rinforzata con bande di ferro. C'è una serratura che blocca il coperchio...;/items/closedChest.png;600;250;100;100;17
-=======
-# -- Oggetti nell'Aula 4 (Stanza 10) --
-10;15;Key;Badge del Direttore;Una tessera magnetica dorata e insanguinata. È l'unica via d'uscita.;/badge.png;400;300;50;50
+6; 15;Chest;Forziere; Una pesante cassa in legno rinforzata con bande di ferro. C'è una serratura che blocca il coperchio...;/items/closedChest.png;600;290;90;90;17
 
-1;99;GameNPC;Prof. di Analisi 1;Gira a vuoto mormorando teoremi incomprensibili...;/zombie.png;300;200;150;150
->>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4
+1;99;GameNPC;Prof. di Analisi 1;Gira a vuoto mormorando teoremi incomprensibili...;/zombie.png;530;147;250;250
+8;94;GameNPC;Prof. di Laboratorio;"Devi usare la malloc e non la calloc, AARRGHHHH!!"";/zombie.png;530;147;250;250

@@ -16,6 +16,7 @@ public class EsameGame extends GameDescription {
     private Player player;
     private List<GameObject> allObjects = new ArrayList<>();
     private List<String> deadZombies = new ArrayList<>();
+    private List<String> unlockedRooms = new ArrayList<>();
 
     @Override
     public void init() throws Exception {
@@ -40,10 +41,15 @@ public class EsameGame extends GameDescription {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Errore critico: Aula Studio (ID 1) non trovata nel file di configurazione!"));
 
-       System.out.println("[DEBUG INIT] Oggetti nell'Aula Studio: " + stanzaIniziale.getObjects().size());        
-       System.out.println("[DEBUG INIT] Oggetti totali registrati nel gioco: " + allObjects.size());
-        // Imposta la stanza corrente
+        System.out.println("[DEBUG INIT] Oggetti nell'Aula Studio: " + stanzaIniziale.getObjects().size());        
+        System.out.println("[DEBUG INIT] Oggetti totali registrati nel gioco: " + allObjects.size());
+         // Imposta la stanza corrente
         setCurrentRoom(stanzaIniziale);
+
+        getRooms().stream()
+         .filter(room -> room.getId() == 2) // Trova l'Aula 2
+         .findFirst()
+         .ifPresent(room -> room.setLocked(true)); // La blocca di default a inizio storia
     }
 
     // Un getter per recuperare facilmente il giocatore durante la partita
@@ -59,12 +65,18 @@ public class EsameGame extends GameDescription {
     public List<String> getDeadZombies() {
         return deadZombies;
     }
+    
+    public List<String> getUnlockedRooms() {
+        return unlockedRooms;
+    }
 
     @Override
     public List<GameObject> getInventory() {
-        // Nota: se il tuo Player usa GameObject e il prof usa AdvObject,
-        // dovrai assicurarti che combacino, altrimenti puoi tenere separati
-        // gli inventari o adattare le classi.
+        
+        if (player != null && player.getInventory() != null) {
+            return player.getInventory().getList(); 
+        }
+        // Fallback di sicurezza sulla struttura del prof
         return super.getInventory();
     }
 
@@ -75,15 +87,4 @@ public class EsameGame extends GameDescription {
                 "Dal corridoio senti un lamento: 'Dov'è il tuo libretttooooo...'\n" +
                 "Devi uscire di qui. Ora.\n";
     }
-
-    /*
-    @Override
-    public void nextMove(ParserOutput p, PrintStream out) {
-        // Qui dentro andrà la logica degli Observer del professore.
-        // Per ora stampiamo un messaggio di test.
-        if (p.getCommand() != null) {
-            out.println("Azione ricevuta: " + p.getCommand().getName());
-        }
-    }
-     */
 }

@@ -14,6 +14,9 @@ import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
 import it.map.graphicadventure.progettoesame.model.GameNPC;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.model.SaveData;
+import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
+import it.map.graphicadventure.progettoesame.model.interfaces.Openable;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -110,6 +113,7 @@ public class GameController extends BaseController {
             // e ci facciamo restituire un semplice intero che rappresenta l'esito:
             // 1 = Vittoria, 2 = Fuga, 3 = Morte/Sconfitta
             int combatResult = view.showCombatWindow(enemy, model.getPlayer(), model.getInventory());
+            view.getGamePanel().updateJlHealth();
 
             if (combatResult == 1) {
                 // 1. Lo togliamo dalla stanza corrente nella sessione attuale
@@ -132,13 +136,7 @@ public class GameController extends BaseController {
 
                 // 5. FINE PARTITA - VITTORIA
                 int punteggio = calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
-                String classifica = sendAndGetLeaderboard("Antonio", punteggio);
-
-                // MVC PURO: Deleghiamo la visualizzazione della classifica alla View
-                view.showLeaderboardDialog(classifica, "ESAME SUPERATO!");
-
-                // Quando chiudi la classifica, torniamo al menù principale
-                view.showMainMenu(); 
+                String classifica = sendAndGetLeaderboard("Matricola", punteggio);
                 
                 return "Hai sconfitto " + enemy.getName() + "!";
                 
@@ -149,9 +147,6 @@ public class GameController extends BaseController {
                 // 5. FINE PARTITA - SCONFITTA (GAME OVER)
                 int punteggio = calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
                 String classifica = sendAndGetLeaderboard("Matricola_Bocciata", punteggio / 2);
-
-                // MVC PURO: Deleghiamo la visualizzazione alla View
-                view.showLeaderboardDialog(classifica, "GAME OVER - BOCCIATO");
 
                 view.showMainMenu();
                 
@@ -169,6 +164,7 @@ public class GameController extends BaseController {
             System.err.println("Errore durante il logging dell'interazione: " + e.getMessage());
         }
 
+        view.getGamePanel().updateJlHealth();
         silentAutosave();
         return response;
     }
@@ -191,6 +187,7 @@ public class GameController extends BaseController {
         view.getGamePanel().toggleInventory(inventoryItems);
     }
 
+
     public void saveCurrentGame() {
         String currentRoomName = model.getCurrentRoom().getName();
         int health = model.getPlayer().getHp();
@@ -201,9 +198,11 @@ public class GameController extends BaseController {
         }
 
         try {
-            // Passiamo anche la lista dei nemici morti al DAO (4 parametri)
-            saveDao.saveGame(currentRoomName, health, itemIds, model.getDeadZombies());
-            view.getGamePanel().animatedText("Salvataggio completato con successo nel database.");
+            // 🟩 Sinergia perfetta: riutilizziamo il metodo helper condiviso!
+            saveDao.saveGame(currentRoomName, health, itemIds, model.getDeadZombies(), model.getUnlockedRooms());
+
+            // Opzionale: un feedback visivo per rassicurare il giocatore
+            view.getGamePanel().animatedText("> Salvataggio completato con successo.");
         } catch (SQLException e) {
             view.getGamePanel().animatedText("[ERRORE] Impossibile salvare la partita.");
             System.err.println("Errore nel salvataggio esplicito: " + e.getMessage());
@@ -222,7 +221,7 @@ public class GameController extends BaseController {
             // 1. Ripristina salute
             model.getPlayer().setHp(data.getHealth());
 
-            // 2. Ripristina stanza
+            // 2. Ripristina stanza corrente
             Room savedRoom = null;
             for (Room r : model.getRooms()) {
                 if (r.getName().trim().equalsIgnoreCase(data.getRoomName().trim())) {
@@ -237,31 +236,106 @@ public class GameController extends BaseController {
                 System.err.println("[WARNING] Stanza salvata '" + data.getRoomName() + "' non trovata.");
             }
 
-            // 3. Ripristina Inventario
+            // 3. 🎒 RIPRISTINA INVENTARIO (Cerca gli oggetti anche DENTRO lo zaino!)
             model.getInventory().clear();
             for (String itemId : data.getItemIds()) {
-                for (GameObject obj : model.getAllObjects()) {
-                    if (String.valueOf(obj.getId()).equals(itemId)) {
-                        model.getInventory().add(obj);
-                        for (Room r : model.getRooms()) {
-                            r.getObjects().remove(obj);
+                GameObject foundObj = null;
+
+                for (Room r : model.getRooms()) {
+                    if (r.getObjects() != null) {
+                        for (int i = 0; i < r.getObjects().size(); i++) {
+                            GameObject obj = r.getObjects().get(i);
+
+                            // Caso A: L'oggetto è per terra nella stanza
+                            if (String.valueOf(obj.getId()).equals(itemId)) {
+                                foundObj = obj;
+                                r.getObjects().remove(i);
+                                break;
+                            }
+
+                            // Caso B: L'oggetto è nascosto dentro un contenitore (es. lo zaino)
+                            if (obj instanceof ObjectContainer) {
+                                ObjectContainer<?> container = (ObjectContainer<?>) obj;
+                                if (container.getInsideItems() != null) {
+                                    for (int j = 0; j < container.getInsideItems().size(); j++) {
+                                        Object nested = container.getInsideItems().get(j);
+                                        if (nested instanceof GameObject && String.valueOf(((GameObject) nested).getId()).equals(itemId)) {
+                                            foundObj = (GameObject) nested;
+                                            container.getInsideItems().remove(j); // Lo estrae dal contenitore
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
+                    }
+                    if (foundObj != null) {
                         break;
                     }
                 }
+
+                // Fallback di sicurezza se non viene trovato dinamicamente
+                if (foundObj == null) {
+                    for (GameObject obj : model.getAllObjects()) {
+                        if (String.valueOf(obj.getId()).equals(itemId)) {
+                            foundObj = obj;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundObj != null) {
+                    model.getInventory().add(foundObj);
+                }
             }
 
-            // 4. 🟩 RIPRISTINA LA LISTA DEI MORTI E CANCELLALI DAL MONDO RIGENERATO
+            // 4. Ripristina la lista dei morti e cancellali dal mondo rigenerato
             model.getDeadZombies().clear();
             model.getDeadZombies().addAll(data.getKilledEnemyIds());
 
             for (String deadId : model.getDeadZombies()) {
                 for (Room r : model.getRooms()) {
-                    r.getObjects().removeIf(obj -> String.valueOf(obj.getId()).equals(deadId));
+                    if (r.getObjects() != null) {
+                        r.getObjects().removeIf(obj -> String.valueOf(obj.getId()).equals(deadId));
+                    }
                 }
             }
 
-            // Aggiorna la vista grafico
+            // 5. Sincronizzazione stanze sbloccate
+            model.getUnlockedRooms().clear();
+            if (data.getUnlockedRoomIds() != null) {
+                model.getUnlockedRooms().addAll(data.getUnlockedRoomIds());
+            }
+
+            for (String idOrName : model.getUnlockedRooms()) {
+                for (Room r : model.getRooms()) {
+                    if (String.valueOf(r.getId()).equals(idOrName) || r.getName().trim().equalsIgnoreCase(idOrName.trim())) {
+                        r.setLocked(false);
+                    }
+                }
+            }
+
+            // Se l'Aula 2 risulta già sbloccata, eliminiamo la chiave (ID 8) dalle stanze
+            if (model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2")) {
+                for (Room r : model.getRooms()) {
+                    if (r.getObjects() != null) {
+                        r.getObjects().removeIf(obj -> obj.getId() == 8);
+                    }
+                }
+            }
+
+            // 🟩 DISINTEGRAZIONE ZAINO FANTASMA (ID 16)
+            // Se nel database risulta che hai già addosso la chiave (17) o l'accendino (11),
+            // significa che hai già preso lo zaino! Lo cancelliamo dalle stanze per non farlo riapparire.
+            if (data.getItemIds().contains("17") || data.getItemIds().contains("11")) {
+                for (Room r : model.getRooms()) {
+                    if (r.getObjects() != null) {
+                        r.getObjects().removeIf(obj -> obj.getId() == 16);
+                    }
+                }
+            }
+
+            // Aggiorna la vista grafica
             view.getGamePanel().renderRoom(model.getCurrentRoom());
             view.getGamePanel().animatedText("Salvataggio caricato. Bentornato nella sessione.");
         } else {
@@ -296,8 +370,8 @@ public class GameController extends BaseController {
         }
 
         try {
-            // Passiamo anche la lista dei nemici morti al DAO (4 parametri)
-            saveDao.saveGame(currentRoomName, health, itemIds, model.getDeadZombies());
+            // 🟩 Pulito, leggibile e riutilizzabile!
+            saveDao.saveGame(currentRoomName, health, itemIds, model.getDeadZombies(), model.getUnlockedRooms());
         } catch (SQLException e) {
             System.err.println("Autosave fallito: " + e.getMessage());
         }
@@ -360,4 +434,5 @@ public class GameController extends BaseController {
 
         return leaderboard.toString();
     }
+   
 }

@@ -24,6 +24,10 @@ public class Chest<T extends GameObject> extends ObjectContainer<T> implements L
         this.locked = true; // La cassa nasce chiusa a chiave
         this.requiredKeyId = requiredKeyId;
     }
+
+    public int getRequiredKeyId() {
+        return requiredKeyId;
+    }
     
     @Override
     public boolean isLocked() {

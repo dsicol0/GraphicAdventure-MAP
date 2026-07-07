@@ -59,14 +59,6 @@ public class GameUtils {
                             
                             Room room = new Room(id, name, description, backgroundPath);
                             
-                           
-                            // Se nel TXT specifichiamo "true" come quinto parametro, blocca la stanza
-                            if (parts.length >= 5) {
-                                boolean isLocked = Boolean.parseBoolean(parts[4].trim());
-                                room.setLocked(isLocked);
-                            }
-                            
-                            
                             rooms.add(room);
                             roomMap.put(id, room);
                         }

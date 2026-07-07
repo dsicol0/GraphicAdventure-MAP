@@ -7,6 +7,7 @@ package it.map.graphicadventure.progettoesame.view;
 import it.map.graphicadventure.progettoesame.model.GameNPC;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.model.items.Weapon;
 import java.awt.Frame;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -44,15 +45,15 @@ public class CombatDialog extends javax.swing.JDialog {
         this.player = player;
         this.inventory = inventory;
         
-        // 2. CONFIGURIAMO I TESTI DELLE ETICHETTE
+        // TESTI DELLE ETICHETTE
         jLabel1.setText("NEMICO: " + zombie.getName());
         jtaCombatLog.setText(zombie.getDescription() + "\nCosa vuoi fare?");
         
-        // 🟩 RIPRISTINATO IL TESTO PER LE ETICHETTE DEGLI HP
+        // TESTO PER LE ETICHETTE DEGLI HP
         jlPlayerHp.setText("I TUOI HP: " + player.getHp());
         jlZombieHp.setText("HP NEMICO: " + zombie.getLife());
         
-        // L'immagine 
+       
         try {
             java.net.URL imgURL = getClass().getResource(zombie.getImagePath());
             if (imgURL != null) {
@@ -78,20 +79,20 @@ public class CombatDialog extends javax.swing.JDialog {
 
     private void checkTurn() {
         if (zombie.isDead()) {
-            // 🟩 Aggiorna etichetta zombie a 0
+            // Aggiorna etichetta zombie a 0
             jlZombieHp.setText("HP NEMICO: 0");
             
             combatWon = true;
             javax.swing.JOptionPane.showMessageDialog(this, "Hai sconfitto " + zombie.getName() + "!");
             dispose(); 
         } else {
-            // 🟩 Aggiorna etichetta zombie
+            // Aggiorna etichetta zombie
             jlZombieHp.setText("HP NEMICO: " + zombie.getLife());
             
             int dmgTaken = zombie.getDamage(); 
             player.setHp(player.getHp() - dmgTaken);
             
-            // 🟩 Aggiorna la tua etichetta (evitando numeri negativi)
+            // Aggiorna la tua etichetta (evitando numeri negativi)
             int currentHp = Math.max(0, player.getHp());
             jlPlayerHp.setText("I TUOI HP: " + currentHp);
             
@@ -243,29 +244,28 @@ public class CombatDialog extends javax.swing.JDialog {
 
     private void jbItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbItemActionPerformed
         if(zombie.isDead() || player.getHp() <= 0) return;
-    if (inventory.isEmpty()) {
-        logAction("Lo zaino è vuoto!");
-        return;
-    }
-    
-    // 🟩 APRE IL TUO INVENTARIO GRAFICO
-    InventoryDialog invDialog = new InventoryDialog((Frame) SwingUtilities.getWindowAncestor(this), inventory);
-    invDialog.setVisible(true);
-    
-    // Recupera l'oggetto scelto
-    GameObject chosen = invDialog.getSelectedItem();
-    
-    if (chosen != null) {
-        int itemDmg = 35; 
-        zombie.takeDamage(itemDmg); 
-        logAction("Usi [" + chosen.getName() + "] e infliggi " + itemDmg + " danni!");
-        
-        // Logica consumo oggetto
-        if(chosen.getName().contains("Ampolla")) {
-            inventory.remove(chosen);
+        if (inventory.isEmpty()) {
+            logAction("Lo zaino è vuoto!");
+            return;
         }
-        checkTurn();
-    }
+        
+        InventoryDialog invDialog = new InventoryDialog((Frame) SwingUtilities.getWindowAncestor(this), inventory);
+        invDialog.setVisible(true);
+
+        // Recupera l'oggetto scelto
+        GameObject chosen = invDialog.getSelectedItem();
+
+        if (chosen instanceof Weapon) {
+            int itemDmg =((Weapon) chosen).getDamage();
+            zombie.takeDamage(itemDmg);
+            logAction("Usi [" + chosen.getName() + "] e infliggi " + itemDmg + " danni!");
+
+            // Logica consumo oggetto
+            if (chosen.getName().contains("Ampolla")) {
+                inventory.remove(chosen);
+            }
+            checkTurn();
+        }
     }//GEN-LAST:event_jbItemActionPerformed
 
     private void jbFleeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbFleeActionPerformed

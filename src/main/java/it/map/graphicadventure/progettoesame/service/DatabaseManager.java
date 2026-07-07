@@ -30,11 +30,24 @@ public class DatabaseManager {
             + "event_type TEXT NOT NULL, "
             + "description TEXT NOT NULL)";
 
-    // 🟩 NUOVA COSTANTE PER LA TABELLA DEI NEMICI SCONFITTI
+    // NUOVA COSTANTE PER LA TABELLA DEI NEMICI SCONFITTI
     private static final String TABLE_KILLED_ENEMIES = "CREATE TABLE IF NOT EXISTS killed_enemies_saves ("
             + "game_id INTEGER, "
             + "enemy_id TEXT NOT NULL, "
             + "FOREIGN KEY(game_id) REFERENCES games(id) ON DELETE CASCADE)";
+    
+    // STATO DI BLOCCO/APERTURA DI PORTE E CASSE
+    private static final String TABLE_OBJECT_SAVES = "CREATE TABLE IF NOT EXISTS object_saves ("
+            + "game_id INTEGER, "
+            + "object_id TEXT NOT NULL, "
+            + "is_locked INTEGER NOT NULL, " // 1 = Chiuso a chiave, 0 = Sbloccato
+            + "is_open INTEGER NOT NULL, "   // 1 = Aperto, 0 = Chiuso
+            + "FOREIGN KEY(game_id) REFERENCES games(id) ON DELETE CASCADE)";
+    
+    private static final String TABLE_UNLOCKED_ROOMS = "CREATE TABLE IF NOT EXISTS unlocked_rooms_saves ("
+        + "game_id INTEGER, "
+        + "room_id TEXT NOT NULL, "
+        + "FOREIGN KEY(game_id) REFERENCES games(id) ON DELETE CASCADE)";
 
     private Connection conn = null;
 
@@ -51,6 +64,8 @@ public class DatabaseManager {
             stm.executeUpdate(TABLE_INVENTORY);
             stm.executeUpdate(TABLE_LOG);
             stm.executeUpdate(TABLE_KILLED_ENEMIES); // 🟩 CREAZIONE DELLA NUOVA TABELLA
+            stm.executeUpdate(TABLE_OBJECT_SAVES);    // 🟩 CREAZIONE DELLA NUOVA TABELLA OGGETTI
+            stm.executeUpdate(TABLE_UNLOCKED_ROOMS);
             stm.close(); // Chiusura esplicita
             
             return conn;

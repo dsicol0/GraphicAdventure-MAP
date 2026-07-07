@@ -25,7 +25,25 @@ public class GameSaveDAO {
         this.connection = connection;
     }
 
-    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds) throws SQLException {
+    // 🟩 CLASSE DI SUPPORTO INTERNA PER LO STATO DEGLI OGGETTI
+    public static class ObjectSave {
+        private final String objectId;
+        private final boolean locked;
+        private final boolean open;
+
+        public ObjectSave(String objectId, boolean locked, boolean open) {
+            this.objectId = objectId;
+            this.locked = locked;
+            this.open = open;
+        }
+
+        public String getObjectId() { return objectId; }
+        public boolean isLocked() { return locked; }
+        public boolean isOpen() { return open; }
+    }
+
+    // 🟩 AGGIORNATO: Accetta anche la lista degli stati degli oggetti
+    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds) throws SQLException {
         connection.setAutoCommit(false); 
 
         PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -51,7 +69,7 @@ public class GameSaveDAO {
         stmInv.executeBatch();
         stmInv.close();
 
-        // 🟩 SALVA I NEMICI SCONFITTI NELLA NUOVA TABELLA
+        // Salva i nemici sconfitti
         PreparedStatement stmKilled = connection.prepareStatement("INSERT INTO killed_enemies_saves(game_id, enemy_id) VALUES (?, ?)");
         for (String enemyId : killedEnemyIds) {
             stmKilled.setInt(1, gameId);
@@ -60,6 +78,15 @@ public class GameSaveDAO {
         }
         stmKilled.executeBatch();
         stmKilled.close();
+        
+        PreparedStatement stmRooms = connection.prepareStatement("INSERT INTO unlocked_rooms_saves(game_id, room_id) VALUES (?, ?)");
+        for (String roomId : unlockedRoomIds) {
+            stmRooms.setInt(1, gameId);
+            stmRooms.setString(2, roomId);
+            stmRooms.addBatch();
+        }
+        stmRooms.executeBatch();
+        stmRooms.close();
 
         connection.commit();
         connection.setAutoCommit(true); 
@@ -76,8 +103,9 @@ public class GameSaveDAO {
             gameId = rs.getInt("id");
             String room = rs.getString("current_room");
             int health = rs.getInt("health");
-            // 🟩 INIZIALIZZA ANCHE LA LISTA DEI NEMICI
-            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>());
+            
+            // 🟩 NOTA: Aggiungiamo un quinto parametro New ArrayList<>() per gli oggetti in SaveData
+            data = new SaveData(room, health, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
         }
         rs.close();
         stm.close();
@@ -93,7 +121,7 @@ public class GameSaveDAO {
             rsInv.close();
             pstm.close();
 
-            // 🟩 RECUPERA I NEMICI SCONFITTI
+            // Recupera i nemici sconfitti
             PreparedStatement pstmKilled = connection.prepareStatement("SELECT enemy_id FROM killed_enemies_saves WHERE game_id = ?");
             pstmKilled.setInt(1, gameId);
             ResultSet rsKilled = pstmKilled.executeQuery();
@@ -102,6 +130,15 @@ public class GameSaveDAO {
             }
             rsKilled.close();
             pstmKilled.close();
+            
+            PreparedStatement pstmRooms = connection.prepareStatement("SELECT room_id FROM unlocked_rooms_saves WHERE game_id = ?");
+            pstmRooms.setInt(1, gameId);
+            ResultSet rsRooms = pstmRooms.executeQuery();
+            while (rsRooms.next()) {
+                data.getUnlockedRoomIds().add(rsRooms.getString("room_id")); // Assicurati di avere questo getter/lista in SaveData
+            }
+            rsRooms.close();
+            pstmRooms.close();
         }
         return data;
     }

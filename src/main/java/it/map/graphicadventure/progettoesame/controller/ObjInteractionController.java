@@ -10,6 +10,8 @@ import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
 import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
+import it.map.graphicadventure.progettoesame.model.items.Chest;
+import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import java.util.List;
 
@@ -39,39 +41,85 @@ public class ObjInteractionController extends BaseController {
             return response.toString();
         }
 
-        // 2. Controllo se si può aprire (Openable / Lockable)
+        // 2. Controllo se si può aprire (Openable)
         if (clickedObject instanceof Openable) {
             Openable openableObj = (Openable) clickedObject;
 
-            // Usiamo Lockable per vedere se è chiuso a chiave
+            // FASE 1: TENTATIVO DI SBLOCCO (Solo se Lockable e BLOCCATO)
             if (openableObj instanceof Lockable && ((Lockable) openableObj).isLocked()) {
-                response.append("È chiuso a chiave. Serve qualcosa per aprirlo.");
-            } else if (openableObj.isOpen()) {
-                response.append("È già aperto.");
-            } else {
-                openableObj.open(); // Metodo corretto dell'interfaccia
-                response.append("Lo hai aperto!\n");
+                Lockable lockableObj = (Lockable) openableObj;
+                int requiredKeyId = -1;
 
-                // Se è un contenitore generico (Zaino), sparpaglia gli oggetti nella stanza
-                if (clickedObject instanceof ObjectContainer<?>) {
-                    ObjectContainer<?> container = (ObjectContainer<?>) clickedObject;
-                    List<?> contenuti = container.getInsideItems();
-                    if (!contenuti.isEmpty()) {
-                        for (Object item : contenuti) {
-                            GameObject gameItem = (GameObject) item;
-                            model.getInventory().add(gameItem);
-                            response.append("Nello zaino trovi ").append(gameItem.getName()).append(". Decidi di prenderlo.\n");
-                        }
-                        model.getCurrentRoom().removeObject(container);
+                if (clickedObject instanceof Chest) {
+                    requiredKeyId = ((Chest<?>) clickedObject).getRequiredKeyId();
+                }
+
+                final int targetId = requiredKeyId;
+                GameObject matchingKey = model.getInventory().stream()
+                        .filter(obj -> obj.getId() == targetId)
+                        .findFirst()
+                        .orElse(null);
+
+                if (matchingKey != null) {
+                    boolean unlocked = false;
+                    if (clickedObject instanceof Chest && matchingKey instanceof Key) {
+                        unlocked = ((Chest<?>) clickedObject).unlock((Key) matchingKey);
                     } else {
-                        response.append("Ma dentro è completamente vuoto.");
+                        lockableObj.setLocked(false);
+                        unlocked = true;
                     }
+
+                    if (unlocked) {
+                        response.append("Usi **").append(matchingKey.getName()).append("** sulla serratura. Senti un netto 'clack'!\n");
+                        model.getInventory().remove(matchingKey);
+                    }
+                } else {
+                    response.append("È chiuso a chiave. Ti serve la chiave adatta per aprirlo.");
+                    return response.toString();
                 }
             }
-            return response.toString();
+
+            // FASE 2: APERTURA EFFETTIVA
+            if (!openableObj.isOpen()) {
+                openableObj.open();
+                response.append("Apri ").append(clickedObject.getName()).append(".\n");
+            } else {
+                response.append("È già aperto.\n");
+            }
+
+            // FASE 3: SVUOTAMENTO CONTENITORE E RIMOZIONE DELLO ZAINO
+            // 🟩 Usiamo ObjectContainer così siamo sicuri al 100% che legga lo Zaino!
+            if (clickedObject instanceof ObjectContainer) {
+                ObjectContainer<?> container = (ObjectContainer<?>) clickedObject;
+
+                if (container.getInsideItems() != null && !container.getInsideItems().isEmpty()) {
+                    response.append("Dentro trovi e raccogli immediatamente:\n");
+
+                    // Creiamo una lista di copia per evitare errori di modifica concorrente
+                    java.util.List<GameObject> itemsDaPrendere = new java.util.ArrayList<>(container.getInsideItems());
+
+                    for (GameObject objDentro : itemsDaPrendere) {
+                        response.append("- **").append(objDentro.getName()).append("**\n");
+
+                        // 🎒 Mettiamo l'oggetto nell'inventario del giocatore
+                        model.getInventory().add(objDentro);
+
+                        // ❌ Lo togliamo dal contenitore
+                        container.getInsideItems().remove(objDentro);
+                    }
+
+                    // 💥 IL TRUCCO PER FARLO SCOMPARIRE:
+                    // Ora che è vuoto, lo rimuoviamo dalla stanza corrente così sparisce dalla vista!
+                    model.getCurrentRoom().removeObject(clickedObject);
+
+                } else {
+                    response.append("Non c'è niente dentro, è già vuoto.");
+                    // Se per caso è vuoto, lo rimuoviamo comunque per non lasciare l'interazione attiva
+                    model.getCurrentRoom().removeObject(clickedObject);
+                }
+            }
         }
 
-        // Descrizione base se non fa nulla
         if (response.toString().equals("Esamini: " + clickedObject.getName() + ". \n")) {
             response.append(clickedObject.getDescription());
         }
