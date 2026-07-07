@@ -60,7 +60,7 @@ public class ObjInteractionController extends BaseController {
                         for (Object item : contenuti) {
                             GameObject gameItem = (GameObject) item;
                             model.getInventory().add(gameItem);
-                            response.append("Nello zaino trovi ").append(gameItem.getName()).append(" e lo prendi.\n");
+                            response.append("Nello zaino trovi ").append(gameItem.getName()).append(". Decidi di prenderlo.\n");
                         }
                         model.getCurrentRoom().removeObject(container);
                     } else {

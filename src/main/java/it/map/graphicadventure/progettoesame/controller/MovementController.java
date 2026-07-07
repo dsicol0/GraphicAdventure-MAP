@@ -38,11 +38,12 @@ public class MovementController extends BaseController {
                         nextRoom.setLocked(false);
 
                         // Consumiamo la chiave dall'inventario
-                        model.getInventory().removeIf(obj -> obj.getId() == 35);
+                        model.getInventory().removeIf(obj -> obj.getId() == 8);
 
                         // Spostiamo il giocatore
                         model.setCurrentRoom(nextRoom);
-
+                        
+                        // Stampiamo l'uso della chiave E POI la descrizione della stanza!
                         return "> Hai usato Chiave dell'Aula 2.\nSenti lo scatto della serratura e la porta si spalanca!";
                     } else {
                         return "> Decidi di conservare la chiave. La porta dell'Aula 2 resta sbarrata.";

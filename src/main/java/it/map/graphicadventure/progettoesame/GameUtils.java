@@ -2,6 +2,7 @@ package it.map.graphicadventure.progettoesame;
 
 import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.type.items.Chest;
 import it.map.graphicadventure.progettoesame.type.items.Key;
 import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.type.items.UsableObject;
@@ -128,10 +129,9 @@ public class GameUtils {
                                         // Istanziamo l'ogetto di tipo arma con il relativo danno
                                         newObj = new Weapon(objId, objName, objDesc, objImg, damage);
                                         break;
-                                    case "UsableObject": 
-                                        // Presumendo che la classe si chiami UsableObject 
-                                        // e che il suo costruttore accetti i 4 parametri standard
-                                        newObj = new UsableObject(objId, objName, objDesc, objImg);
+                                    case "Chest": 
+                                        int requiredKey = Integer.parseInt(objParts[10].trim());
+                                        newObj = new Chest<>(objId, objName, objDesc, objImg, requiredKey);
                                         break;
                                 }
 

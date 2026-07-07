@@ -5,9 +5,11 @@
 package it.map.graphicadventure.progettoesame.view;
 
 import it.map.graphicadventure.progettoesame.controller.GameController;
+import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Player;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.items.Weapon;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -206,7 +208,7 @@ public class GamePanel extends javax.swing.JPanel {
         }
     }
     
-    public void toggleInventory(java.util.List<it.map.graphicadventure.progettoesame.type.GameObject> items) {
+    public void toggleInventory(List<GameObject> items) {
         
         // Calcoliamo larghezza e altezza per passarla alle AbsoluteConstraints
         int w = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
@@ -284,6 +286,8 @@ public class GamePanel extends javax.swing.JPanel {
                 jlEmpty.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 18));
                 jlEmpty.setForeground(java.awt.Color.WHITE);
                 gridPanel.add(jlEmpty, java.awt.BorderLayout.CENTER);
+                
+                jpInventoryView.add(gridPanel, java.awt.BorderLayout.CENTER);
             } else {
                 // Inventario con Oggetti (Griglia fissa a 4 colonne)
                 gridPanel.setLayout(new java.awt.GridLayout(0, 4, 15, 15)); 
@@ -373,22 +377,38 @@ public class GamePanel extends javax.swing.JPanel {
      * Gestisce il tentativo di movimento in una direzione specifica.
      */
     private void movePlayer(String direction) {
-        if (controller != null) {
-            // 1. Diciamo al controller di provare a muovere il giocatore e ci facciamo dare il testo di risposta
-            String response = controller.handleMovement(direction);
+        if (controller == null) return;
+        
+        // Memorizziamo la stanza attuale prima del movimento
+        Room previousRoom = controller.getCurrentRoom();
+
+        // Chiediamo il movimento al controller (ci restituirà il testo dell'azione o dell'errore)
+        String response = controller.handleMovement(direction);
+
+        // Recuperiamo la stanza dopo che il controller ha agito
+        Room newRoom = controller.getCurrentRoom();
+        
+        // IL GIOCATORE HA CAMBIATO STANZA
+        if(previousRoom != newRoom) {
+            String finalMessage = newRoom.getDescription();
             
-            // Stampiamo la risposta SOLO se è un messaggio di errore/blocco (non null e non vuoto)
             if (response != null && !response.trim().isEmpty()) {
-                animatedText(response);
+                finalMessage = response + "\n\n" + finalMessage;
             }
             
-            /* 
-               Ridisegniamo la stanza. 
-               Se il controller ha cambiato la stanza, renderRoom caricherà la nuova immagine e i nuovi oggetti!
-               Se il movimento è fallito, renderRoom semplicemente non farà nulla di nuovo.
-            */
-            renderRoom(controller.getCurrentRoom());
+            this.currentRenderedRoom = newRoom;
+            // Avviamo l'animazione UNA SOLA VOLTA con tutto il testo unito
+            animatedText(finalMessage);
+            
+            renderRoom(newRoom);
+        } else {
+            if (response != null && !response.trim().isEmpty()) {
+                // Viene stampato semplicemente il messaggio restituito dal controller
+                animatedText(response);
+            }
         }
+        
+            
     }
     
     /**

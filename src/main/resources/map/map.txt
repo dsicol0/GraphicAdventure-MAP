@@ -59,10 +59,10 @@
 4;6;Weapon;Attrezzo da Lavoro;Una pesante chiave inglese d'acciaio, sporca di grasso e ruggine. Sembra solida.;/items/tool.png;400;270;75;75;35
 
 # -- Oggetti nell'Aula di biologia --
-3;7;UsableObject;Ampolla;Un'ampolla di vetro spesso e rinforzato. All'interno si muove un liquido denso e luminescente che emette una debole luce verdastra, illuminando debolmente la polvere circostante..;/items/biologyLiquid.png;240;160;55;55
+3;7;Weapon;Ampolla;Un'ampolla di vetro spesso e rinforzato. All'interno si muove un liquido denso e luminescente che emette una debole luce verdastra, illuminando debolmente la polvere circostante..;/items/biologyLiquid.png;240;160;55;55; 25
 
 # -- Oggetti nella Segreteria --
 8;8;Key;Chiave dell'Aula 2; Una chiave d'ottone leggermente ossidata. La targhetta di plastica consunta riporta il numero '2' scritto a pennarello.;/items/room2Keys.png;410;272;27;27
 
-# -- Oggetti nell'Aula 4 (Stanza 10) --
-10;15;Key;Badge del Direttore;Una tessera magnetica dorata e insanguinata. È l'unica via d'uscita.;/badge.png;400;300;50;50
+# -- Oggetto nel Corridoio del 2 piano --
+6; 15;Chest;Forziere; Una pesante cassa in legno rinforzata con bande di ferro. C'è una serratura che blocca il coperchio...;/items/closedChest.png;600;250;100;100;17
