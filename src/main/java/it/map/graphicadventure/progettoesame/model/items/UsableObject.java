@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package it.map.graphicadventure.progettoesame.type.items;
+package it.map.graphicadventure.progettoesame.model.items;
 
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.interfaces.Usable;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.interfaces.Usable;
 
 /**
  * Classe concreta per gli oggetti statici d'interazione ambientale 

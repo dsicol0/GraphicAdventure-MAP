@@ -2,15 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package it.map.graphicadventure.progettoesame;
+package it.map.graphicadventure.progettoesame.factory;
 
 /**
  *
  * @author David
  */
 
-import it.map.graphicadventure.progettoesame.GameUtils;
-import it.map.graphicadventure.progettoesame.type.Room;
+import it.map.graphicadventure.progettoesame.util.GameUtils;
+import it.map.graphicadventure.progettoesame.model.Room;
 import java.util.List;
 
 public class MapBuilder {

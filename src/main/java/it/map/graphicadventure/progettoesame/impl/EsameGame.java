@@ -1,18 +1,21 @@
 package it.map.graphicadventure.progettoesame.impl;
 import it.map.graphicadventure.progettoesame.GameDescription;
-import it.map.graphicadventure.progettoesame.GameUtils;
-import it.map.graphicadventure.progettoesame.type.Player;
-import it.map.graphicadventure.progettoesame.type.Room;
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.util.GameUtils;
+import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EsameGame extends GameDescription {
 
     // Aggiungiamo il nostro Player alla struttura del prof
     private Player player;
+    private List<GameObject> allObjects = new ArrayList<>();
+    private List<String> deadZombies = new ArrayList<>();
 
     @Override
     public void init() throws Exception {
@@ -25,6 +28,11 @@ public class EsameGame extends GameDescription {
 
         // REQUISITO LAMBDA: Usiamo il forEach per aggiungere tutte le stanze caricate
         stanzeCaricate.forEach(room -> getRooms().add(room));
+        
+        stanzeCaricate.stream()
+                .filter(room -> room.getObjects() != null)
+                .flatMap(room -> room.getObjects().stream())
+                .forEach(obj -> allObjects.add(obj));
 
         // REQUISITO STREAM & PIPELINE: Cerchiamo la stanza iniziale (Aula Studio con ID 1)
         Room stanzaIniziale = getRooms().stream()
@@ -33,6 +41,7 @@ public class EsameGame extends GameDescription {
                 .orElseThrow(() -> new RuntimeException("Errore critico: Aula Studio (ID 1) non trovata nel file di configurazione!"));
 
        System.out.println("[DEBUG INIT] Oggetti nell'Aula Studio: " + stanzaIniziale.getObjects().size());        
+       System.out.println("[DEBUG INIT] Oggetti totali registrati nel gioco: " + allObjects.size());
         // Imposta la stanza corrente
         setCurrentRoom(stanzaIniziale);
     }
@@ -40,6 +49,15 @@ public class EsameGame extends GameDescription {
     // Un getter per recuperare facilmente il giocatore durante la partita
     public Player getPlayer() {
         return player;
+    }
+    
+    // GETTER PER L'ANAGRAFE GLOBALE
+    public List<GameObject> getAllObjects() {
+        return allObjects;
+    }
+    
+    public List<String> getDeadZombies() {
+        return deadZombies;
     }
 
     @Override

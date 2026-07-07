@@ -4,11 +4,11 @@
  */
 package it.map.graphicadventure.progettoesame.controller;
 
-import it.map.graphicadventure.progettoesame.type.GameObject;
-import it.map.graphicadventure.progettoesame.type.interfaces.Openable;
-import it.map.graphicadventure.progettoesame.type.interfaces.Lockable;
-import it.map.graphicadventure.progettoesame.type.interfaces.Takeable;
-import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.interfaces.Openable;
+import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
+import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import java.util.List;

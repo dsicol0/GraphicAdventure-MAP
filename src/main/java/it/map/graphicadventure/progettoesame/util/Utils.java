@@ -1,4 +1,4 @@
-package it.map.graphicadventure.progettoesame;
+package it.map.graphicadventure.progettoesame.util;
 
 import java.io.BufferedReader;
 import java.io.File;

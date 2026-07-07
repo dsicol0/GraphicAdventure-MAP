@@ -28,7 +28,7 @@
 - [x] Creare la finestra di gioco principale
 - [x] Creare il pannello stanza (immagine di sfondo + aree cliccabili sugli oggetti)
 - [x] Creare il pannello inventario (mostra gli oggetti raccolti)
-- [ ] Creare il box testo (descrizioni e risultati delle azioni)
+- [x] Creare il box testo (descrizioni e risultati delle azioni)
 
 ---
 
@@ -43,9 +43,9 @@
 ## Fase 5 — Salvataggio e caricamento (File + Database)
 
 - [x] Caricare la mappa e gli oggetti da file esterni (no dati hardcoded)
-- [ ] Implementare il salvataggio della partita su database
-- [ ] Implementare il caricamento di una partita salvata
-- [ ] Tenere un log degli eventi (oggetti raccolti, stanze visitate, zombie incontrati)
+- [x] Implementare il salvataggio della partita su database
+- [x] Implementare il caricamento di una partita salvata
+- [x] Tenere un log degli eventi (oggetti raccolti, stanze visitate, zombie incontrati)
 
 ---
 
@@ -78,6 +78,7 @@
   - [ ] SWING
   - [ ] Thread e programmazione concorrente
   - [ ] Socket e/o REST
+- [ ] RIMUOVERE TUTTI I COMMENTI DI AI
 - [ ] Documentare il codice (Javadoc sui metodi principali)
 
 ---

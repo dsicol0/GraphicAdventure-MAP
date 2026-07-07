@@ -64,5 +64,12 @@
 # -- Oggetti nella Segreteria --
 8;8;Key;Chiave dell'Aula 2; Una chiave d'ottone leggermente ossidata. La targhetta di plastica consunta riporta il numero '2' scritto a pennarello.;/items/room2Keys.png;410;272;27;27
 
+<<<<<<< HEAD
 # -- Oggetto nel Corridoio del 2 piano --
 6; 15;Chest;Forziere; Una pesante cassa in legno rinforzata con bande di ferro. C'è una serratura che blocca il coperchio...;/items/closedChest.png;600;250;100;100;17
+=======
+# -- Oggetti nell'Aula 4 (Stanza 10) --
+10;15;Key;Badge del Direttore;Una tessera magnetica dorata e insanguinata. È l'unica via d'uscita.;/badge.png;400;300;50;50
+
+1;99;GameNPC;Prof. di Analisi 1;Gira a vuoto mormorando teoremi incomprensibili...;/zombie.png;300;200;150;150
+>>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4

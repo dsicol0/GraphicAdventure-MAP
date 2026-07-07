@@ -61,7 +61,7 @@ public class ConfirmDialog extends javax.swing.JDialog {
         jbConfirm.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
         jbConfirm.setForeground(new java.awt.Color(0, 204, 0));
         jbConfirm.setText("Conferma");
-        jbConfirm.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbConfirm.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbConfirm.setFocusPainted(false);
         jbConfirm.addActionListener(this::jbConfirmActionPerformed);
         jPanel1.add(jbConfirm);
@@ -70,7 +70,7 @@ public class ConfirmDialog extends javax.swing.JDialog {
         jbUndo.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
         jbUndo.setForeground(new java.awt.Color(204, 0, 0));
         jbUndo.setText("ANNULLA");
-        jbUndo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbUndo.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbUndo.setFocusPainted(false);
         jbUndo.addActionListener(this::jbUndoActionPerformed);
         jPanel1.add(jbUndo);

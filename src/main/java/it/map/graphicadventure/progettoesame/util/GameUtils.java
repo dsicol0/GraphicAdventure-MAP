@@ -1,5 +1,6 @@
-package it.map.graphicadventure.progettoesame;
+package it.map.graphicadventure.progettoesame.util;
 
+<<<<<<< HEAD:src/main/java/it/map/graphicadventure/progettoesame/GameUtils.java
 import it.map.graphicadventure.progettoesame.type.GameObject;
 import it.map.graphicadventure.progettoesame.type.Room;
 import it.map.graphicadventure.progettoesame.type.items.Chest;
@@ -7,6 +8,15 @@ import it.map.graphicadventure.progettoesame.type.items.Key;
 import it.map.graphicadventure.progettoesame.type.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.type.items.UsableObject;
 import it.map.graphicadventure.progettoesame.type.items.Weapon;
+=======
+import it.map.graphicadventure.progettoesame.model.GameObject;
+import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.items.Key;
+import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.model.items.UsableObject;
+import it.map.graphicadventure.progettoesame.model.items.Weapon;
+import it.map.graphicadventure.progettoesame.model.GameNPC;
+>>>>>>> 19a513db65ca0af90536ac5758fc576ffea31ad4:src/main/java/it/map/graphicadventure/progettoesame/util/GameUtils.java
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -133,6 +143,11 @@ public class GameUtils {
                                         int requiredKey = Integer.parseInt(objParts[10].trim());
                                         newObj = new Chest<>(objId, objName, objDesc, objImg, requiredKey);
                                         break;
+                                        
+                                    // 🟩 REGOLA AGGIUNTA PER IL NEMICO!
+                                    case "GameNPC":
+                                        newObj = new GameNPC(objId, objName, objDesc, objImg);
+                                        break;
                                 }
 
                                 // 3. Se l'oggetto è stato creato, applichiamo le coordinate e lo salviamo nella stanza
@@ -148,7 +163,7 @@ public class GameUtils {
                                 }
                             }
                         }
-                        break;    
+                        break;   
                 }
             }
         }

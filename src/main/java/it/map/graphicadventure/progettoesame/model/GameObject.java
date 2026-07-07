@@ -1,4 +1,4 @@
-package it.map.graphicadventure.progettoesame.type;
+package it.map.graphicadventure.progettoesame.model;
 
 import java.util.Objects;
 
