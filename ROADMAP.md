@@ -51,9 +51,8 @@
 
 ## Fase 6 — Timer e zombie in movimento (Thread)
 
-- [ ] Aggiungere un timer visibile (es. il generatore si esaurisce entro X minuti)
-- [ ] Gestire la scadenza del timer (game over)
-- [ ] Far muovere gli zombie in background senza bloccare l'interfaccia
+- [x] Aggiungere un timer visibile (es. il generatore si esaurisce entro X minuti)
+- [x] Gestire la scadenza del timer (game over)
 
 ---
 
