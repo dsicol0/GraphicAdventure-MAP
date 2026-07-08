@@ -55,7 +55,7 @@ public class GameSaveDAO {
     public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) throws SQLException {
         connection.setAutoCommit(false);
 
-        PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining, ambush_happening) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         stmGame.setString(1, roomName);
         stmGame.setInt(2, health);
         stmGame.setInt(3, timeRemaining);
@@ -104,7 +104,7 @@ public class GameSaveDAO {
 
     public SaveData getLatestSave() throws SQLException {
         Statement stm = connection.createStatement();
-        ResultSet rs = stm.executeQuery("SELECT id, current_room, health, time_remaining, ambush_happening FROM games ORDER BY save_date DESC LIMIT 1");
+        ResultSet rs = stm.executeQuery("SELECT id, current_room, health, time_remaining FROM games ORDER BY id DESC LIMIT 1");
 
         SaveData data = null;
         int gameId = -1;
@@ -114,9 +114,8 @@ public class GameSaveDAO {
             String room = rs.getString("current_room");
             int health = rs.getInt("health");
             int timeRemaining = rs.getInt("time_remaining");
-            boolean ambushActive = rs.getInt("ambush_happening") == 1;
-
-            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), timeRemaining, ambushActive);
+          
+            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), timeRemaining);
         }
         rs.close();
         stm.close();

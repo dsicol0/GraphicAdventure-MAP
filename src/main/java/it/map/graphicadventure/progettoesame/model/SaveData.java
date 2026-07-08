@@ -19,17 +19,15 @@ public class SaveData {
     private List<String> killedEnemyIds;
     private final List<String> unlockedRoomIds;
     private int timeRemaining;
-    private boolean ambushActive;
 
     // 🟩 2. AGGIORNA IL COSTRUTTORE PER ACCETTARE IL QUINTO PARAMETRO
-    public SaveData(String currentRoom, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining, boolean ambushActive) {
+    public SaveData(String currentRoom, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) {
         this.currentRoom = currentRoom;
         this.health = health;
         this.itemIds = itemIds;
         this.killedEnemyIds = killedEnemyIds;
         this.unlockedRoomIds = unlockedRoomIds;
         this.timeRemaining = timeRemaining;
-        this.ambushActive = ambushActive;
     }
 
     public String getRoomName() {
@@ -58,9 +56,5 @@ public class SaveData {
 
     public void setTimeRemaining(int timeRemaining) {
         this.timeRemaining = timeRemaining;
-    }
-
-    public boolean isAmbushActive() {
-        return ambushActive;
     }
 }

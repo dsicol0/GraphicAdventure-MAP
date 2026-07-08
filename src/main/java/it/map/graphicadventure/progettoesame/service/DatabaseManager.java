@@ -18,8 +18,7 @@ public class DatabaseManager {
             + "save_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
             + "current_room TEXT NOT NULL, "
             + "health INTEGER NOT NULL, " 
-            + "time_remaining INTEGER DEFAULT 900, "
-            + "ambush_happening INTEGER DEFAULT 0)";
+            + "time_remaining INTEGER DEFAULT 900)";
 
     private static final String TABLE_INVENTORY = "CREATE TABLE IF NOT EXISTS inventory_saves ("
             + "game_id INTEGER, "

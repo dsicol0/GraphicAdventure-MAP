@@ -134,8 +134,7 @@ public class GameController extends BaseController {
                 } catch (java.sql.SQLException e) {
                     System.err.println("Errore nel salvataggio dell'uccisione nel DB: " + e.getMessage());
                 }
-
-                // 4. Autosave immediato per blindare il salvataggio
+                
                 silentAutosave();
 
                 // 5. FINE PARTITA - VITTORIA
@@ -145,6 +144,9 @@ public class GameController extends BaseController {
                 return "Hai sconfitto " + enemy.getName() + "!";
                 
             } else if (combatResult == 2) {
+                
+                silentAutosave();
+                
                 return "Sei fuggito dal combattimento in preda al panico!";
                 
             } else if (combatResult == 3 || model.getPlayer().getHp() <= 0) {
@@ -197,6 +199,9 @@ public class GameController extends BaseController {
         
         if (success) {
             view.getGamePanel().renderRoom(model.getCurrentRoom());
+            
+            view.getGamePanel().updateJlHealth();
+            
             view.getGamePanel().animatedText("Salvataggio caricato. Bentornato nella sessione.");
         } else {
             view.getGamePanel().animatedText("Nessun salvataggio trovato o errore nel caricamento.");
@@ -232,10 +237,13 @@ public class GameController extends BaseController {
     }
 
     private void silentAutosave() {
+        // 🟩 AGGIUNGI QUESTA RIGA PER DEBUG:
+        System.out.println("[DEBUG] Tentativo di autosave! Vita attuale del player nel model: " + model.getPlayer().getHp());
+        
         try {
             int timeToSave = (generatorThread != null) ? generatorThread.getTimeRemaining() : 900;
-            model.setTimeRemaining(timeToSave); // 🟩 Aggiorniamo il Model
-            saveManager.saveGame(model);        // 🟩 E salviamo il Model puro
+            model.setTimeRemaining(timeToSave);
+            saveManager.saveGame(model);
         } catch (SQLException e) {
             System.err.println("Autosave fallito: " + e.getMessage());
         }
