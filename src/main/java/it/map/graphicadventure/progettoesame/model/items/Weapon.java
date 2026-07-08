@@ -4,7 +4,7 @@
  */
 package it.map.graphicadventure.progettoesame.model.items;
 
-import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.model.interfaces.Usable;
@@ -44,7 +44,7 @@ public class Weapon extends GameObject implements Usable, Takeable {
     public boolean use(GameObject target) {
         
         // Controlliamo se l'oggetto su cui stiamo usando l'arma è un NPC!
-        if (target instanceof GameNPC enemy) {
+        if (target instanceof Zombie enemy) {
             
             // Immaginiamo che il nemico abbia un metodo per subire danni
             System.out.println("Hai attaccato " + enemy.getName() + " infliggendo " + this.damage + " danni!");

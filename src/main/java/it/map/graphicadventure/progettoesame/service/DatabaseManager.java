@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class DatabaseManager {
 
-    // Costanti come fa il prof
+    
     private static final String TABLE_GAMES = "CREATE TABLE IF NOT EXISTS games ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "save_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "

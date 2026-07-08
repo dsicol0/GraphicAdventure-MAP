@@ -11,6 +11,8 @@ import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
+import it.map.graphicadventure.progettoesame.model.items.Chip;
+import it.map.graphicadventure.progettoesame.model.items.ElectricPanel;
 import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import java.util.ArrayList;
@@ -46,7 +48,12 @@ public class ObjInteractionController extends BaseController {
         // 2. Aprire, Sbloccare e Svuotare (Openable)
         if (clickedObject instanceof Openable) {
             Openable openableObj = (Openable) clickedObject;
-
+            
+            if (openableObj.isOpen()) {
+                response.append("La cassa è già aperta e l'hai già svuotata.");
+                return response.toString();
+            }
+            
             // Tentativo di sblocco (se fallisce, interrompiamo qui)
             if (!handleUnlockAttempt(openableObj, response)) {
                 return response.toString();
@@ -60,7 +67,38 @@ public class ObjInteractionController extends BaseController {
             
             interactionPerformed = true;
         }
+        
+        if (clickedObject instanceof ElectricPanel) {
 
+            // Cerchiamo se c'è il Chip nell'inventario del giocatore usando gli Stream
+            Chip chipInInventory = model.getInventory().stream()
+                    .filter(obj -> obj instanceof Chip)
+                    .map(obj -> (Chip) obj)
+                    .findFirst()
+                    .orElse(null);
+
+            // Se il giocatore possiede il chip
+            if (chipInInventory != null) {
+
+                // 💳 Delegiamo la logica specifica alla classe Chip passando il pannello come target
+                if (chipInInventory.use(clickedObject)) {
+
+                    // Rimuoviamo il chip consumato dall'inventario
+                    model.getInventory().remove(chipInInventory);
+
+                    // Ritorniamo il testo trionfale alla View
+                    return "Inserisci il **Chip di Sicurezza** nella fessura del pannello...\n"
+                            + "I sistemi si riavviano con un forte ronzio elettronico!\n"
+                            + "Le luci dell'edificio si accendono. La corrente è tornata!\n\n"
+                            + "🏆 COMPLIMENTI! HAI RIPRISTINATO LA CORRENTE E SUPERATO L'ESAME! HAI VINTO! 🏆";
+                }
+            } else {
+                // Messaggio di fallback se il giocatore clicca sul pannello ma non ha il chip
+                return "Esamini: " + clickedObject.getName() + ".\n"
+                        + "Lo schermo mostra una luce rossa lampeggiante: 'ACCESSO NEGATO'.\n"
+                        + "Ti serve un chip di sicurezza per riattivare l'interruttore generale.";
+            }
+        }
         // 3. Se non abbiamo fatto azioni speciali, mostriamo solo la descrizione
         if (!interactionPerformed) {
             response.append(clickedObject.getDescription());

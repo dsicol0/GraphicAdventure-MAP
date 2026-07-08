@@ -52,14 +52,13 @@ public class GameSaveDAO {
     }
 
     // AGGIORNATO: Accetta anche la lista degli stati degli oggetti
-    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining, boolean ambushActive) throws SQLException {
+    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) throws SQLException {
         connection.setAutoCommit(false);
 
         PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining, ambush_happening) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         stmGame.setString(1, roomName);
         stmGame.setInt(2, health);
         stmGame.setInt(3, timeRemaining);
-        stmGame.setInt(4, ambushActive ? 1 : 0); // Trasforma boolean in 1 o 0
         stmGame.executeUpdate();
 
         int gameId = -1;

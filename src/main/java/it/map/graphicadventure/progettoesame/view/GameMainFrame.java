@@ -6,7 +6,7 @@ package it.map.graphicadventure.progettoesame.view;
 
 import it.map.graphicadventure.progettoesame.controller.GameController;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
-import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Player;
 import java.awt.Color;
@@ -140,7 +140,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         return this.gamePanel;
     }
     
-    public int showCombatWindow(GameNPC enemy, Player player, java.util.List<GameObject> inventory) {
+    public int showCombatWindow(Zombie enemy, Player player, java.util.List<GameObject> inventory) {
         // 'this' fa riferimento al GameMainFrame (la View principale)
         CombatDialog dialog = new CombatDialog(this, true, enemy, player, inventory);
         dialog.setVisible(true); // Il gioco si blocca qui finché l'utente non chiude la finestra

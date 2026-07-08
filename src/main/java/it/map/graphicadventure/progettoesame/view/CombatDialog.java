@@ -4,7 +4,7 @@
  */
 package it.map.graphicadventure.progettoesame.view;
 
-import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
@@ -20,7 +20,7 @@ public class CombatDialog extends javax.swing.JDialog {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CombatDialog.class.getName());
     
-    private GameNPC zombie;
+    private Zombie zombie;
     private Player player;
     private List<GameObject> inventory;
     
@@ -35,7 +35,7 @@ public class CombatDialog extends javax.swing.JDialog {
      * @param player
      * @param inventory
      */
-    public CombatDialog(java.awt.Frame parent, boolean modal, GameNPC zombie, Player player, List<GameObject> inventory){
+    public CombatDialog(java.awt.Frame parent, boolean modal, Zombie zombie, Player player, List<GameObject> inventory){
         super(parent, modal);
         
         // 1. IL DESIGNER CARICA TUTTA LA GRAFICA

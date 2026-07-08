@@ -1,9 +1,11 @@
 package it.map.graphicadventure.progettoesame.util;
 
-import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
+import it.map.graphicadventure.progettoesame.model.items.Chip;
+import it.map.graphicadventure.progettoesame.model.items.ElectricPanel;
 import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
@@ -146,8 +148,12 @@ public class GameUtils {
             case "Chest":
                 int requiredKey = Integer.parseInt(parts[10].trim());
                 return new Chest<>(id, name, desc, img, requiredKey);
-            case "GameNPC":
-                return new GameNPC(id, name, desc, img);
+            case "Zombie":
+                return new Zombie(id, name, desc, img);
+            case "ElectricPanel":
+                return new ElectricPanel(id, name, desc, img);
+            case "Chip":
+                return new Chip(id, name, desc, img);
             default:
                 return null;
         }

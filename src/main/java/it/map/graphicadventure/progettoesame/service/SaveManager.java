@@ -45,8 +45,7 @@ public class SaveManager {
                 itemIds, 
                 model.getDeadZombies(), 
                 model.getUnlockedRooms(),
-                model.getTimeRemaining(),
-                model.isAmbushActive()
+                model.getTimeRemaining()
         );
     }
 
@@ -75,7 +74,6 @@ public class SaveManager {
         restoreUnlockedRoomsAndFixes(model, data);
         
         model.setTimeRemaining(data.getTimeRemaining());
-        model.setAmbushActive(data.isAmbushActive());
 
         return true;
     }
@@ -149,6 +147,11 @@ public class SaveManager {
         if (data.getItemIds().contains("17") || data.getItemIds().contains("11")) {
             model.getRooms().forEach(r -> {
                 if (r.getObjects() != null) r.getObjects().removeIf(obj -> obj.getId() == 16);
+            });
+        }
+        else if (data.getItemIds().contains("19")) {
+            model.getRooms().forEach(r -> {
+                if (r.getObjects() != null) r.getObjects().removeIf(obj -> obj.getId() == 15);
             });
         }
     }

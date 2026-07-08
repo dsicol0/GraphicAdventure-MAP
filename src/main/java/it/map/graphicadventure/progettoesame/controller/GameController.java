@@ -11,11 +11,10 @@ import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 import it.map.graphicadventure.progettoesame.factory.GameDataInitializer;
 import it.map.graphicadventure.progettoesame.service.DatabaseManager;
 import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
-import it.map.graphicadventure.progettoesame.model.GameNPC;
+import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.service.NetworkService;
 import it.map.graphicadventure.progettoesame.service.SaveManager;
-import it.map.graphicadventure.progettoesame.threads.AmbushThread;
 import it.map.graphicadventure.progettoesame.threads.GeneratorThread;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +36,6 @@ public class GameController extends BaseController {
     private SaveManager saveManager;
     
     private GeneratorThread generatorThread;
-    private AmbushThread ambushThread;
 
     public GameController(EsameGame model, GameMainFrame view) {
         super(model, view);
@@ -104,9 +102,6 @@ public class GameController extends BaseController {
 
             silentAutosave();
         }
-        
-        if (ambushThread != null) ambushThread.resetTimer();
-        model.setAmbushActive(false);
 
         return response;
     }
@@ -114,8 +109,8 @@ public class GameController extends BaseController {
     // Gestione interazione
     public String processInteraction(GameObject clickedObject) {
 
-        if (clickedObject instanceof GameNPC) {
-            GameNPC enemy = (GameNPC) clickedObject;
+        if (clickedObject instanceof Zombie) {
+            Zombie enemy = (Zombie) clickedObject;
             
             // MVC PURO: Chiediamo alla View di gestire la finestra di combattimento
             // e ci facciamo restituire un semplice intero che rappresenta l'esito:
@@ -216,7 +211,7 @@ public class GameController extends BaseController {
             loadSavedGame(); // Innesca il caricamento e la pulizia dei nemici morti
             
             if (model.isAmbushActive()) {
-                GameNPC ambushZombie = new GameNPC(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
+                Zombie ambushZombie = new Zombie(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
                 ambushZombie.setX(350);
                 ambushZombie.setY(150);
                 ambushZombie.setWidth(150);
@@ -252,20 +247,17 @@ public class GameController extends BaseController {
     
     private void startThreads(int minutiGeneratore) {
         // Se c'erano thread vecchi, li fermiamo per sicurezza
-        if (generatorThread != null) generatorThread.stopTimer();
-        if (ambushThread != null) ambushThread.stopAmbush();
+        if (generatorThread != null) {
+            generatorThread.stopTimer();
+        }
 
         generatorThread = new it.map.graphicadventure.progettoesame.threads.GeneratorThread(minutiGeneratore, view.getGamePanel(), this);
-        ambushThread = new it.map.graphicadventure.progettoesame.threads.AmbushThread(this);
-
         generatorThread.start();
-        ambushThread.start();
+        
     }
     
     public void handleGeneratorDeath() {
         // Ferma anche i mostri
-        if (ambushThread != null) ambushThread.stopAmbush();
-        
         view.getGamePanel().animatedText("CLACK! Il generatore si è spento. Il buio ti avvolge... non puoi più sfuggire ai professori.");
         
         // Punteggio dimezzato per morte
@@ -274,24 +266,5 @@ public class GameController extends BaseController {
         
         view.showLeaderboardDialog(classifica, "GAME OVER - GENERATORE ESAURITO");
         view.showMainMenu();
-    }
-    
-    public void triggerAmbush() {
-        model.setAmbushActive(true);
-        view.getGamePanel().animatedText("Hai fatto troppo rumore rovistando... Un infetto ti ha trovato!");
-        
-        // Crea uno zombie generico "volante"
-        GameNPC ambushZombie = new GameNPC(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
-        
-        ambushZombie.setX(350);      // Posizione orizzontale
-        ambushZombie.setY(150);      // Posizione verticale
-        ambushZombie.setWidth(150);  // Larghezza dell'immagine
-        ambushZombie.setHeight(200); // Altezza dell'immagine
-        
-        // Lo aggiungiamo temporaneamente alla stanza per combatterlo
-        model.getCurrentRoom().addObject(ambushZombie);
-        view.getGamePanel().renderRoom(model.getCurrentRoom());
-        
-        silentAutosave();
     }
 }

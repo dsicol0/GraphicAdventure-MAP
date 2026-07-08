@@ -9,23 +9,21 @@ import java.util.Random;
  *
  * @author David
  */
-public class GameNPC extends GameObject {
+public class Zombie extends GameObject {
     
     private int life;
     private int damage;
     
-    public GameNPC(int id, String name, String description, String imagePath) {
+    public Zombie(int id, String name, String description, String imagePath) {
         super(id, name, description, imagePath);
         
         // 2. Generazione della vita casuale
         Random rand = new Random();
-        // Vita casuale tra 50 e 100
-        this.life = rand.nextInt(51) + 50;
-        // Danno casuale tra 6 e 15
-        this.damage = rand.nextInt(10) + 6;
+        // Vita casuale tra 60 e 100
+        this.life = rand.nextInt(61) + 50;
+        // Danno casuale tra 15 e 25
+        this.damage = rand.nextInt(25) + 15;
     }
-
-    // --- Getter e Setter ---
 
     public int getLife() { return life; }
     public void setLife(int life) { this.life = life; }
