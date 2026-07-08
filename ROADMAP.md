@@ -34,9 +34,9 @@
 
 ## Fase 4 — Zombie
 
-- [ ] Definire il comportamento degli zombie (statici o in pattuglia tra stanze)
-- [ ] Implementare cosa succede quando il giocatore incontra uno zombie
-- [ ] Implementare armi o oggetti per neutralizzarli
+- [x] Definire il comportamento degli zombie (statici o in pattuglia tra stanze)
+- [x] Implementare cosa succede quando il giocatore incontra uno zombie
+- [x] Implementare armi o oggetti per neutralizzarli
 
 ---
 
@@ -59,9 +59,9 @@
 
 ## Fase 7 — Leaderboard (Socket / REST)
 
-- [ ] Calcolare il punteggio finale (tempo, oggetti raccolti, zombie evitati)
-- [ ] Inviare il punteggio a un server al termine della partita
-- [ ] Visualizzare la classifica dei migliori punteggi
+- [x] Calcolare il punteggio finale (tempo, oggetti raccolti, zombie evitati)
+- [x] Inviare il punteggio a un server al termine della partita
+- [x] Visualizzare la classifica dei migliori punteggi
 
 ---
 
