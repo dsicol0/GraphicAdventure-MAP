@@ -409,51 +409,17 @@ public class GamePanel extends javax.swing.JPanel {
         }
     }
     
-    /**
-     * Crea un bottone direzionale stilizzato per il D-Pad.
-     */
-    private javax.swing.JButton directionButton(String command, String symbol, boolean isOpen) {
-        javax.swing.JButton btn = new javax.swing.JButton(symbol);
-        
-        // Font in stile terminale
-        btn.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 18));
-        
-        // FORZIAMO IL QUADRATINO NERO
-        btn.setOpaque(true);
-        btn.setContentAreaFilled(true);
-        btn.setBackground(new java.awt.Color(10, 10, 10)); // Nero puro
-        btn.setFocusPainted(false);
-        
-        if (isOpen) {
-            // STILE ATTIVO (Bordi e testo verdi)
-            btn.setForeground(new java.awt.Color(50, 255, 50)); 
-            btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 1));
-            btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+    public void updateTimerLabel(String time) {
+        if (jlTimer != null) {
+            jlTimer.setText("GENERATORE: " + time);
             
-            // Effetto hover: si inverte quando passi il mouse
-            btn.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mouseEntered(java.awt.event.MouseEvent e) {
-                    btn.setBackground(new java.awt.Color(50, 255, 50));
-                    btn.setForeground(java.awt.Color.BLACK);
-                }
-                @Override
-                public void mouseExited(java.awt.event.MouseEvent e) {
-                    btn.setBackground(new java.awt.Color(10, 10, 10));
-                    btn.setForeground(new java.awt.Color(50, 255, 50));
-                }
-            });
-            
-            // L'azione di movimento
-            btn.addActionListener(e -> movePlayer(command)); // Assicurati di usare il nome corretto del tuo metodo (es. movePlayer)
-        } else {
-            // STILE DISABILITATO (Il quadratino c'è, ma è spento)
-            btn.setForeground(new java.awt.Color(40, 40, 40)); // Grigio scuro
-            btn.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(30, 30, 30), 1));
-            btn.setEnabled(false);
+            // Effetto scenico: se mancano meno di 3 minuti, diventa rosso fuoco
+            if (time.startsWith("02") || time.startsWith("01") || time.startsWith("00")) {
+                jlTimer.setForeground(java.awt.Color.RED);
+            } else {
+                jlTimer.setForeground(java.awt.Color.WHITE);
+            }
         }
-        
-        return btn;
     }
 
     /**
@@ -480,6 +446,7 @@ public class GamePanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         jbSouth = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        jlTimer = new javax.swing.JLabel();
         jpPlayingArea = new javax.swing.JPanel();
         jlBackground = new javax.swing.JLabel();
 
@@ -515,7 +482,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbInventory.setForeground(new java.awt.Color(210, 195, 160));
         jbInventory.setText("[ INVENTARIO ]");
         jbInventory.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
-        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbInventory.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbInventory.setFocusPainted(false);
         jbInventory.setPreferredSize(new java.awt.Dimension(124, 5));
         jbInventory.addActionListener(this::jbInventoryActionPerformed);
@@ -532,7 +499,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbNorth.setText("▲");
         jbNorth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbNorth.setBorderPainted(false);
-        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbNorth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbNorth.setFocusPainted(false);
         jbNorth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbNorth.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -546,7 +513,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbWest.setText("◄");
         jbWest.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbWest.setBorderPainted(false);
-        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbWest.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbWest.setFocusPainted(false);
         jbWest.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbWest.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -560,7 +527,7 @@ public class GamePanel extends javax.swing.JPanel {
         jbEast.setText("►");
         jbEast.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbEast.setBorderPainted(false);
-        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbEast.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbEast.setFocusPainted(false);
         jbEast.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbEast.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -574,13 +541,17 @@ public class GamePanel extends javax.swing.JPanel {
         jbSouth.setText("▼");
         jbSouth.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(20, 15, 10), 2));
         jbSouth.setBorderPainted(false);
-        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbSouth.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbSouth.setFocusPainted(false);
         jbSouth.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbSouth.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jbSouth.addActionListener(this::jbSouthActionPerformed);
         jpExits.add(jbSouth);
         jpExits.add(jLabel5);
+
+        jlTimer.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
+        jlTimer.setForeground(new java.awt.Color(210, 195, 160));
+        jlTimer.setText("GENERATORE: 15:00");
 
         javax.swing.GroupLayout jpControlsLayout = new javax.swing.GroupLayout(jpControls);
         jpControls.setLayout(jpControlsLayout);
@@ -590,7 +561,9 @@ public class GamePanel extends javax.swing.JPanel {
                 .addComponent(jbInventory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jlHealth, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(478, 478, 478)
+                .addGap(18, 18, 18)
+                .addComponent(jlTimer)
+                .addGap(329, 329, 329)
                 .addComponent(jpExits, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -600,7 +573,9 @@ public class GamePanel extends javax.swing.JPanel {
             .addComponent(jpExits, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpControlsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jlHealth)
+                .addGroup(jpControlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlHealth)
+                    .addComponent(jlTimer))
                 .addContainerGap())
         );
 
@@ -652,6 +627,7 @@ public class GamePanel extends javax.swing.JPanel {
     private javax.swing.JButton jbWest;
     private javax.swing.JLabel jlBackground;
     private javax.swing.JLabel jlHealth;
+    private javax.swing.JLabel jlTimer;
     private javax.swing.JPanel jpControls;
     private javax.swing.JPanel jpExits;
     private javax.swing.JPanel jpPlayingArea;

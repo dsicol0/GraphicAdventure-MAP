@@ -15,6 +15,8 @@ import it.map.graphicadventure.progettoesame.model.GameNPC;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.service.NetworkService;
 import it.map.graphicadventure.progettoesame.service.SaveManager;
+import it.map.graphicadventure.progettoesame.threads.AmbushThread;
+import it.map.graphicadventure.progettoesame.threads.GeneratorThread;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -33,6 +35,9 @@ public class GameController extends BaseController {
     private DatabaseManager dbManager;
     private GameSaveDAO saveDao;
     private SaveManager saveManager;
+    
+    private GeneratorThread generatorThread;
+    private AmbushThread ambushThread;
 
     public GameController(EsameGame model, GameMainFrame view) {
         super(model, view);
@@ -69,6 +74,9 @@ public class GameController extends BaseController {
                     System.err.println("Errore durante il logging: " + e.getMessage());
                 }
             }
+            
+            startThreads(15);
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -96,6 +104,8 @@ public class GameController extends BaseController {
 
             silentAutosave();
         }
+        
+        if (ambushThread != null) ambushThread.resetTimer();
 
         return response;
     }
@@ -203,6 +213,8 @@ public class GameController extends BaseController {
             view.showGamePanel();
             loadSavedGame(); // Innesca il caricamento e la pulizia dei nemici morti
 
+            startThreads(15);
+            
         } catch (Exception ex) {
             System.err.println("[ERRORE CRITICO] Fallimento durante il caricamento del mondo.");
             ex.printStackTrace();
@@ -220,4 +232,46 @@ public class GameController extends BaseController {
     public String fetchOnlyLeaderboard() {
         return networkService.fetchOnlyLeaderboard();
     } 
+    
+    private void startThreads(int minutiGeneratore) {
+        // Se c'erano thread vecchi, li fermiamo per sicurezza
+        if (generatorThread != null) generatorThread.stopTimer();
+        if (ambushThread != null) ambushThread.stopAmbush();
+
+        generatorThread = new it.map.graphicadventure.progettoesame.threads.GeneratorThread(minutiGeneratore, view.getGamePanel(), this);
+        ambushThread = new it.map.graphicadventure.progettoesame.threads.AmbushThread(this);
+
+        generatorThread.start();
+        ambushThread.start();
+    }
+    
+    public void handleGeneratorDeath() {
+        // Ferma anche i mostri
+        if (ambushThread != null) ambushThread.stopAmbush();
+        
+        view.getGamePanel().animatedText("CLACK! Il generatore si è spento. Il buio ti avvolge... non puoi più sfuggire ai professori.");
+        
+        // Punteggio dimezzato per morte
+        int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size()) / 2;
+        String classifica = networkService.sendAndGetLeaderboard("Matricola_Al_Buio", punteggio);
+        
+        view.showLeaderboardDialog(classifica, "GAME OVER - GENERATORE ESAURITO");
+        view.showMainMenu();
+    }
+    
+    public void triggerAmbush() {
+        view.getGamePanel().animatedText("Hai fatto troppo rumore rovistando... Un infetto ti ha trovato!");
+        
+        // Crea uno zombie generico "volante"
+        GameNPC agguatoZombie = new GameNPC(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
+        
+        agguatoZombie.setX(350);      // Posizione orizzontale
+        agguatoZombie.setY(150);      // Posizione verticale
+        agguatoZombie.setWidth(150);  // Larghezza dell'immagine
+        agguatoZombie.setHeight(200); // Altezza dell'immagine
+        
+        // Lo aggiungiamo temporaneamente alla stanza per combatterlo
+        model.getCurrentRoom().addObject(agguatoZombie);
+        view.getGamePanel().renderRoom(model.getCurrentRoom());
+    }
 }

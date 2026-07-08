@@ -82,6 +82,8 @@ public class GameMainFrame extends javax.swing.JFrame {
             Color rosso = new Color(255,51,51);
             Color rossoHover = new Color(199, 38, 38);
             
+            jbStandings.setFont(fontBottoni);
+            
             jbNewGame.setFont(fontBottoni);
             jbNewGame.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -188,7 +190,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         jtfTitle = new javax.swing.JTextField();
         jbContinue = new javax.swing.JButton();
         jbQuit = new javax.swing.JButton();
-        jbClassifica = new javax.swing.JButton();
+        jbStandings = new javax.swing.JButton();
         jlBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -238,14 +240,14 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbQuit.addActionListener(this::jbQuitActionPerformed);
         jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 440, 240, 40));
 
-        jbClassifica.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
-        jbClassifica.setForeground(new java.awt.Color(102, 255, 0));
-        jbClassifica.setText("CLASSIFICA");
-        jbClassifica.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 255, 0), 2));
-        jbClassifica.setContentAreaFilled(false);
-        jbClassifica.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jbClassifica.addActionListener(this::jbClassificaActionPerformed);
-        jpMenu.add(jbClassifica, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 220, 240, 40));
+        jbStandings.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
+        jbStandings.setForeground(new java.awt.Color(102, 255, 0));
+        jbStandings.setText("CLASSIFICA");
+        jbStandings.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 255, 0), 2));
+        jbStandings.setContentAreaFilled(false);
+        jbStandings.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbStandings.addActionListener(this::jbStandingsActionPerformed);
+        jpMenu.add(jbStandings, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 220, 240, 40));
 
         jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main_menu_background.png"))); // NOI18N
@@ -312,13 +314,13 @@ public class GameMainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jbContinueActionPerformed
 
-    private void jbClassificaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbClassificaActionPerformed
+    private void jbStandingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbStandingsActionPerformed
         String classifica = controller.fetchOnlyLeaderboard(); 
         
         // Apre la tua nuova finestra grafica
         LeaderboardDialog dialog = new LeaderboardDialog(this, true, classifica);
         dialog.setVisible(true);
-    }//GEN-LAST:event_jbClassificaActionPerformed
+    }//GEN-LAST:event_jbStandingsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -346,10 +348,10 @@ public class GameMainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jbClassifica;
     private javax.swing.JButton jbContinue;
     private javax.swing.JButton jbNewGame;
     private javax.swing.JButton jbQuit;
+    private javax.swing.JButton jbStandings;
     private javax.swing.JLabel jlBackground;
     private javax.swing.JPanel jpMenu;
     private javax.swing.JTextField jtfTitle;
