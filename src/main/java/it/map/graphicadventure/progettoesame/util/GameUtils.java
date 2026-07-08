@@ -6,7 +6,6 @@ import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
 import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
-import it.map.graphicadventure.progettoesame.model.items.UsableObject;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
 
 import java.io.BufferedReader;
@@ -23,7 +22,6 @@ public class GameUtils {
         List<Room> rooms = new ArrayList<>();
         Map<Integer, Room> roomMap = new HashMap<>();
 
-        // Il try-with-resources garantisce la chiusura del file anche in caso di eccezioni
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             String currentSection = "";
@@ -31,123 +29,17 @@ public class GameUtils {
             while ((line = br.readLine()) != null) {
                 line = line.trim();
 
-                // Salta le righe vuote e i commenti
-                if (line.isEmpty() || line.startsWith("#")) {
-                    continue;
-                }
+                // Salta righe vuote e commenti
+                if (line.isEmpty() || line.startsWith("#")) continue;
 
-                // Identifica il cambio di sezione
+                // Cambio di sezione
                 if (line.startsWith("[") && line.endsWith("]")) {
                     currentSection = line.toUpperCase();
                     continue;
                 }
 
-                // Elabora la riga in base alla sezione in cui si trova
-                switch (currentSection) {
-                    case "[ROOMS]":
-                        String[] parts = line.split(";");
-                        if (parts.length >= 3) {
-                            int id = Integer.parseInt(parts[0].trim());
-                            String name = parts[1].trim();
-                            String description = parts[2].trim();
-                            
-                            // Controlliamo se nella riga del file c'è anche il quarto parametro
-                            String backgroundPath = "";
-                            if (parts.length >= 4) {
-                                backgroundPath = parts[3].trim();
-                            }
-                            
-                            Room room = new Room(id, name, description, backgroundPath);
-                            
-                            rooms.add(room);
-                            roomMap.put(id, room);
-                        }
-                        break;
-
-                    case "[EXITS]":
-                        // Formato atteso: idStanzaPartenza;direzione;idStanzaDestinazione
-                        String[] exitParts = line.split(";", 3);
-                        if (exitParts.length == 3) {
-                            int fromId = Integer.parseInt(exitParts[0].trim());
-                            String direction = exitParts[1].trim();
-                            int toId = Integer.parseInt(exitParts[2].trim());
-
-                            Room fromRoom = roomMap.get(fromId);
-                            Room toRoom = roomMap.get(toId);
-
-                            // Se entrambe le stanze esistono, crea il collegamento bivalente/monovalente
-                            if (fromRoom != null && toRoom != null) {
-                                fromRoom.setExit(direction, toRoom);
-                            }
-                        }
-                        break;
-                    case "[OBJECTS]":
-                        // Formato: IdStanza;IdOggetto;TipoClasse;Nome;Descrizione;PathImmagine;X;Y;Larghezza;Altezza
-                        String[] objParts = line.split(";");
-                        if (objParts.length >= 10) {
-                            int roomId = Integer.parseInt(objParts[0].trim());
-                            int objId = Integer.parseInt(objParts[1].trim());
-                            String objType = objParts[2].trim();
-                            String objName = objParts[3].trim();
-                            String objDesc = objParts[4].trim();
-                            String objImg = objParts[5].trim();
-                            int x = Integer.parseInt(objParts[6].trim());
-                            int y = Integer.parseInt(objParts[7].trim());
-                            int width = Integer.parseInt(objParts[8].trim());
-                            int height = Integer.parseInt(objParts[9].trim());
-
-                            // 1. Troviamo a quale stanza aggiungere l'oggetto
-                            Room targetRoom = roomMap.get(roomId);
-                            
-                            if (targetRoom != null) {
-                                GameObject newObj = null;
-                                
-                                System.out.println("[DEBUG] Provo a creare l'oggetto di tipo: [" + objType + "]");
-                                // 2. Instanziamo la classe corretta in base al tipo (Factory)
-                                switch (objType.trim()) {
-                                    case "ObjectContainer":
-                                        newObj = new ObjectContainer(objId, objName, objDesc, objImg);
-                                        System.out.println("[DEBUG] Baule creato con successo!");
-                                        break;
-                                    case "Key":
-                                        newObj = new Key(objId, objName, objDesc, objImg);
-                                        break;
-                                    case "Weapon":
-                                        // Come default un'arma fa almeno 10 danni
-                                        int damage = 10;
-                                        // Se la riga ha l'11° parametro (indice 10), leggiamo il danno dal file
-                                        if (objParts.length >= 11) {
-                                            damage = Integer.parseInt(objParts[10].trim());
-                                        }
-                                        // Istanziamo l'ogetto di tipo arma con il relativo danno
-                                        newObj = new Weapon(objId, objName, objDesc, objImg, damage);
-                                        break;
-                                    case "Chest": 
-                                        int requiredKey = Integer.parseInt(objParts[10].trim());
-                                        newObj = new Chest<>(objId, objName, objDesc, objImg, requiredKey);
-                                        break;
-                                        
-                                    // 🟩 REGOLA AGGIUNTA PER IL NEMICO!
-                                    case "GameNPC":
-                                        newObj = new GameNPC(objId, objName, objDesc, objImg);
-                                        break;
-                                }
-
-                                // 3. Se l'oggetto è stato creato, applichiamo le coordinate e lo salviamo nella stanza
-                                if (newObj != null) {
-                                    newObj.setX(x);
-                                    newObj.setY(y);
-                                    newObj.setWidth(width);
-                                    newObj.setHeight(height);
-                                    
-                                    targetRoom.addObject(newObj);
-                                } else {
-                                     System.err.println("Impossibile creare l'oggetto: tipo '" + objType + "' non riconosciuto.");
-                                }
-                            }
-                        }
-                        break;   
-                }
+                // Deleghiamo il parsing della singola riga al metodo dedicato
+                processLine(currentSection, line, rooms, roomMap);
             }
         }
         return rooms;
@@ -157,6 +49,108 @@ public class GameUtils {
         if (inventory == null) return false;
         
         return inventory.stream().anyMatch(obj -> obj.getId() == idObject);
+    }
+    
+    // ==========================================
+    // METODI PRIVATI DI SUPPORTO (SRP & CLEAN CODE)
+    // ==========================================
+
+    private static void processLine(String section, String line, List<Room> rooms, Map<Integer, Room> roomMap) {
+        switch (section) {
+            case "[ROOMS]":
+                parseRoom(line, rooms, roomMap);
+                break;
+            case "[EXITS]":
+                parseExit(line, roomMap);
+                break;
+            case "[OBJECTS]":
+                parseObject(line, roomMap);
+                break;
+        }
+    }
+
+    private static void parseRoom(String line, List<Room> rooms, Map<Integer, Room> roomMap) {
+        String[] parts = line.split(";");
+        if (parts.length < 3) return; // Guard clause
+
+        int id = Integer.parseInt(parts[0].trim());
+        String name = parts[1].trim();
+        String description = parts[2].trim();
+        String backgroundPath = parts.length >= 4 ? parts[3].trim() : "";
+
+        Room room = new Room(id, name, description, backgroundPath);
+        rooms.add(room);
+        roomMap.put(id, room);
+    }
+
+    private static void parseExit(String line, Map<Integer, Room> roomMap) {
+        String[] parts = line.split(";", 3);
+        if (parts.length < 3) return; // Guard clause
+
+        int fromId = Integer.parseInt(parts[0].trim());
+        String direction = parts[1].trim();
+        int toId = Integer.parseInt(parts[2].trim());
+
+        Room fromRoom = roomMap.get(fromId);
+        Room toRoom = roomMap.get(toId);
+
+        if (fromRoom != null && toRoom != null) {
+            fromRoom.setExit(direction, toRoom);
+        }
+    }
+
+    private static void parseObject(String line, Map<Integer, Room> roomMap) {
+        String[] parts = line.split(";");
+        if (parts.length < 10) return; // Guard clause
+
+        int roomId = Integer.parseInt(parts[0].trim());
+        Room targetRoom = roomMap.get(roomId);
+        if (targetRoom == null) return; // La stanza deve esistere
+
+        int objId = Integer.parseInt(parts[1].trim());
+        String objType = parts[2].trim();
+        String objName = parts[3].trim();
+        String objDesc = parts[4].trim();
+        String objImg = parts[5].trim();
+        int x = Integer.parseInt(parts[6].trim());
+        int y = Integer.parseInt(parts[7].trim());
+        int width = Integer.parseInt(parts[8].trim());
+        int height = Integer.parseInt(parts[9].trim());
+
+        // Deleghiamo la creazione fisica dell'oggetto ad un Factory Method
+        GameObject newObj = createObjectInstance(objType, objId, objName, objDesc, objImg, parts);
+
+        if (newObj != null) {
+            newObj.setX(x);
+            newObj.setY(y);
+            newObj.setWidth(width);
+            newObj.setHeight(height);
+            targetRoom.addObject(newObj);
+        } else {
+            System.err.println("Impossibile creare l'oggetto: tipo '" + objType + "' non riconosciuto.");
+        }
+    }
+
+    /**
+     * Factory Method: si occupa solo di istanziare la classe giusta in base alla stringa.
+     */
+    private static GameObject createObjectInstance(String type, int id, String name, String desc, String img, String[] parts) {
+        switch (type.trim()) {
+            case "ObjectContainer":
+                return new ObjectContainer<>(id, name, desc, img);
+            case "Key":
+                return new Key(id, name, desc, img);
+            case "Weapon":
+                int damage = parts.length >= 11 ? Integer.parseInt(parts[10].trim()) : 10;
+                return new Weapon(id, name, desc, img, damage);
+            case "Chest":
+                int requiredKey = Integer.parseInt(parts[10].trim());
+                return new Chest<>(id, name, desc, img, requiredKey);
+            case "GameNPC":
+                return new GameNPC(id, name, desc, img);
+            default:
+                return null;
+        }
     }
 
 }

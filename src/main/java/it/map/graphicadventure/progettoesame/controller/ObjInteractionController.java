@@ -13,6 +13,7 @@ import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
 import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,99 +32,132 @@ public class ObjInteractionController extends BaseController {
         }
 
         StringBuilder response = new StringBuilder();
-        response.append("Esamini: ").append(clickedObject.getName()).append(". \n");
+        response.append("Esamini: ").append(clickedObject.getName()).append(".\n");
 
-        // 1. Controllo se si può raccogliere (Takeable)
-        if (clickedObject instanceof Takeable && ((Takeable) clickedObject).isTakeable()) {
-            model.getInventory().add(clickedObject);
-            model.getCurrentRoom().removeObject(clickedObject);
+        // 1. Raccogliere (Takeable)
+        if (isTakeable(clickedObject)) {
+            performTake(clickedObject);
             response.append("Hai raccolto ").append(clickedObject.getName()).append("!");
             return response.toString();
         }
 
-        // 2. Controllo se si può aprire (Openable)
+        boolean interactionPerformed = false;
+
+        // 2. Aprire, Sbloccare e Svuotare (Openable)
         if (clickedObject instanceof Openable) {
             Openable openableObj = (Openable) clickedObject;
 
-            // FASE 1: TENTATIVO DI SBLOCCO (Solo se Lockable e BLOCCATO)
-            if (openableObj instanceof Lockable && ((Lockable) openableObj).isLocked()) {
-                Lockable lockableObj = (Lockable) openableObj;
-                int requiredKeyId = -1;
-
-                if (clickedObject instanceof Chest) {
-                    requiredKeyId = ((Chest<?>) clickedObject).getRequiredKeyId();
-                }
-
-                final int targetId = requiredKeyId;
-                GameObject matchingKey = model.getInventory().stream()
-                        .filter(obj -> obj.getId() == targetId)
-                        .findFirst()
-                        .orElse(null);
-
-                if (matchingKey != null) {
-                    boolean unlocked = false;
-                    if (clickedObject instanceof Chest && matchingKey instanceof Key) {
-                        unlocked = ((Chest<?>) clickedObject).unlock((Key) matchingKey);
-                    } else {
-                        lockableObj.setLocked(false);
-                        unlocked = true;
-                    }
-
-                    if (unlocked) {
-                        response.append("Usi **").append(matchingKey.getName()).append("** sulla serratura. Senti un netto 'clack'!\n");
-                        model.getInventory().remove(matchingKey);
-                    }
-                } else {
-                    response.append("È chiuso a chiave. Ti serve la chiave adatta per aprirlo.");
-                    return response.toString();
-                }
+            // Tentativo di sblocco (se fallisce, interrompiamo qui)
+            if (!handleUnlockAttempt(openableObj, response)) {
+                return response.toString();
             }
 
-            // FASE 2: APERTURA EFFETTIVA
-            if (!openableObj.isOpen()) {
-                openableObj.open();
-                response.append("Apri ").append(clickedObject.getName()).append(".\n");
-            } else {
-                response.append("È già aperto.\n");
-            }
+            // Apertura effettiva
+            handleOpening(openableObj, clickedObject, response);
 
-            // FASE 3: SVUOTAMENTO CONTENITORE E RIMOZIONE DELLO ZAINO
-            // 🟩 Usiamo ObjectContainer così siamo sicuri al 100% che legga lo Zaino!
-            if (clickedObject instanceof ObjectContainer) {
-                ObjectContainer<?> container = (ObjectContainer<?>) clickedObject;
-
-                if (container.getInsideItems() != null && !container.getInsideItems().isEmpty()) {
-                    response.append("Dentro trovi e raccogli immediatamente:\n");
-
-                    // Creiamo una lista di copia per evitare errori di modifica concorrente
-                    java.util.List<GameObject> itemsDaPrendere = new java.util.ArrayList<>(container.getInsideItems());
-
-                    for (GameObject objDentro : itemsDaPrendere) {
-                        response.append("- **").append(objDentro.getName()).append("**\n");
-
-                        // 🎒 Mettiamo l'oggetto nell'inventario del giocatore
-                        model.getInventory().add(objDentro);
-
-                        // ❌ Lo togliamo dal contenitore
-                        container.getInsideItems().remove(objDentro);
-                    }
-
-                    // 💥 IL TRUCCO PER FARLO SCOMPARIRE:
-                    // Ora che è vuoto, lo rimuoviamo dalla stanza corrente così sparisce dalla vista!
-                    model.getCurrentRoom().removeObject(clickedObject);
-
-                } else {
-                    response.append("Non c'è niente dentro, è già vuoto.");
-                    // Se per caso è vuoto, lo rimuoviamo comunque per non lasciare l'interazione attiva
-                    model.getCurrentRoom().removeObject(clickedObject);
-                }
-            }
+            // Svuotamento (se è un contenitore)
+            handleContainerLoot(clickedObject, response);
+            
+            interactionPerformed = true;
         }
 
-        if (response.toString().equals("Esamini: " + clickedObject.getName() + ". \n")) {
+        // 3. Se non abbiamo fatto azioni speciali, mostriamo solo la descrizione
+        if (!interactionPerformed) {
             response.append(clickedObject.getDescription());
         }
 
         return response.toString();
+    }
+
+    // ==========================================
+    // METODI PRIVATI (Per il Clean Code e l'SRP)
+    // ==========================================
+
+    private boolean isTakeable(GameObject obj) {
+        return obj instanceof Takeable && ((Takeable) obj).isTakeable();
+    }
+
+    private void performTake(GameObject obj) {
+        model.getInventory().add(obj);
+        model.getCurrentRoom().removeObject(obj);
+    }
+
+    /**
+     * Gestisce lo sblocco. Ritorna TRUE se l'oggetto è aperto o è stato appena sbloccato.
+     * Ritorna FALSE se l'oggetto è chiuso a chiave e il giocatore non ha la chiave.
+     */
+    private boolean handleUnlockAttempt(Openable openableObj, StringBuilder response) {
+        if (!(openableObj instanceof Lockable)) {
+            return true; // Non c'è serratura, si può procedere
+        }
+
+        Lockable lockableObj = (Lockable) openableObj;
+        if (!lockableObj.isLocked()) {
+            return true; // Ha una serratura ma è già sbloccato
+        }
+
+        // L'oggetto è chiuso: cerchiamo la chiave
+        int requiredKeyId = (openableObj instanceof Chest) ? ((Chest<?>) openableObj).getRequiredKeyId() : -1;
+        
+        GameObject matchingKey = model.getInventory().stream()
+                .filter(obj -> obj.getId() == requiredKeyId)
+                .findFirst()
+                .orElse(null);
+
+        if (matchingKey != null) {
+            boolean unlocked = false;
+            if (openableObj instanceof Chest && matchingKey instanceof Key) {
+                unlocked = ((Chest<?>) openableObj).unlock((Key) matchingKey);
+            } else {
+                lockableObj.setLocked(false);
+                unlocked = true;
+            }
+
+            if (unlocked) {
+                response.append("Usi **").append(matchingKey.getName()).append("** sulla serratura. Senti un netto 'clack'!\n");
+                model.getInventory().remove(matchingKey);
+                return true;
+            }
+        }
+
+        // Chiave non trovata o sblocco fallito
+        response.append("È chiuso a chiave. Ti serve la chiave adatta per aprirlo.");
+        return false;
+    }
+
+    private void handleOpening(Openable openableObj, GameObject clickedObject, StringBuilder response) {
+        if (!openableObj.isOpen()) {
+            openableObj.open();
+            response.append("Apri ").append(clickedObject.getName()).append(".\n");
+        } else {
+            response.append("È già aperto.\n");
+        }
+    }
+
+    private void handleContainerLoot(GameObject clickedObject, StringBuilder response) {
+        if (!(clickedObject instanceof ObjectContainer)) {
+            return;
+        }
+
+        ObjectContainer<?> container = (ObjectContainer<?>) clickedObject;
+
+        if (container.getInsideItems() != null && !container.getInsideItems().isEmpty()) {
+            response.append("Dentro trovi e raccogli immediatamente:\n");
+
+            List<GameObject> itemsToLoot = new ArrayList<>(container.getInsideItems());
+
+            for (GameObject objDentro : itemsToLoot) {
+                response.append("- **").append(objDentro.getName()).append("**\n");
+                model.getInventory().add(objDentro);
+                container.getInsideItems().remove(objDentro);
+            }
+            
+            // Il contenitore è vuoto: lo facciamo sparire
+            model.getCurrentRoom().removeObject(clickedObject);
+            
+        } else {
+            response.append("Non c'è niente dentro, è già vuoto.");
+            model.getCurrentRoom().removeObject(clickedObject);
+        }
     }
 }

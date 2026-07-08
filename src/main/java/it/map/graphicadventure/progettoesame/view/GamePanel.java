@@ -152,7 +152,7 @@ public class GamePanel extends javax.swing.JPanel {
 
                     if (cd.isConfirmed()) {
                         if (controller != null) {
-                            String r = controller.handleObjectInteraction(obj);
+                            String r = controller.processInteraction(obj);
                             animatedText(r);
                             renderRoom(room); // Ridisegna per far sparire l'oggetto raccolto
                         }

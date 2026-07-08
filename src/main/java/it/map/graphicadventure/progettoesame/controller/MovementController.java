@@ -17,7 +17,7 @@ import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 public class MovementController extends BaseController {
     
     public static final int ID_AULA_2 = 2;
-    public static final int ID_CHIAVE_AULA_2 = 35;
+    public static final int ID_CHIAVE_AULA_2 = 8;
     
 
     public MovementController(EsameGame model, GameMainFrame view) {
@@ -38,7 +38,7 @@ public class MovementController extends BaseController {
             if (nextRoom.isLocked()) {
 
                 // Controlliamo se è l'Aula 2 (ID 2) e se il giocatore ha la chiave (ID 8)
-                if (nextRoom.getId() == ID_AULA_2 && GameUtils.hasObject(model.getInventory(), 8)) {
+                if (nextRoom.getId() == ID_AULA_2 && GameUtils.hasObject(model.getInventory(), ID_CHIAVE_AULA_2)) {
 
                     ConfirmDialog cd = new ConfirmDialog(view, true, "Hai la Chiave dell'Aula 2. Vuoi usarla per aprire la porta?");
                     cd.setVisible(true);
@@ -49,7 +49,7 @@ public class MovementController extends BaseController {
                         
                         model.getUnlockedRooms().add(String.valueOf(nextRoom.getId()));
                         // 🟩 FIX CHIAVE: Cancelliamo l'ID 8, che è lo stesso ID reale verificato nel checking!
-                        model.getInventory().removeIf(obj -> obj.getId() == 8);
+                        model.getInventory().removeIf(obj -> obj.getId() == ID_CHIAVE_AULA_2);
 
                         // Spostiamo il giocatore
                         model.setCurrentRoom(nextRoom);

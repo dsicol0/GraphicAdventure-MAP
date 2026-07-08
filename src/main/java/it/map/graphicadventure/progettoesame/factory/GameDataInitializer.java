@@ -8,7 +8,6 @@ import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.items.Key;
-import it.map.graphicadventure.progettoesame.model.items.Badge;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 
@@ -37,29 +36,34 @@ public class GameDataInitializer {
         if (model == null || model.getRooms() == null) return;
 
         // FASE 1: Cerca la stanza tramite il suo ID numerico
-        Room room = null;
-        for (Room r : model.getRooms()) {
-            if (r.getId() == idStanza) { // 🟩 Confronto numerico ultra-sicuro
-                room = r;
-                break; 
-            }
+        Room room = model.getRooms().stream()
+                .filter(r -> r.getId() == idStanza)
+                .findFirst()
+                .orElse(null);
+        
+        // GUARD CLAUSE 2: Se la stanza non esiste, stampiamo l'errore ed usciamo
+        if (room == null) {
+            System.err.println("[WARNING] Stanza ID " + idStanza + " non trovata nella mappa del gioco.");
+            return;
         }
+        
+        // GUARD CLAUSE 3: Se la stanza non ha oggetti, non c'è nulla da fare
+        if (room.getObjects() == null) return;
 
         // FASE 2: Se la stanza esiste, cerca il contenitore al suo interno per ID
-        if (room != null && room.getObjects() != null) {
-            for (GameObject obj : room.getObjects()) {
-                
-                if (obj.getId() == idContenitore && obj instanceof ObjectContainer<?>) {
-                    ObjectContainer<GameObject> container = (ObjectContainer<GameObject>) obj;
-                    
-                    // Inserisce l'oggetto nascosto
-                    container.getInsideItems().add(oggettoDaNascondere);
-                    return; // Oggetto nascosto con successo, chiudiamo il metodo
-                }
-            }
+        GameObject targetContainer = room.getObjects().stream()
+                .filter(obj -> obj.getId() == idContenitore && obj instanceof ObjectContainer)
+                .findFirst()
+                .orElse(null);
+        
+        // GUARD CLAUSE 4: Se il contenitore non c'è, avvisiamo ed usciamo
+        if (targetContainer == null) {
             System.err.println("[WARNING] Contenitore ID " + idContenitore + " non trovato nella stanza ID: " + idStanza);
-        } else {
-            System.err.println("[WARNING] Stanza ID " + idStanza + " non trovata nella mappa del gioco.");
+            return;
         }
+        
+        // FASE 3: Se siamo arrivati qui, è tutto perfetto! Facciamo il cast e inseriamo l'oggetto.
+        ObjectContainer<GameObject> container = (ObjectContainer<GameObject>) targetContainer;
+        container.getInsideItems().add(oggettoDaNascondere);
     }
 }
