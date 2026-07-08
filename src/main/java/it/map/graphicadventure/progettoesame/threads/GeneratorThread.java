@@ -20,10 +20,14 @@ public class GeneratorThread extends Thread {
     private final GameController controller;
 
     public GeneratorThread(int startMinutes, GamePanel gamePanel, GameController controller) {
-        this.timeRemaining = startMinutes * 60;
+        this.timeRemaining = startMinutes;
         this.gamePanel = gamePanel;
         this.controller = controller;
         this.running = true;
+    }
+    
+    public int getTimeRemaining() {
+        return this.timeRemaining;
     }
 
     public void stopTimer() {

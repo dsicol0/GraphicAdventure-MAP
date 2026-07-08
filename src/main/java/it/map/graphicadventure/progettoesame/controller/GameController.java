@@ -75,7 +75,7 @@ public class GameController extends BaseController {
                 }
             }
             
-            startThreads(15);
+            startThreads(900); // 15 min * 60 sec
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -106,6 +106,7 @@ public class GameController extends BaseController {
         }
         
         if (ambushThread != null) ambushThread.resetTimer();
+        model.setAmbushActive(false);
 
         return response;
     }
@@ -124,6 +125,7 @@ public class GameController extends BaseController {
 
             if (combatResult == 1) {
                 // 1. Lo togliamo dalla stanza corrente nella sessione attuale
+                model.setAmbushActive(false);
                 model.getCurrentRoom().getObjects().remove(enemy);
 
                 // 2. REGISTRIAMO L'ID NELLA LISTA DEI MORTI DEL MODELLO
@@ -212,8 +214,21 @@ public class GameController extends BaseController {
             GameDataInitializer.setUpGameData(model);
             view.showGamePanel();
             loadSavedGame(); // Innesca il caricamento e la pulizia dei nemici morti
+            
+            if (model.isAmbushActive()) {
+                GameNPC ambushZombie = new GameNPC(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
+                ambushZombie.setX(350);
+                ambushZombie.setY(150);
+                ambushZombie.setWidth(150);
+                ambushZombie.setHeight(200);
+                model.getCurrentRoom().addObject(ambushZombie);
+                view.getGamePanel().renderRoom(model.getCurrentRoom());
+            }
 
-            startThreads(15);
+            int savedSeconds = model.getTimeRemaining(); 
+            if (savedSeconds <= 0) savedSeconds = 900; // Fallback di sicurezza
+
+            startThreads(savedSeconds);
             
         } catch (Exception ex) {
             System.err.println("[ERRORE CRITICO] Fallimento durante il caricamento del mondo.");
@@ -223,7 +238,9 @@ public class GameController extends BaseController {
 
     private void silentAutosave() {
         try {
-            saveManager.saveGame(model);
+            int timeToSave = (generatorThread != null) ? generatorThread.getTimeRemaining() : 900;
+            model.setTimeRemaining(timeToSave); // 🟩 Aggiorniamo il Model
+            saveManager.saveGame(model);        // 🟩 E salviamo il Model puro
         } catch (SQLException e) {
             System.err.println("Autosave fallito: " + e.getMessage());
         }
@@ -260,18 +277,21 @@ public class GameController extends BaseController {
     }
     
     public void triggerAmbush() {
+        model.setAmbushActive(true);
         view.getGamePanel().animatedText("Hai fatto troppo rumore rovistando... Un infetto ti ha trovato!");
         
         // Crea uno zombie generico "volante"
-        GameNPC agguatoZombie = new GameNPC(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
+        GameNPC ambushZombie = new GameNPC(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
         
-        agguatoZombie.setX(350);      // Posizione orizzontale
-        agguatoZombie.setY(150);      // Posizione verticale
-        agguatoZombie.setWidth(150);  // Larghezza dell'immagine
-        agguatoZombie.setHeight(200); // Altezza dell'immagine
+        ambushZombie.setX(350);      // Posizione orizzontale
+        ambushZombie.setY(150);      // Posizione verticale
+        ambushZombie.setWidth(150);  // Larghezza dell'immagine
+        ambushZombie.setHeight(200); // Altezza dell'immagine
         
         // Lo aggiungiamo temporaneamente alla stanza per combatterlo
-        model.getCurrentRoom().addObject(agguatoZombie);
+        model.getCurrentRoom().addObject(ambushZombie);
         view.getGamePanel().renderRoom(model.getCurrentRoom());
+        
+        silentAutosave();
     }
 }

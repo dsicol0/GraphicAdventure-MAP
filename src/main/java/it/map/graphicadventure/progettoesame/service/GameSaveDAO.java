@@ -25,8 +25,9 @@ public class GameSaveDAO {
         this.connection = connection;
     }
 
-    // 🟩 CLASSE DI SUPPORTO INTERNA PER LO STATO DEGLI OGGETTI
+    // CLASSE DI SUPPORTO INTERNA PER LO STATO DEGLI OGGETTI
     public static class ObjectSave {
+
         private final String objectId;
         private final boolean locked;
         private final boolean open;
@@ -37,18 +38,28 @@ public class GameSaveDAO {
             this.open = open;
         }
 
-        public String getObjectId() { return objectId; }
-        public boolean isLocked() { return locked; }
-        public boolean isOpen() { return open; }
+        public String getObjectId() {
+            return objectId;
+        }
+
+        public boolean isLocked() {
+            return locked;
+        }
+
+        public boolean isOpen() {
+            return open;
+        }
     }
 
-    // 🟩 AGGIORNATO: Accetta anche la lista degli stati degli oggetti
-    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds) throws SQLException {
-        connection.setAutoCommit(false); 
+    // AGGIORNATO: Accetta anche la lista degli stati degli oggetti
+    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining, boolean ambushActive) throws SQLException {
+        connection.setAutoCommit(false);
 
-        PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining, ambush_happening) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         stmGame.setString(1, roomName);
         stmGame.setInt(2, health);
+        stmGame.setInt(3, timeRemaining);
+        stmGame.setInt(4, ambushActive ? 1 : 0); // Trasforma boolean in 1 o 0
         stmGame.executeUpdate();
 
         int gameId = -1;
@@ -78,7 +89,7 @@ public class GameSaveDAO {
         }
         stmKilled.executeBatch();
         stmKilled.close();
-        
+
         PreparedStatement stmRooms = connection.prepareStatement("INSERT INTO unlocked_rooms_saves(game_id, room_id) VALUES (?, ?)");
         for (String roomId : unlockedRoomIds) {
             stmRooms.setInt(1, gameId);
@@ -89,13 +100,13 @@ public class GameSaveDAO {
         stmRooms.close();
 
         connection.commit();
-        connection.setAutoCommit(true); 
+        connection.setAutoCommit(true);
     }
 
     public SaveData getLatestSave() throws SQLException {
         Statement stm = connection.createStatement();
-        ResultSet rs = stm.executeQuery("SELECT id, current_room, health FROM games ORDER BY save_date DESC LIMIT 1");
-        
+        ResultSet rs = stm.executeQuery("SELECT id, current_room, health, time_remaining, ambush_happening FROM games ORDER BY save_date DESC LIMIT 1");
+
         SaveData data = null;
         int gameId = -1;
 
@@ -103,9 +114,10 @@ public class GameSaveDAO {
             gameId = rs.getInt("id");
             String room = rs.getString("current_room");
             int health = rs.getInt("health");
-            
-            // 🟩 NOTA: Aggiungiamo un quinto parametro New ArrayList<>() per gli oggetti in SaveData
-            data = new SaveData(room, health, new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+            int timeRemaining = rs.getInt("time_remaining");
+            boolean ambushActive = rs.getInt("ambush_happening") == 1;
+
+            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), timeRemaining, ambushActive);
         }
         rs.close();
         stm.close();
@@ -130,7 +142,7 @@ public class GameSaveDAO {
             }
             rsKilled.close();
             pstmKilled.close();
-            
+
             PreparedStatement pstmRooms = connection.prepareStatement("SELECT room_id FROM unlocked_rooms_saves WHERE game_id = ?");
             pstmRooms.setInt(1, gameId);
             ResultSet rsRooms = pstmRooms.executeQuery();

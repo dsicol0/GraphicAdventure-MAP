@@ -12,12 +12,14 @@ import java.util.Properties;
  */
 public class DatabaseManager {
 
-    // 🟩 Costanti come fa il prof
+    // Costanti come fa il prof
     private static final String TABLE_GAMES = "CREATE TABLE IF NOT EXISTS games ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "save_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
             + "current_room TEXT NOT NULL, "
-            + "health INTEGER NOT NULL)";
+            + "health INTEGER NOT NULL, " 
+            + "time_remaining INTEGER DEFAULT 900, "
+            + "ambush_happening INTEGER DEFAULT 0)";
 
     private static final String TABLE_INVENTORY = "CREATE TABLE IF NOT EXISTS inventory_saves ("
             + "game_id INTEGER, "
@@ -63,8 +65,8 @@ public class DatabaseManager {
             stm.executeUpdate(TABLE_GAMES);
             stm.executeUpdate(TABLE_INVENTORY);
             stm.executeUpdate(TABLE_LOG);
-            stm.executeUpdate(TABLE_KILLED_ENEMIES); // 🟩 CREAZIONE DELLA NUOVA TABELLA
-            stm.executeUpdate(TABLE_OBJECT_SAVES);    // 🟩 CREAZIONE DELLA NUOVA TABELLA OGGETTI
+            stm.executeUpdate(TABLE_KILLED_ENEMIES);
+            stm.executeUpdate(TABLE_OBJECT_SAVES);
             stm.executeUpdate(TABLE_UNLOCKED_ROOMS);
             stm.close(); // Chiusura esplicita
             

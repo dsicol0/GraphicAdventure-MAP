@@ -44,7 +44,9 @@ public class SaveManager {
                 model.getPlayer().getHp(), 
                 itemIds, 
                 model.getDeadZombies(), 
-                model.getUnlockedRooms()
+                model.getUnlockedRooms(),
+                model.getTimeRemaining(),
+                model.isAmbushActive()
         );
     }
 
@@ -71,6 +73,9 @@ public class SaveManager {
         restoreInventory(model, data);
         restoreDeadZombies(model, data);
         restoreUnlockedRoomsAndFixes(model, data);
+        
+        model.setTimeRemaining(data.getTimeRemaining());
+        model.setAmbushActive(data.isAmbushActive());
 
         return true;
     }

@@ -17,3 +17,7 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# Ignora il database SQLite locale
+final_exam.db
+*.db
