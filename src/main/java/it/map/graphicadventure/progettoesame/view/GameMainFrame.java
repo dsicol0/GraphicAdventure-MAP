@@ -9,6 +9,7 @@ import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.service.WeatherRESTService;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -19,7 +20,7 @@ import javax.swing.BorderFactory;
  * @author David
  */
 public class GameMainFrame extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GameMainFrame.class.getName());
     private GameController controller;
     private EsameGame model;
@@ -29,12 +30,12 @@ public class GameMainFrame extends javax.swing.JFrame {
      * Creates new form GameMainFrame
      */
     public GameMainFrame() {
-            // 1. Questo generato da NetBeans deve stare SEMPRE per primo
-        initComponents(); 
+        // 1. Questo generato da NetBeans deve stare SEMPRE per primo
+        initComponents();
 
         // 2. CREIAMO IL MODEL PER PRIMO (La memoria dei dati)
         // Assicurati che ci sia il "new" e che venga salvato nella variabile della classe
-        this.model = new EsameGame(); 
+        this.model = new EsameGame();
 
         // 3. Creiamo il pannello di gioco
         this.gamePanel = new GamePanel();
@@ -42,13 +43,14 @@ public class GameMainFrame extends javax.swing.JFrame {
         // 4. CREIAMO IL CONTROLLER PASSANDO IL MODEL APPENA INIZIALIZZATO
         // Nota che passiamo 'this.model' (che ora non è più null!) e 'this' (il frame)
         this.controller = new GameController(this.model, this);
-        
+
         this.gamePanel.setController(this.controller);
-        
-      
+
+        applyDynamicWeatherBackground();
+
         try {
             javax.swing.ImageIcon iconaOriginale = (javax.swing.ImageIcon) jlBackground.getIcon();
-            
+
             if (iconaOriginale != null) {
                 java.awt.Image img = iconaOriginale.getImage();
                 java.awt.Image imgScalata = img.getScaledInstance(800, 610, java.awt.Image.SCALE_SMOOTH);
@@ -58,7 +60,6 @@ public class GameMainFrame extends javax.swing.JFrame {
             System.out.println("Impossibile ridimensionare lo sfondo: " + e.getMessage());
         }
 
-        
         try {
             java.io.InputStream is = getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf");
 
@@ -77,69 +78,72 @@ public class GameMainFrame extends javax.swing.JFrame {
             jtfTitle.setFont(fontTitolo);
             jtfTitle.setOpaque(false);
             jtfTitle.setBackground(new Color(0, 0, 0, 0));
-            
+
             Color verde = new Color(102, 255, 0);
-            Color rosso = new Color(255,51,51);
+            Color rosso = new Color(255, 51, 51);
             Color rossoHover = new Color(199, 38, 38);
-            
+
             jbStandings.setFont(fontBottoni);
-            
+
             jbNewGame.setFont(fontBottoni);
             jbNewGame.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                jbNewGame.setForeground(verde);
-                jbNewGame.setBorder(BorderFactory.createLineBorder(verde, 2));
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                jbNewGame.setForeground(Color.WHITE);
-                jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-            }
-             });
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    jbNewGame.setForeground(verde);
+                    jbNewGame.setBorder(BorderFactory.createLineBorder(verde, 2));
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    jbNewGame.setForeground(Color.WHITE);
+                    jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+                }
+            });
             jbNewGame.setForeground(Color.WHITE); // Fa diventare il testo bianco (o Color.GREEN se lo vuoi verde!)
             jbNewGame.setContentAreaFilled(false); // Rende lo sfondo del bottone trasparente (addio rettangolo grigio!)
             jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2)); // Opzionale: un bel bordo bianco di 2 pixel
-            
+
             jbContinue.setFont(fontBottoni);
             jbContinue.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                if (jbContinue.isEnabled()) {
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    if (jbContinue.isEnabled()) {
                         jbContinue.setForeground(verde);
                         jbContinue.setBorder(BorderFactory.createLineBorder(verde, 2));
                     }
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                if (jbContinue.isEnabled()) {
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    if (jbContinue.isEnabled()) {
                         // Nota: qui stai usando Color.WHITE. Se vuoi che torni al colore
                         // "sabbia" di setContinueButtonEnabled, puoi usare:
                         // new java.awt.Color(210, 195, 160) al posto di Color.WHITE!
-                        jbContinue.setForeground(Color.WHITE); 
+                        jbContinue.setForeground(Color.WHITE);
                         jbContinue.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
                     }
-            }
-             });
-            
+                }
+            });
+
             jbQuit.setFont(fontBottoni);
             jbQuit.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                jbQuit.setForeground(rossoHover);
-                jbQuit.setBorder(BorderFactory.createLineBorder(rossoHover, 2));
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                jbQuit.setForeground(rosso);
-                jbQuit.setBorder(BorderFactory.createLineBorder(rosso, 2));
-            }
-             });
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    jbQuit.setForeground(rossoHover);
+                    jbQuit.setBorder(BorderFactory.createLineBorder(rossoHover, 2));
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    jbQuit.setForeground(rosso);
+                    jbQuit.setBorder(BorderFactory.createLineBorder(rosso, 2));
+                }
+            });
 
         } catch (Exception e) {
             System.out.println("Impossibile caricare la font pixel art: " + e.getMessage());
             // Se fallisce, Swing userà automaticamente la font di default senza crashare
         }
     }
-    
+
     public GamePanel getGamePanel() {
         return this.gamePanel;
     }
-    
+
     public int showCombatWindow(Zombie enemy, Player player, java.util.List<GameObject> inventory) {
         // 'this' fa riferimento al GameMainFrame (la View principale)
         CombatDialog dialog = new CombatDialog(this, true, enemy, player, inventory);
@@ -155,24 +159,65 @@ public class GameMainFrame extends javax.swing.JFrame {
         }
         return 0; // 0 = Annullato/Altro
     }
-    
+
     public void showLeaderboardDialog(String classifica, String title) {
         // 'this' fa riferimento al GameMainFrame stesso, che fa da parent per il Dialog
         LeaderboardDialog leadDialog = new LeaderboardDialog(this, true, classifica);
         leadDialog.setTitle(title);
         leadDialog.setVisible(true); // L'esecuzione del gioco si blocca qui finché l'utente non chiude il Dialog
     }
-    
+
     public void setContinueButtonEnabled(boolean enabled) {
         if (jbContinue != null) {
             jbContinue.setEnabled(enabled);
-            
+
             if (enabled) {
-            //jbContinue.setBackground(new java.awt.Color(85, 70, 50));     // Marrone chiaro
-            jbContinue.setForeground(new java.awt.Color(255, 255, 255));  // Sabbia lucido
-            jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
-            jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+                //jbContinue.setBackground(new java.awt.Color(85, 70, 50));     // Marrone chiaro
+                jbContinue.setForeground(new java.awt.Color(255, 255, 255));  // Sabbia lucido
+                jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
+                jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            }
         }
+    }
+
+    private void applyDynamicWeatherBackground() {
+        try {
+            String atmosphere = WeatherRESTService.getCurrentAtmosphere();
+            System.out.println("Avvio gioco con atmosfera: " + atmosphere);
+
+            String imagePath;
+            switch (atmosphere) {
+                case "THUNDERSTORM":
+                    imagePath = "/images/menu_thunder.png"; // Schermata con fulmini
+                    break;
+                case "RAIN":
+                    imagePath = "/images/menu_rain.png";    // Schermata con pioggia battente
+                    break;
+                case "CLOUDS":
+                case "FOG":
+                    imagePath = "/images/menu_cloudy.png";  // Schermata grigia, opprimente o nebbiosa
+                    break;
+                case "SUN":
+                default:
+                    // Il soleggiato: mantienilo asettico, freddo o desaturato
+                    imagePath = "/images/menu_default.png";     
+                    break;
+            }
+
+            java.net.URL imgUrl = getClass().getResource(imagePath);
+
+            if (imgUrl != null) {
+                // Carica e scala l'immagine a 800x610 esattamente come facevi prima
+                javax.swing.ImageIcon weatherIcon = new javax.swing.ImageIcon(imgUrl);
+                java.awt.Image img = weatherIcon.getImage();
+                java.awt.Image imgScalata = img.getScaledInstance(800, 610, java.awt.Image.SCALE_SMOOTH);
+                jlBackground.setIcon(new javax.swing.ImageIcon(imgScalata));
+            } else {
+                System.err.println("Immagine di sfondo non trovata al percorso: " + imagePath);
+                // Non rompe il gioco, lascia l'immagine di default settata in initComponents()
+            }
+        } catch (Exception e) {
+            System.out.println("Impossibile caricare lo sfondo dinamico: " + e.getMessage());
         }
     }
 
@@ -285,9 +330,9 @@ public class GameMainFrame extends javax.swing.JFrame {
         this.repaint();
 
         // 3. Sposta l'attenzione del programma sul nuovo pannello (utile per i tasti)
-        gamePanel.requestFocusInWindow(); 
+        gamePanel.requestFocusInWindow();
     }
-    
+
     public void showMainMenu() {
         // 1. Sostituisce il pannello di gioco rimettendo il menu iniziale
         this.setContentPane(jpMenu);
@@ -299,7 +344,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         this.revalidate();
         this.repaint();
     }
-    
+
     private void jbNewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbNewGameActionPerformed
 
         controller.startNewGame();
@@ -315,8 +360,8 @@ public class GameMainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jbContinueActionPerformed
 
     private void jbStandingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbStandingsActionPerformed
-        String classifica = controller.fetchOnlyLeaderboard(); 
-        
+        String classifica = controller.fetchOnlyLeaderboard();
+
         // Apre la tua nuova finestra grafica
         LeaderboardDialog dialog = new LeaderboardDialog(this, true, classifica);
         dialog.setVisible(true);
