@@ -13,6 +13,8 @@ import it.map.graphicadventure.progettoesame.service.DatabaseManager;
 import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
 import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.Player;
+import it.map.graphicadventure.progettoesame.model.interfaces.Healable;
+import it.map.graphicadventure.progettoesame.model.items.Food;
 import it.map.graphicadventure.progettoesame.service.NetworkService;
 import it.map.graphicadventure.progettoesame.service.SaveManager;
 import it.map.graphicadventure.progettoesame.threads.GeneratorThread;
@@ -191,6 +193,18 @@ public class GameController extends BaseController {
     public void handleInventoryToggle() {
         List<GameObject> inventoryItems = model.getInventory();
         view.getGamePanel().toggleInventory(inventoryItems);
+    }
+    
+    public String handleInventoryItemUsage(Food consumable) {
+        // 1. Applichiamo la cura direttamente, senza nessun if o controllo d'istanza!
+        consumable.heal(model.getPlayer());
+
+        // 2. Sappiamo che l'oggetto è anche un GameObject, quindi lo castiamo per gestirlo nell'inventario
+        GameObject item = (GameObject) consumable;
+        model.getInventory().remove(item);
+        
+        return "Consumi " + item.getName() + ".\n"
+                + "Hai recuperato " + consumable.getHealAmount()+ "HP! TOT HP: " + model.getPlayer().getHp() + "/100";
     }
 
 

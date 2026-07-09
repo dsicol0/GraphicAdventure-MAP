@@ -9,6 +9,8 @@ import it.map.graphicadventure.progettoesame.model.GameObject;
 import java.util.List;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.model.Room;
+import it.map.graphicadventure.progettoesame.model.interfaces.Healable;
+import it.map.graphicadventure.progettoesame.model.items.Food;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -367,6 +369,34 @@ public class GamePanel extends javax.swing.JPanel {
                     sb.append("\nPotenza d'attacco: ").append(weapon.getDamage()).append(" PT");
                 }
                 animatedText(sb.toString());
+                
+                if (item instanceof Healable) {
+                    java.awt.Window window = javax.swing.SwingUtilities.getWindowAncestor(itemSlot);
+                    java.awt.Frame parentFrame = (window instanceof java.awt.Frame) ? (java.awt.Frame) window : null;
+                    Food consumable = (Food) item;
+                    
+                    // ConfirmDialog personalizzato
+                    ConfirmDialog dialog = new ConfirmDialog(
+                            parentFrame,
+                            true,
+                            "Vuoi consumare " + item.getName() + " per curarti?"
+                    );
+
+                    // Mostriamo il popup. Essendo modale, il codice si ferma qui finché non viene chiuso
+                    dialog.setVisible(true);
+
+                    // Verifichiamo cosa ha scelto il giocatore tramite il tuo metodo dedicato
+                    if (dialog.isConfirmed()) {
+
+                        // 1. Applichiamo la cura nel modello tramite il controller
+                        String healLog = controller.handleInventoryItemUsage(consumable);
+
+                        // 2. Stampiamo l'esito a schermo
+                        animatedText("\n" + healLog);
+                        updateJlHealth();
+                        
+                    }
+                }
             }
         });
 

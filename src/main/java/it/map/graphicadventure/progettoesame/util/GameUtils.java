@@ -6,6 +6,7 @@ import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
 import it.map.graphicadventure.progettoesame.model.items.Chip;
 import it.map.graphicadventure.progettoesame.model.items.ElectricPanel;
+import it.map.graphicadventure.progettoesame.model.items.Food;
 import it.map.graphicadventure.progettoesame.model.items.Key;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
@@ -154,6 +155,9 @@ public class GameUtils {
                 return new ElectricPanel(id, name, desc, img);
             case "Chip":
                 return new Chip(id, name, desc, img);
+            case "Food":
+                int healAmount = parts.length >= 11 ? Integer.parseInt(parts[10].trim()) : 20;
+                return new Food(id, name, desc, img, healAmount);
             default:
                 return null;
         }
