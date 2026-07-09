@@ -49,18 +49,6 @@ public class GameMainFrame extends javax.swing.JFrame {
         applyDynamicWeatherBackground();
 
         try {
-            javax.swing.ImageIcon iconaOriginale = (javax.swing.ImageIcon) jlBackground.getIcon();
-
-            if (iconaOriginale != null) {
-                java.awt.Image img = iconaOriginale.getImage();
-                java.awt.Image imgScalata = img.getScaledInstance(800, 610, java.awt.Image.SCALE_SMOOTH);
-                jlBackground.setIcon(new javax.swing.ImageIcon(imgScalata));
-            }
-        } catch (Exception e) {
-            System.out.println("Impossibile ridimensionare lo sfondo: " + e.getMessage());
-        }
-
-        try {
             java.io.InputStream is = getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf");
 
             // 2. Creiamo l'oggetto Font di Java (formato TrueType)
@@ -247,7 +235,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbNewGame.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jbNewGame.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
         jbNewGame.setContentAreaFilled(false);
-        jbNewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbNewGame.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbNewGame.setFocusPainted(false);
         jbNewGame.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jbNewGame.setLabel("▶ NUOVA PARTITA");
@@ -281,7 +269,7 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbQuit.setText("X ESCI");
         jbQuit.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 0, 0), 2));
         jbQuit.setContentAreaFilled(false);
-        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbQuit.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbQuit.addActionListener(this::jbQuitActionPerformed);
         jpMenu.add(jbQuit, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 440, 240, 40));
 
@@ -290,12 +278,12 @@ public class GameMainFrame extends javax.swing.JFrame {
         jbStandings.setText("CLASSIFICA");
         jbStandings.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 255, 0), 2));
         jbStandings.setContentAreaFilled(false);
-        jbStandings.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jbStandings.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jbStandings.addActionListener(this::jbStandingsActionPerformed);
         jpMenu.add(jbStandings, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 220, 240, 40));
 
         jlBackground.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/main_menu_background.png"))); // NOI18N
+        jlBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/menu_default.png"))); // NOI18N
         jlBackground.setToolTipText("");
         jpMenu.add(jlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 610));
 

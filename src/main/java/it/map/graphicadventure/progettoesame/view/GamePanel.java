@@ -551,7 +551,7 @@ public class GamePanel extends javax.swing.JPanel {
 
         jlTimer.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
         jlTimer.setForeground(new java.awt.Color(210, 195, 160));
-        jlTimer.setText("GENERATORE: 15:00");
+        jlTimer.setText("GENERATORE: 10:00");
 
         javax.swing.GroupLayout jpControlsLayout = new javax.swing.GroupLayout(jpControls);
         jpControls.setLayout(jpControlsLayout);

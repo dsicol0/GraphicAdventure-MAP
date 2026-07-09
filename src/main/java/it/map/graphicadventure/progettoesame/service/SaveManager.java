@@ -8,7 +8,11 @@ import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.SaveData;
+import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
+import it.map.graphicadventure.progettoesame.model.interfaces.Openable;
+import it.map.graphicadventure.progettoesame.model.items.Chest;
+import it.map.graphicadventure.progettoesame.model.items.Chip;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -136,24 +140,60 @@ public class SaveManager {
     }
 
     private void applyMapSpecificFixes(EsameGame model, SaveData data) {
-        // Se l'Aula 2 è sbloccata, rimuoviamo l'oggetto 8 (la porta chiusa)
-        if (model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2")) {
-            model.getRooms().forEach(r -> {
-                if (r.getObjects() != null) r.getObjects().removeIf(obj -> obj.getId() == 8);
-            });
-        }
+        boolean aula2Sbloccata = model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2");
 
-        // Se hai raccolto gli oggetti 17 o 11, lo zaino (16) deve sparire
-        if (data.getItemIds().contains("17") || data.getItemIds().contains("11")) {
-            model.getRooms().forEach(r -> {
-                if (r.getObjects() != null) r.getObjects().removeIf(obj -> obj.getId() == 16);
-            });
+        // 🎯 VALORIZZAZIONE DIRETTA: viene assegnata una volta sola, quindi è "effectively final"!
+        boolean hasChipInInventory = hasChip(model);
+
+        // Giriamo tra le stanze con un ciclo classico
+        for (Room r : model.getRooms()) {
+            if (r.getObjects() != null) {
+
+                // 🛑 FASE 1: LE RIMOZIONI
+                r.getObjects().removeIf(obj -> {
+                    // Se l'aula è aperta, via la porta chiusa (ID 8)
+                    if (aula2Sbloccata && obj.getId() == 8) {
+                        return true;
+                    }
+
+                    // Se lo zaino è un ObjectContainer senza serratura
+                    if (obj instanceof ObjectContainer && !(obj instanceof Lockable)) {
+                        // Usiamo direttamente la tua variabile originale senza errori!
+                        if (hasChipInInventory) {
+                            return true;
+                        }
+                        
+                        ObjectContainer<?> container = (ObjectContainer<?>) obj;
+                        return container.getInsideItems() == null || container.getInsideItems().isEmpty();
+                    }
+                    return false;
+                });
+
+                // 🧰 FASE 2: LE MODIFICHE (Per la Chest)
+                for (GameObject obj : r.getObjects()) {
+                    if (obj instanceof Chest) {
+                        Chest f = (Chest) obj;
+
+                        if (f.getInsideItems() == null || f.getInsideItems().isEmpty() || hasChipInInventory) {
+                            f.setLocked(false);
+                            f.open();
+                        }
+                    }
+                }
+
+            }
         }
-        else if (data.getItemIds().contains("19")) {
-            model.getRooms().forEach(r -> {
-                if (r.getObjects() != null) r.getObjects().removeIf(obj -> obj.getId() == 15);
-            });
+    }
+    
+    private boolean hasChip(EsameGame model) {
+        if (model.getInventory() != null) {
+            for (GameObject item : model.getInventory()) {
+                if (item instanceof Chip) {
+                    return true; // Trovato, esce immediatamente restituendo true
+                }
+            }
         }
+        return false; // Se il ciclo finisce senza trovare nulla
     }
 
     /**

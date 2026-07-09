@@ -48,12 +48,13 @@ public class ObjInteractionController extends BaseController {
         // 2. Aprire, Sbloccare e Svuotare (Openable)
         if (clickedObject instanceof Openable) {
             Openable openableObj = (Openable) clickedObject;
-            
+
+            // 🎯 SE CI RICLICCHI SOPRA: Mostra il messaggio specifico per la Chest rimasta nella stanza
             if (openableObj.isOpen()) {
-                response.append("La cassa è già aperta e l'hai già svuotata.");
+                response.append(clickedObject.getName()).append(" è già aperto e non c'è niente dentro.");
                 return response.toString();
             }
-            
+
             // Tentativo di sblocco (se fallisce, interrompiamo qui)
             if (!handleUnlockAttempt(openableObj, response)) {
                 return response.toString();
@@ -64,10 +65,10 @@ public class ObjInteractionController extends BaseController {
 
             // Svuotamento (se è un contenitore)
             handleContainerLoot(clickedObject, response);
-            
+
             interactionPerformed = true;
         }
-        
+
         if (clickedObject instanceof ElectricPanel) {
 
             // Cerchiamo se c'è il Chip nell'inventario del giocatore usando gli Stream
@@ -110,7 +111,6 @@ public class ObjInteractionController extends BaseController {
     // ==========================================
     // METODI PRIVATI (Per il Clean Code e l'SRP)
     // ==========================================
-
     private boolean isTakeable(GameObject obj) {
         return obj instanceof Takeable && ((Takeable) obj).isTakeable();
     }
@@ -121,8 +121,9 @@ public class ObjInteractionController extends BaseController {
     }
 
     /**
-     * Gestisce lo sblocco. Ritorna TRUE se l'oggetto è aperto o è stato appena sbloccato.
-     * Ritorna FALSE se l'oggetto è chiuso a chiave e il giocatore non ha la chiave.
+     * Gestisce lo sblocco. Ritorna TRUE se l'oggetto è aperto o è stato appena
+     * sbloccato. Ritorna FALSE se l'oggetto è chiuso a chiave e il giocatore
+     * non ha la chiave.
      */
     private boolean handleUnlockAttempt(Openable openableObj, StringBuilder response) {
         if (!(openableObj instanceof Lockable)) {
@@ -136,7 +137,7 @@ public class ObjInteractionController extends BaseController {
 
         // L'oggetto è chiuso: cerchiamo la chiave
         int requiredKeyId = (openableObj instanceof Chest) ? ((Chest<?>) openableObj).getRequiredKeyId() : -1;
-        
+
         GameObject matchingKey = model.getInventory().stream()
                 .filter(obj -> obj.getId() == requiredKeyId)
                 .findFirst()
@@ -152,7 +153,7 @@ public class ObjInteractionController extends BaseController {
             }
 
             if (unlocked) {
-                response.append("Usi **").append(matchingKey.getName()).append("** sulla serratura. Senti un netto 'clack'!\n");
+                response.append("Usi ").append(matchingKey.getName()).append(" sulla serratura. Senti un netto 'clack'!\n");
                 model.getInventory().remove(matchingKey);
                 return true;
             }
@@ -167,6 +168,11 @@ public class ObjInteractionController extends BaseController {
         if (!openableObj.isOpen()) {
             openableObj.open();
             response.append("Apri ").append(clickedObject.getName()).append(".\n");
+
+            // 🔓 MODIFICA: Rimuoviamo dalla stanza solo se NON è Lockable (lo Zaino sparisce, la Chest resta)
+            if (!(clickedObject instanceof Lockable)) {
+                model.getCurrentRoom().getObjects().remove(clickedObject);
+            }
         } else {
             response.append("È già aperto.\n");
         }
@@ -185,17 +191,23 @@ public class ObjInteractionController extends BaseController {
             List<GameObject> itemsToLoot = new ArrayList<>(container.getInsideItems());
 
             for (GameObject objDentro : itemsToLoot) {
-                response.append("- **").append(objDentro.getName()).append("**\n");
+                response.append("-").append(objDentro.getName()).append("\n");
                 model.getInventory().add(objDentro);
                 container.getInsideItems().remove(objDentro);
             }
-            
-            // Il contenitore è vuoto: lo facciamo sparire
-            model.getCurrentRoom().removeObject(clickedObject);
-            
+
+            // 🔓 MODIFICA: Se lo Zaino viene svuotato, lo facciamo sparire (se non è già stato rimosso)
+            if (!(clickedObject instanceof Lockable)) {
+                model.getCurrentRoom().removeObject(clickedObject);
+            }
+
         } else {
             response.append("Non c'è niente dentro, è già vuoto.");
-            model.getCurrentRoom().removeObject(clickedObject);
+
+            // 🔓 MODIFICA: Se un oggetto già vuoto viene cliccato, sparisce solo se NON è Lockable
+            if (!(clickedObject instanceof Lockable)) {
+                model.getCurrentRoom().removeObject(clickedObject);
+            }
         }
     }
 }

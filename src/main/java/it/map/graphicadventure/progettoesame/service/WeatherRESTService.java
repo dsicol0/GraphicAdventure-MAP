@@ -16,8 +16,7 @@ import javax.ws.rs.core.Response;
  * @author antoniostilla
  */
 public class WeatherRESTService {
-
-    // ⚠️ Inserisci qui la tua API Key di OpenWeatherMap
+    
     public static final String API_KEY = "f030089a65dc30ce65772b1bc1904bb4"; 
     public static final String CITY = "Bari";
 

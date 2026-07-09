@@ -73,7 +73,7 @@ public class GameController extends BaseController {
                 }
             }
             
-            startThreads(900); // 15 min * 60 sec
+            startThreads(600); // 15 min * 60 sec
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -214,16 +214,6 @@ public class GameController extends BaseController {
             GameDataInitializer.setUpGameData(model);
             view.showGamePanel();
             loadSavedGame(); // Innesca il caricamento e la pulizia dei nemici morti
-            
-            if (model.isAmbushActive()) {
-                Zombie ambushZombie = new Zombie(999, "Studente Infetto", "Uno studente impazzito a causa della sessione.", "/zombie.png");
-                ambushZombie.setX(350);
-                ambushZombie.setY(150);
-                ambushZombie.setWidth(150);
-                ambushZombie.setHeight(200);
-                model.getCurrentRoom().addObject(ambushZombie);
-                view.getGamePanel().renderRoom(model.getCurrentRoom());
-            }
 
             int savedSeconds = model.getTimeRemaining(); 
             if (savedSeconds <= 0) savedSeconds = 900; // Fallback di sicurezza

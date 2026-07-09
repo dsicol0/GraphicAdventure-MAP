@@ -328,7 +328,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="a0" green="c3" red="d2" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="GENERATORE: 15:00"/>
+            <Property name="text" type="java.lang.String" value="GENERATORE: 10:00"/>
           </Properties>
         </Component>
       </SubComponents>
