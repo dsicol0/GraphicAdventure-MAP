@@ -1,4 +1,4 @@
-package it.map.graphicadventure.progettoesame.util;
+package it.map.graphicadventure.progettoesame.factory;
 
 import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.GameObject;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GameUtils {
+public class FileMapParser {
 
     public static List<Room> loadMapFromFile(String filePath) throws IOException {
         List<Room> rooms = new ArrayList<>();
@@ -46,12 +46,6 @@ public class GameUtils {
             }
         }
         return rooms;
-    }
-
-    public static boolean hasObject(List<GameObject> inventory, int idObject) {
-        if (inventory == null) return false;
-        
-        return inventory.stream().anyMatch(obj -> obj.getId() == idObject);
     }
     
     // ==========================================

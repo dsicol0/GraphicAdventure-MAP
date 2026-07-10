@@ -142,8 +142,8 @@ public class SaveManager {
     private void applyMapSpecificFixes(EsameGame model, SaveData data) {
         boolean aula2Sbloccata = model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2");
 
-        // 🎯 VALORIZZAZIONE DIRETTA: viene assegnata una volta sola, quindi è "effectively final"!
-        boolean hasChipInInventory = hasChip(model);
+        
+        boolean hasChipInInventory = model.getPlayer().hasObject(19);
 
         // Giriamo tra le stanze con un ciclo classico
         for (Room r : model.getRooms()) {

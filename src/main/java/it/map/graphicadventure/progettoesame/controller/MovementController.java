@@ -4,7 +4,7 @@
  */
 package it.map.graphicadventure.progettoesame.controller;
 
-import it.map.graphicadventure.progettoesame.util.GameUtils;
+import it.map.graphicadventure.progettoesame.factory.FileMapParser;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.view.ConfirmDialog;
@@ -17,7 +17,7 @@ import it.map.graphicadventure.progettoesame.view.GameMainFrame;
 public class MovementController extends BaseController {
     
     public static final int ID_AULA_2 = 2;
-    public static final int ID_CHIAVE_AULA_2 = 8;
+    public static final int ID_CHIAVE_AULA_2 = 13;
     
 
     public MovementController(EsameGame model, GameMainFrame view) {
@@ -34,11 +34,11 @@ public class MovementController extends BaseController {
                 nextRoom.setLocked(false);
             }   
             
-            // CASO 1: La stanza è chiusa a chiave
+            // Caso di una stanza chiusa a chiave
             if (nextRoom.isLocked()) {
 
                 // Controlliamo se è l'Aula 2 (ID 2) e se il giocatore ha la chiave (ID 8)
-                if (nextRoom.getId() == ID_AULA_2 && GameUtils.hasObject(model.getInventory(), ID_CHIAVE_AULA_2)) {
+                if (nextRoom.getId() == ID_AULA_2 && model.getPlayer().hasObject(ID_CHIAVE_AULA_2)) {
 
                     ConfirmDialog cd = new ConfirmDialog(view, true, "Hai la Chiave dell'Aula 2. Vuoi usarla per aprire la porta?");
                     cd.setVisible(true);

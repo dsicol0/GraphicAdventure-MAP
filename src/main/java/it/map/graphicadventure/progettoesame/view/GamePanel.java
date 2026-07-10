@@ -92,14 +92,14 @@ public class GamePanel extends javax.swing.JPanel {
         if (imagePath != null && !imagePath.trim().isEmpty()) {
             java.net.URL imgURL = getClass().getResource(imagePath);
             if (imgURL != null) {
-                int larghezza = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
-                int altezza = jpPlayingArea.getHeight() > 0 ? jpPlayingArea.getHeight() : 450;
+                int width = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
+                int height = jpPlayingArea.getHeight() > 0 ? jpPlayingArea.getHeight() : 450;
 
                 // La label dello sfondo ora occupa solo la sua area di gioco, non va più sotto l'HUD!
-                jlBackground.setBounds(0, 0, larghezza, altezza);
+                jlBackground.setBounds(0, 0, width, height);
 
                 javax.swing.ImageIcon originalImage = new javax.swing.ImageIcon(imgURL);
-                java.awt.Image scaledImage = originalImage.getImage().getScaledInstance(larghezza, altezza, java.awt.Image.SCALE_SMOOTH);
+                java.awt.Image scaledImage = originalImage.getImage().getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
                 jlBackground.setIcon(new javax.swing.ImageIcon(scaledImage));
             } else {
                 System.err.println("Risorsa non trovata: " + imagePath);
@@ -199,7 +199,7 @@ public class GamePanel extends javax.swing.JPanel {
             jlHealth.setText(String.valueOf(playerHp));
 
             // 🎨 Controllo colore accademico: se ha poca vita diventa rosso, altrimenti verde neon coerente!
-            if (player.isDead()) {
+            if (player.getHp() <= 0) {
                 jlHealth.setForeground(java.awt.Color.RED);
                 jlHealth.setText("0"); // Evita numeri negativi se muore male
             } else if (playerHp <= 30) {

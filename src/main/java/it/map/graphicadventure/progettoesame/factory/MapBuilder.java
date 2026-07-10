@@ -9,7 +9,6 @@ package it.map.graphicadventure.progettoesame.factory;
  * @author David
  */
 
-import it.map.graphicadventure.progettoesame.util.GameUtils;
 import it.map.graphicadventure.progettoesame.model.Room;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class MapBuilder {
         
         try {
             // Leggiamo la mappa dal file esterno usando la tua GameUtils!
-            List<Room> stanze = GameUtils.loadMapFromFile("src/main/resources/map/map.txt");
+            List<Room> stanze = FileMapParser.loadMapFromFile("src/main/resources/map/map.txt");
             
             // Assumiamo che la prima stanza della lista (indice 0) sia quella iniziale
             return stanze.get(0); 

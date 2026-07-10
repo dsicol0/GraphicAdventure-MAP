@@ -1,7 +1,7 @@
 package it.map.graphicadventure.progettoesame.impl;
 
 import it.map.graphicadventure.progettoesame.GameDescription;
-import it.map.graphicadventure.progettoesame.util.GameUtils;
+import it.map.graphicadventure.progettoesame.factory.FileMapParser;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.GameObject;
@@ -24,11 +24,11 @@ public class EsameGame extends GameDescription {
     @Override
     public void init() throws Exception {
         // 1. INIZIALIZZA IL GIOCATORE
-        player = new Player("Matricola Disperata", 100);
+        player = new Player("Matricola Disperata");
 
         // 2. CARICAMENTO DINAMICO DA FILE
         String pathMappa = "src/main/resources/map/map.txt";
-        List<Room> stanzeCaricate = GameUtils.loadMapFromFile(pathMappa);
+        List<Room> stanzeCaricate = FileMapParser.loadMapFromFile(pathMappa);
 
         // REQUISITO LAMBDA: Usiamo il forEach per aggiungere tutte le stanze caricate
         stanzeCaricate.forEach(room -> getRooms().add(room));

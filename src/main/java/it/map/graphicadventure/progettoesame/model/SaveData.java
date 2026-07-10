@@ -20,7 +20,7 @@ public class SaveData {
     private final List<String> unlockedRoomIds;
     private int timeRemaining;
 
-    // 🟩 2. AGGIORNA IL COSTRUTTORE PER ACCETTARE IL QUINTO PARAMETRO
+    
     public SaveData(String currentRoom, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) {
         this.currentRoom = currentRoom;
         this.health = health;

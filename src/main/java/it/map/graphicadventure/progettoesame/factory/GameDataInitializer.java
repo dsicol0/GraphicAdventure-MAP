@@ -22,10 +22,10 @@ public class GameDataInitializer {
         
         // Nella stanza iniziale, dentro lo Zaino (ID 16), nascondi la Chiave dell'Esame (ID 17)
         // 1. Stanza 2 (Aula 2) -> Zaino (ID 16) -> Chiave d'Oro (ID 17)
-        hideObject(model, 2, 16, new Key(17, "Una semplice Chiave", "Una chiave luccicante. Potrebbe servire per aprire qualcosa...", "/items/key.png"));
-        hideObject(model, 2, 16, new Weapon(11, "Accendino", "Un'accendino zippo. Probabilmente funziona ancora...", "/items/lighter.png", 10));
+        hideObject(model, 2, 9, new Key(17, "Una semplice Chiave", "Una chiave luccicante. Potrebbe servire per aprire qualcosa...", "/items/key.png"));
+        hideObject(model, 2, 9, new Weapon(18, "Accendino", "Un'accendino zippo. Probabilmente funziona ancora...", "/items/lighter.png", 10));
         
-        hideObject(model, 6, 15, new Chip(19,"Chip elettronico", "Un chip di memoria a stato solido recuperato dal forziere. Potrebbe essere la chiave software necessaria per sbloccare il quadro elettrico","/items/electronicBoard.png"));
+        hideObject(model, 6, 14, new Chip(19,"Chip elettronico", "Un chip di memoria a stato solido recuperato dal forziere. Potrebbe essere la chiave software necessaria per sbloccare il quadro elettrico","/items/electronicBoard.png"));
         
         // Esempi futuri di quanto sarà facile aggiungere roba:
         // nascondiOggetto(aulaInformatica, 20, new Badge(21, "Badge Amministratore", "Livello 3", "/badge.png"));

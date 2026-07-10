@@ -122,7 +122,6 @@ public class GameController extends BaseController {
 
             if (combatResult == 1) {
                 // 1. Lo togliamo dalla stanza corrente nella sessione attuale
-                model.setAmbushActive(false);
                 model.getCurrentRoom().getObjects().remove(enemy);
 
                 // 2. REGISTRIAMO L'ID NELLA LISTA DEI MORTI DEL MODELLO

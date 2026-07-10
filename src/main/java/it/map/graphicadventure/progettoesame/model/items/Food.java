@@ -26,7 +26,6 @@ public class Food extends GameObject implements Healable, Takeable{
     @Override
     public void heal(Player player) {
         int newHp = player.getHp() + this.healAmount;
-        
         // Limite massimo standard a 100 HP
         if (newHp > 100) {
             newHp = 100;
