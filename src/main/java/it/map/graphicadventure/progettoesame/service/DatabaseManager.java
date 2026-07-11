@@ -31,13 +31,13 @@ public class DatabaseManager {
             + "event_type TEXT NOT NULL, "
             + "description TEXT NOT NULL)";
 
-    // NUOVA COSTANTE PER LA TABELLA DEI NEMICI SCONFITTI
+
     private static final String TABLE_KILLED_ENEMIES = "CREATE TABLE IF NOT EXISTS killed_enemies_saves ("
             + "game_id INTEGER, "
             + "enemy_id TEXT NOT NULL, "
             + "FOREIGN KEY(game_id) REFERENCES games(id) ON DELETE CASCADE)";
     
-    // STATO DI BLOCCO/APERTURA DI PORTE E CASSE
+
     private static final String TABLE_OBJECT_SAVES = "CREATE TABLE IF NOT EXISTS object_saves ("
             + "game_id INTEGER, "
             + "object_id TEXT NOT NULL, "
@@ -56,7 +56,7 @@ public class DatabaseManager {
         if (conn != null) {
             return conn;
         } else {
-            // Il prof usa Properties, lo manteniamo per coerenza formale
+            
             Properties dbprops = new Properties();
             conn = DriverManager.getConnection("jdbc:sqlite:final_exam.db", dbprops);
             
@@ -67,7 +67,7 @@ public class DatabaseManager {
             stm.executeUpdate(TABLE_KILLED_ENEMIES);
             stm.executeUpdate(TABLE_OBJECT_SAVES);
             stm.executeUpdate(TABLE_UNLOCKED_ROOMS);
-            stm.close(); // Chiusura esplicita
+            stm.close();
             
             return conn;
         }

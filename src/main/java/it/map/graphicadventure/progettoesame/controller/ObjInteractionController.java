@@ -49,21 +49,21 @@ public class ObjInteractionController extends BaseController {
         if (clickedObject instanceof Openable) {
             Openable openableObj = (Openable) clickedObject;
 
-            // 🎯 SE CI RICLICCHI SOPRA: Mostra il messaggio specifico per la Chest rimasta nella stanza
+            // Mostra il messaggio specifico per la Chest rimasta nella stanza
             if (openableObj.isOpen()) {
                 response.append(clickedObject.getName()).append(" è già aperto e non c'è niente dentro.");
                 return response.toString();
             }
 
-            // Tentativo di sblocco (se fallisce, interrompiamo qui)
+            // Tentativo di sblocco (se fallisce, non fare niente)
             if (!handleUnlockAttempt(openableObj, response)) {
                 return response.toString();
             }
 
-            // Apertura effettiva
+            
             handleOpening(openableObj, clickedObject, response);
 
-            // Svuotamento (se è un contenitore)
+            
             handleContainerLoot(clickedObject, response);
 
             interactionPerformed = true;
@@ -71,36 +71,35 @@ public class ObjInteractionController extends BaseController {
 
         if (clickedObject instanceof ElectricPanel) {
 
-            // Cerchiamo se c'è il Chip nell'inventario del giocatore usando gli Stream
+            
             Chip chipInInventory = model.getInventory().stream()
                     .filter(obj -> obj instanceof Chip)
                     .map(obj -> (Chip) obj)
                     .findFirst()
                     .orElse(null);
 
-            // Se il giocatore possiede il chip
+            
             if (chipInInventory != null) {
 
-                // 💳 Delegiamo la logica specifica alla classe Chip passando il pannello come target
+                
                 if (chipInInventory.use(clickedObject)) {
 
-                    // Rimuoviamo il chip consumato dall'inventario
+                    
                     model.getInventory().remove(chipInInventory);
 
-                    // Ritorniamo il testo trionfale alla View
+                    
                     return "Inserisci il **Chip di Sicurezza** nella fessura del pannello...\n"
                             + "I sistemi si riavviano con un forte ronzio elettronico!\n"
                             + "Le luci dell'edificio si accendono. La corrente è tornata!\n\n"
                             + "🏆 COMPLIMENTI! HAI RIPRISTINATO LA CORRENTE E SUPERATO L'ESAME! HAI VINTO! 🏆";
                 }
             } else {
-                // Messaggio di fallback se il giocatore clicca sul pannello ma non ha il chip
                 return "Esamini: " + clickedObject.getName() + ".\n"
                         + "Lo schermo mostra una luce rossa lampeggiante: 'ACCESSO NEGATO'.\n"
                         + "Ti serve un chip di sicurezza per riattivare l'interruttore generale.";
             }
         }
-        // 3. Se non abbiamo fatto azioni speciali, mostriamo solo la descrizione
+        
         if (!interactionPerformed) {
             response.append(clickedObject.getDescription());
         }
@@ -108,9 +107,7 @@ public class ObjInteractionController extends BaseController {
         return response.toString();
     }
 
-    // ==========================================
-    // METODI PRIVATI (Per il Clean Code e l'SRP)
-    // ==========================================
+    
     private boolean isTakeable(GameObject obj) {
         return obj instanceof Takeable && ((Takeable) obj).isTakeable();
     }
@@ -169,7 +166,7 @@ public class ObjInteractionController extends BaseController {
             openableObj.open();
             response.append("Apri ").append(clickedObject.getName()).append(".\n");
 
-            // 🔓 MODIFICA: Rimuoviamo dalla stanza solo se NON è Lockable (lo Zaino sparisce, la Chest resta)
+            // Rimuoviamo dalla stanza solo se NON è Lockable (lo Zaino sparisce, la Chest resta)
             if (!(clickedObject instanceof Lockable)) {
                 model.getCurrentRoom().getObjects().remove(clickedObject);
             }
@@ -196,7 +193,7 @@ public class ObjInteractionController extends BaseController {
                 container.getInsideItems().remove(objDentro);
             }
 
-            // 🔓 MODIFICA: Se lo Zaino viene svuotato, lo facciamo sparire (se non è già stato rimosso)
+            // Se lo Zaino viene svuotato, lo facciamo sparire (se non è già stato rimosso)
             if (!(clickedObject instanceof Lockable)) {
                 model.getCurrentRoom().removeObject(clickedObject);
             }
@@ -204,7 +201,7 @@ public class ObjInteractionController extends BaseController {
         } else {
             response.append("Non c'è niente dentro, è già vuoto.");
 
-            // 🔓 MODIFICA: Se un oggetto già vuoto viene cliccato, sparisce solo se NON è Lockable
+            // Se un oggetto già vuoto viene cliccato, sparisce solo se NON è Lockable
             if (!(clickedObject instanceof Lockable)) {
                 model.getCurrentRoom().removeObject(clickedObject);
             }

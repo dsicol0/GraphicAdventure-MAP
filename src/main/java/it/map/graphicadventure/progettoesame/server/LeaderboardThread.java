@@ -42,13 +42,13 @@ import java.util.regex.Pattern;
                 String str = in.readLine();
                 if (str != null) {
                     str = str.trim();
-                    // Utilizzo esatto della regex del professore
+                    
                     Pattern pattern = Pattern.compile("\\S+");
                     Matcher matcher = pattern.matcher(str);
                     boolean findcmd = matcher.find();
                     
                     if (findcmd && matcher.group().equalsIgnoreCase("#score")) {
-                        // Mi aspetto: #score Username 1500
+                        
                         String name = null;
                         String scoreStr = null;
                         if (matcher.find()) {
@@ -70,7 +70,7 @@ import java.util.regex.Pattern;
                         }
                         
                     } else if (findcmd && matcher.group().equalsIgnoreCase("#top")) {
-                        // Restituisce la classifica formattata
+                        
                         out.println("#start_top");
                         out.println(ld.getTopLeaderboard());
                         out.println("#end_top");

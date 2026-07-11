@@ -10,6 +10,9 @@ import java.util.List;
 import it.map.graphicadventure.progettoesame.model.Player;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.interfaces.Healable;
+import it.map.graphicadventure.progettoesame.model.interfaces.Openable;
+import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
+import it.map.graphicadventure.progettoesame.model.interfaces.Usable;
 import it.map.graphicadventure.progettoesame.model.items.Food;
 import it.map.graphicadventure.progettoesame.model.items.Weapon;
 import javax.swing.JPanel;
@@ -20,15 +23,15 @@ import javax.swing.Timer;
  * @author David
  */
 public class GamePanel extends javax.swing.JPanel {
-    
-    private Timer timerText;  
+
+    private Timer timerText;
     private GameController controller;
-    
+
     private Room currentRenderedRoom = null;
-    
+
     private JPanel jpInventoryView = null;
     private boolean isInventoryVisible = false;
-    
+
     public void setController(GameController controller) {
         this.controller = controller;
     }
@@ -38,46 +41,41 @@ public class GamePanel extends javax.swing.JPanel {
      */
     public GamePanel() {
         initComponents();
-        
-        // NECESSARI PER NON AVERE IL BRUTTO DESIGN DEL SISTEMA OPERATIVO (NON TOGLIERE)
+
         jbNorth.setUI(new javax.swing.plaf.basic.BasicButtonUI());
         jbSouth.setUI(new javax.swing.plaf.basic.BasicButtonUI());
         jbEast.setUI(new javax.swing.plaf.basic.BasicButtonUI());
         jbWest.setUI(new javax.swing.plaf.basic.BasicButtonUI());
         jbInventory.setUI(new javax.swing.plaf.basic.BasicButtonUI());
     }
-    
+
     public void animatedText(String testo) {
-        // 1. Se c'è un'altra frase che sta ancora scorrendo, la fermiamo
+
         if (timerText != null && timerText.isRunning()) {
             timerText.stop();
         }
 
-        // 2. Puliamo la text area e mettiamo il cursore iniziale per la nuova stanza
         jtaDialogs.setText("> ");
 
-        // 3. Usiamo un array come "contatore" per ricordarci a quale lettera siamo
         int[] index = {0};
 
-        // 4. Creiamo il Timer
         timerText = new javax.swing.Timer(20, e -> {
-            // Finché ci sono lettere da scrivere...
+
             if (index[0] < testo.length()) {
-                // Aggiungiamo una singola lettera alla tua jtaDialogs reale
+
                 jtaDialogs.append(String.valueOf(testo.charAt(index[0])));
                 index[0]++;
             } else {
-                // Frase finita, fermiamo il Timer
+
                 timerText.stop();
             }
         });
 
-        // 5. Facciamo partire l'animazione!
         timerText.start();
     }
-    
+
     public void renderRoom(Room room) {
-        // 1. Aggiorna il testo della descrizione solo se la stanza è diversa dalla precedente
+
         if (isInventoryVisible) {
             toggleInventory(null);
         }
@@ -87,7 +85,6 @@ public class GamePanel extends javax.swing.JPanel {
             this.currentRenderedRoom = room;
         }
 
-        // 2. Aggiorna l'immagine di sfondo della stanza
         String imagePath = room.getBackgroundPath();
         if (imagePath != null && !imagePath.trim().isEmpty()) {
             java.net.URL imgURL = getClass().getResource(imagePath);
@@ -95,7 +92,6 @@ public class GamePanel extends javax.swing.JPanel {
                 int width = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
                 int height = jpPlayingArea.getHeight() > 0 ? jpPlayingArea.getHeight() : 450;
 
-                // La label dello sfondo ora occupa solo la sua area di gioco, non va più sotto l'HUD!
                 jlBackground.setBounds(0, 0, width, height);
 
                 javax.swing.ImageIcon originalImage = new javax.swing.ImageIcon(imgURL);
@@ -109,13 +105,11 @@ public class GamePanel extends javax.swing.JPanel {
             jlBackground.setIcon(null);
         }
 
-        // Svuota lo sfondo dai vecchi oggetti della stanza precedente
         jlBackground.removeAll();
         jlBackground.setLayout(null);
 
-        // 3. DISEGNO DEI BOTTONI DEGLI OGGETTI (Cassa, Chiave, ecc.)
         if (room.getObjects() != null) {
-            for (it.map.graphicadventure.progettoesame.model.GameObject obj : room.getObjects()) {
+            for (GameObject obj : room.getObjects()) {
 
                 javax.swing.JButton objectButton = new javax.swing.JButton();
                 objectButton.setOpaque(false);
@@ -134,16 +128,15 @@ public class GamePanel extends javax.swing.JPanel {
                 objectButton.setBounds(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
                 objectButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-                // Click sull'oggetto con richiesta di conferma modale
                 objectButton.addActionListener(e -> {
                     java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-                    
+
                     String message;
-                    if (obj instanceof it.map.graphicadventure.progettoesame.model.interfaces.Openable) {
+                    if (obj instanceof Openable) {
                         message = "Vuoi davvero aprire " + obj.getName() + "?";
-                    } else if (obj instanceof it.map.graphicadventure.progettoesame.model.interfaces.Takeable) {
+                    } else if (obj instanceof Takeable) {
                         message = "Vuoi davvero raccogliere " + obj.getName() + "?";
-                    } else if (obj instanceof it.map.graphicadventure.progettoesame.model.interfaces.Usable) {
+                    } else if (obj instanceof Usable) {
                         message = "Vuoi davvero usare " + obj.getName() + "?";
                     } else {
                         message = "Vuoi interagire con " + obj.getName() + "?";
@@ -156,7 +149,7 @@ public class GamePanel extends javax.swing.JPanel {
                         if (controller != null) {
                             String r = controller.processInteraction(obj);
                             animatedText(r);
-                            renderRoom(room); // Ridisegna per far sparire l'oggetto raccolto
+                            renderRoom(room);
                         }
                     }
                 });
@@ -165,8 +158,6 @@ public class GamePanel extends javax.swing.JPanel {
             }
         }
 
-        // 4. AGGIORNAMENTO STATO DELLE FRECCE (DAL DESIGN)
-        // Leggiamo le direzioni e accendiamo/spegniamo i bottoni già esistenti sul pannello
         java.util.Set<String> directions = new java.util.HashSet<>();
         if (room.getAvailableDirections() != null) {
             for (String dir : room.getAvailableDirections()) {
@@ -181,146 +172,125 @@ public class GamePanel extends javax.swing.JPanel {
         jbEast.setEnabled(directions.contains("EST"));
         jbSouth.setEnabled(directions.contains("SUD"));
 
-        // 5. REFRESH GENERALE DELLA SCHERMATA
         jpPlayingArea.revalidate();
         jpPlayingArea.repaint();
         this.revalidate();
         this.repaint();
     }
-    
+
     public void updateJlHealth() {
         if (controller != null && controller.getPlayer() != null) {
             Player player = controller.getPlayer();
 
-            // Prendiamo gli HP attuali
             int playerHp = player.getHp();
 
-            // Aggiorniamo il testo della label (mostrerà solo il numero, es: "100")
             jlHealth.setText(String.valueOf(playerHp));
 
-            // 🎨 Controllo colore accademico: se ha poca vita diventa rosso, altrimenti verde neon coerente!
             if (player.getHp() <= 0) {
                 jlHealth.setForeground(java.awt.Color.RED);
-                jlHealth.setText("0"); // Evita numeri negativi se muore male
+                jlHealth.setText("0");
             } else if (playerHp <= 30) {
-                jlHealth.setForeground(java.awt.Color.RED); // Stato di pericolo
+                jlHealth.setForeground(java.awt.Color.RED);
             } else {
-                jlHealth.setForeground(new java.awt.Color(50, 255, 50)); // Verde neon coordinato
+                jlHealth.setForeground(new java.awt.Color(50, 255, 50));
             }
         }
     }
 
     public void toggleInventory(List<GameObject> items) {
-        
-        // Calcoliamo larghezza e altezza per passarla alle AbsoluteConstraints
-        int w = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
-        int h = jpPlayingArea.getHeight() > 0 ? jpPlayingArea.getHeight() : 450;
 
         if (isInventoryVisible) {
-            // ==========================================
-            // CHIUSURA INVENTARIO
-            // ==========================================
+
             if (jpInventoryView != null) {
                 jpPlayingArea.remove(jpInventoryView);
             }
-            
-            // 🟩 CORREZIONE: Usiamo la sintassi di NetBeans invece di BorderLayout.CENTER
+
             jpPlayingArea.add(jlBackground, java.awt.BorderLayout.CENTER);
             isInventoryVisible = false;
-            
+
         } else {
-            // ==========================================
-            // APERTURA INVENTARIO
-            // ==========================================
-            jpPlayingArea.remove(jlBackground); // Nascondiamo la stanza
+
+            jpPlayingArea.remove(jlBackground);
 
             if (jpInventoryView == null) {
                 jpInventoryView = new javax.swing.JPanel();
             }
-            
-            // Svuotiamo tutto il pannello per ricostruirlo aggiornato
+
             jpInventoryView.removeAll();
             jpInventoryView.setLayout(new java.awt.BorderLayout());
             jpInventoryView.setBackground(new java.awt.Color(15, 15, 15));
 
-            // --- 1. BARRA SUPERIORE CON LA "X" ---
             javax.swing.JPanel topBar = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-            topBar.setOpaque(false); // Sfondo trasparente
-            
+            topBar.setOpaque(false);
+
             javax.swing.JButton btnClose = new javax.swing.JButton("X CHIUDI");
-            btnClose.setUI(new javax.swing.plaf.basic.BasicButtonUI()); // Disattiva lo stile Mac
+            btnClose.setUI(new javax.swing.plaf.basic.BasicButtonUI());
             btnClose.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16));
             btnClose.setForeground(new java.awt.Color(255, 50, 50));
             btnClose.setBackground(new java.awt.Color(10, 10, 10));
             btnClose.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 50, 50), 2));
             btnClose.setFocusPainted(false);
             btnClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            
-            // Effetto Hover del tasto X
+
             btnClose.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent e) {
                     btnClose.setBackground(new java.awt.Color(255, 50, 50));
                     btnClose.setForeground(java.awt.Color.BLACK);
                 }
+
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent e) {
                     btnClose.setBackground(new java.awt.Color(10, 10, 10));
                     btnClose.setForeground(new java.awt.Color(255, 50, 50));
                 }
             });
-            
+
             btnClose.addActionListener(e -> toggleInventory(null));
             topBar.add(btnClose);
-            
-            // Aggiungiamo la barra al NORD dell'inventario
+
             jpInventoryView.add(topBar, java.awt.BorderLayout.NORTH);
 
-            // --- 2. GRIGLIA DEGLI OGGETTI AL CENTRO ---
             javax.swing.JPanel gridPanel = new javax.swing.JPanel();
-            gridPanel.setOpaque(false); // Fa vedere il colore di fondo scuro
+            gridPanel.setOpaque(false);
             gridPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
             if (items == null || items.isEmpty()) {
-                // Inventario Vuoto
+
                 gridPanel.setLayout(new java.awt.BorderLayout());
                 javax.swing.JLabel jlEmpty = new javax.swing.JLabel("Il tuo zaino è vuoto.", javax.swing.SwingConstants.CENTER);
                 jlEmpty.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 18));
                 jlEmpty.setForeground(java.awt.Color.WHITE);
                 gridPanel.add(jlEmpty, java.awt.BorderLayout.CENTER);
-                
+
                 jpInventoryView.add(gridPanel, java.awt.BorderLayout.CENTER);
             } else {
-                // Inventario con Oggetti (Griglia fissa a 4 colonne)
-                gridPanel.setLayout(new java.awt.GridLayout(0, 4, 15, 15)); 
-                for (it.map.graphicadventure.progettoesame.model.GameObject item : items) {
+
+                gridPanel.setLayout(new java.awt.GridLayout(0, 4, 15, 15));
+                for (GameObject item : items) {
                     gridPanel.add(createItemSlot(item));
                 }
-                
-                // Il tuo trucco definitivo con il FlowLayout
+
                 javax.swing.JPanel flowWrapper = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 30, 30));
                 flowWrapper.setOpaque(false);
                 flowWrapper.add(gridPanel);
-                
+
                 jpInventoryView.add(flowWrapper, java.awt.BorderLayout.CENTER);
             }
-            
-            // 🟩 CORREZIONE: Sintassi corretta per inserire l'inventario nell'Absolute Layout
+
             jpPlayingArea.add(jpInventoryView, java.awt.BorderLayout.CENTER);
             isInventoryVisible = true;
         }
 
-        // Forza Java a ricalcolare la grafica
         jpPlayingArea.revalidate();
         jpPlayingArea.repaint();
     }
 
-    private javax.swing.JPanel createItemSlot(it.map.graphicadventure.progettoesame.model.GameObject item) {
+    private javax.swing.JPanel createItemSlot(GameObject item) {
         javax.swing.JPanel itemSlot = new javax.swing.JPanel(new java.awt.BorderLayout());
         itemSlot.setBackground(new java.awt.Color(30, 30, 30));
         itemSlot.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(50, 255, 50), 1));
-        
-        // 🟩 BLOCCHIAMO LE MISURE DA TUTTI I LATI (Minima, Massima e Preferita):
+
         itemSlot.setPreferredSize(new java.awt.Dimension(110, 110));
         itemSlot.setMinimumSize(new java.awt.Dimension(110, 110));
         itemSlot.setMaximumSize(new java.awt.Dimension(110, 110));
@@ -352,49 +322,45 @@ public class GamePanel extends javax.swing.JPanel {
                 itemSlot.setBackground(new java.awt.Color(50, 255, 50));
                 jlName.setForeground(java.awt.Color.BLACK);
             }
+
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
                 itemSlot.setBackground(new java.awt.Color(30, 30, 30));
                 jlName.setForeground(java.awt.Color.WHITE);
             }
+
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("> Inventario: ").append(item.getName().toUpperCase()).append(".\n");
                 sb.append(item.getDescription());
-                
-                // Se l'oggetto è un'istanza di Weapon stampiamo anche il danno
+
                 if (item instanceof Weapon) {
                     Weapon weapon = (Weapon) item;
                     sb.append("\nPotenza d'attacco: ").append(weapon.getDamage()).append(" PT");
                 }
                 animatedText(sb.toString());
-                
+
                 if (item instanceof Healable) {
                     java.awt.Window window = javax.swing.SwingUtilities.getWindowAncestor(itemSlot);
                     java.awt.Frame parentFrame = (window instanceof java.awt.Frame) ? (java.awt.Frame) window : null;
                     Food consumable = (Food) item;
-                    
-                    // ConfirmDialog personalizzato
+
                     ConfirmDialog dialog = new ConfirmDialog(
                             parentFrame,
                             true,
                             "Vuoi consumare " + item.getName() + " per curarti?"
                     );
 
-                    // Mostriamo il popup. Essendo modale, il codice si ferma qui finché non viene chiuso
                     dialog.setVisible(true);
 
-                    // Verifichiamo cosa ha scelto il giocatore tramite il tuo metodo dedicato
                     if (dialog.isConfirmed()) {
 
-                        // 1. Applichiamo la cura nel modello tramite il controller
                         String healLog = controller.handleInventoryItemUsage(consumable);
 
-                        // 2. Stampiamo l'esito a schermo
                         animatedText("\n" + healLog);
                         updateJlHealth();
-                        
+
                     }
                 }
             }
@@ -402,48 +368,45 @@ public class GamePanel extends javax.swing.JPanel {
 
         return itemSlot;
     }
-    
+
     /**
      * Gestisce il tentativo di movimento in una direzione specifica.
      */
     private void movePlayer(String direction) {
-        if (controller == null) return;
-        
-        // Memorizziamo la stanza attuale prima del movimento
+        if (controller == null) {
+            return;
+        }
+
         Room previousRoom = controller.getCurrentRoom();
 
-        // Chiediamo il movimento al controller (ci restituirà il testo dell'azione o dell'errore)
         String response = controller.handleMovement(direction);
 
-        // Recuperiamo la stanza dopo che il controller ha agito
         Room newRoom = controller.getCurrentRoom();
-        
-        // IL GIOCATORE HA CAMBIATO STANZA
-        if(previousRoom != newRoom) {
+
+        if (previousRoom != newRoom) {
             String finalMessage = newRoom.getDescription();
-            
+
             if (response != null && !response.trim().isEmpty()) {
                 finalMessage = response + "\n\n" + finalMessage;
             }
-            
+
             this.currentRenderedRoom = newRoom;
-            // Avviamo l'animazione UNA SOLA VOLTA con tutto il testo unito
+
             animatedText(finalMessage);
-            
+
             renderRoom(newRoom);
         } else {
             if (response != null && !response.trim().isEmpty()) {
-                // Viene stampato semplicemente il messaggio restituito dal controller
+
                 animatedText(response);
             }
         }
     }
-    
+
     public void updateTimerLabel(String time) {
         if (jlTimer != null) {
             jlTimer.setText("GENERATORE: " + time);
-            
-            // Effetto scenico: se mancano meno di 3 minuti, diventa rosso fuoco
+
             if (time.startsWith("02") || time.startsWith("01") || time.startsWith("00")) {
                 jlTimer.setForeground(java.awt.Color.RED);
             } else {

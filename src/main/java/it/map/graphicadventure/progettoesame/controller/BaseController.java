@@ -6,7 +6,6 @@ package it.map.graphicadventure.progettoesame.controller;
 
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.view.GameMainFrame;
-import it.map.graphicadventure.progettoesame.view.GamePanel;
 
 /**
  *

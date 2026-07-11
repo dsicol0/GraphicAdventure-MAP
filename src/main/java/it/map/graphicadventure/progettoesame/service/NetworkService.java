@@ -52,7 +52,7 @@ public class NetworkService {
              PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {
 
             out.println("#score " + playerName + " " + finalScore);
-            in.readLine(); // Leggo ok
+            in.readLine();
 
             out.println("#top");
             String response = in.readLine();

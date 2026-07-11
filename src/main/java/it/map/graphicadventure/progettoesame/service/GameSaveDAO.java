@@ -25,7 +25,7 @@ public class GameSaveDAO {
         this.connection = connection;
     }
 
-    // CLASSE DI SUPPORTO INTERNA PER LO STATO DEGLI OGGETTI
+    
     public static class ObjectSave {
 
         private final String objectId;
@@ -51,7 +51,7 @@ public class GameSaveDAO {
         }
     }
 
-    // AGGIORNATO: Accetta anche la lista degli stati degli oggetti
+    
     public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) throws SQLException {
         connection.setAutoCommit(false);
 

@@ -17,7 +17,7 @@ public class Zombie extends GameObject {
     public Zombie(int id, String name, String description, String imagePath) {
         super(id, name, description, imagePath);
         
-        // 2. Generazione della vita casuale
+        
         Random rand = new Random();
         // Vita casuale tra 60 e 100
         this.life = rand.nextInt(61) + 50;
@@ -29,10 +29,10 @@ public class Zombie extends GameObject {
     public void setLife(int life) { this.life = life; }
 
     public int getDamage() { return damage; }
-    // Di solito il danno base non si cambia, ma puoi mettere il setter se prevedi dei "malus" o "potenziamenti" per i nemici
+    
     public void setDamage(int damage) { this.damage = damage; }
     
-    // Metodo per far subire danni all'NPC
+    
     public void takeDamage(int damageTaken) {
         this.life -= damageTaken;
         if (this.life < 0) {

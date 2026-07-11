@@ -10,7 +10,6 @@ import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.SaveData;
 import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
-import it.map.graphicadventure.progettoesame.model.interfaces.Openable;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
 import it.map.graphicadventure.progettoesame.model.items.Chip;
 import java.sql.SQLException;
@@ -37,12 +36,12 @@ public class SaveManager {
             return;
         }
 
-        // 1. Estrazione ID tramite Stream (1 riga invece di 4)
+        
         List<String> itemIds = model.getInventory().stream()
                 .map(obj -> String.valueOf(obj.getId()))
                 .collect(Collectors.toList());
 
-        // 2. Salvataggio
+        
         saveDao.saveGame(
                 model.getCurrentRoom().getName(), 
                 model.getPlayer().getHp(), 
@@ -67,10 +66,10 @@ public class SaveManager {
         }
 
         if (data == null) {
-            return false; // Nessun salvataggio trovato
+            return false;
         }
 
-        // MVC e CLEAN CODE: Il metodo ora è una lista di passaggi chiari e leggibili!
+        
         restoreHealth(model, data);
         restoreCurrentRoom(model, data);
         restoreInventory(model, data);
@@ -82,10 +81,7 @@ public class SaveManager {
         return true;
     }
     
-    // ==========================================
-    // METODI PRIVATI DI SUPPORTO (SRP applicato)
-    // ==========================================
-
+    
     private void restoreHealth(EsameGame model, SaveData data) {
         model.getPlayer().setHp(data.getHealth());
     }
@@ -94,7 +90,7 @@ public class SaveManager {
         model.getRooms().stream()
                 .filter(r -> r.getName().trim().equalsIgnoreCase(data.getRoomName().trim()))
                 .findFirst()
-                .ifPresent(model::setCurrentRoom); // Imposta la stanza se la trova
+                .ifPresent(model::setCurrentRoom);
     }
 
     private void restoreInventory(EsameGame model, SaveData data) {
@@ -126,7 +122,7 @@ public class SaveManager {
             model.getUnlockedRooms().addAll(data.getUnlockedRoomIds());
         }
 
-        // 1. Sblocca le stanze salvate
+        
         for (String idOrName : model.getUnlockedRooms()) {
             model.getRooms().forEach(r -> {
                 if (String.valueOf(r.getId()).equals(idOrName) || r.getName().trim().equalsIgnoreCase(idOrName.trim())) {
@@ -135,7 +131,7 @@ public class SaveManager {
             });
         }
 
-        // 2. Fix specifici della mappa (Nascondere porte vecchie o zaini aperti)
+        
         applyMapSpecificFixes(model, data);
     }
 
@@ -145,20 +141,20 @@ public class SaveManager {
         
         boolean hasChipInInventory = model.getPlayer().hasObject(19);
 
-        // Giriamo tra le stanze con un ciclo classico
+        
         for (Room r : model.getRooms()) {
             if (r.getObjects() != null) {
 
-                // 🛑 FASE 1: LE RIMOZIONI
+                
                 r.getObjects().removeIf(obj -> {
-                    // Se l'aula è aperta, via la porta chiusa (ID 8)
+                    
                     if (aula2Sbloccata && obj.getId() == 8) {
                         return true;
                     }
 
-                    // Se lo zaino è un ObjectContainer senza serratura
+                    
                     if (obj instanceof ObjectContainer && !(obj instanceof Lockable)) {
-                        // Usiamo direttamente la tua variabile originale senza errori!
+                        
                         if (hasChipInInventory) {
                             return true;
                         }
@@ -169,7 +165,7 @@ public class SaveManager {
                     return false;
                 });
 
-                // 🧰 FASE 2: LE MODIFICHE (Per la Chest)
+                
                 for (GameObject obj : r.getObjects()) {
                     if (obj instanceof Chest) {
                         Chest f = (Chest) obj;
@@ -189,16 +185,14 @@ public class SaveManager {
         if (model.getInventory() != null) {
             for (GameObject item : model.getInventory()) {
                 if (item instanceof Chip) {
-                    return true; // Trovato, esce immediatamente restituendo true
+                    return true;
                 }
             }
         }
-        return false; // Se il ciclo finisce senza trovare nulla
+        return false;
     }
 
-    /**
-     * Ricerca complessa degli oggetti nel mondo, anche dentro i contenitori.
-     */
+    
     private GameObject findAndRemoveItemFromWorld(EsameGame model, String itemId) {
         for (Room r : model.getRooms()) {
             if (r.getObjects() == null) continue;
@@ -206,12 +200,12 @@ public class SaveManager {
             for (int i = 0; i < r.getObjects().size(); i++) {
                 GameObject obj = r.getObjects().get(i);
 
-                // Caso A: L'oggetto è per terra
+                
                 if (String.valueOf(obj.getId()).equals(itemId)) {
                     return r.getObjects().remove(i);
                 }
 
-                // Caso B: L'oggetto è nascosto in un contenitore
+                
                 if (obj instanceof ObjectContainer) {
                     ObjectContainer<?> container = (ObjectContainer<?>) obj;
                     if (container.getInsideItems() != null) {
@@ -226,7 +220,7 @@ public class SaveManager {
             }
         }
 
-        // Fallback: cerca negli oggetti globali
+        
         return model.getAllObjects().stream()
                 .filter(obj -> String.valueOf(obj.getId()).equals(itemId))
                 .findFirst()

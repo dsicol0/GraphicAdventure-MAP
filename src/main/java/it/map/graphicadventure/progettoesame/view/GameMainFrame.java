@@ -30,18 +30,13 @@ public class GameMainFrame extends javax.swing.JFrame {
      * Creates new form GameMainFrame
      */
     public GameMainFrame() {
-        // 1. Questo generato da NetBeans deve stare SEMPRE per primo
+
         initComponents();
 
-        // 2. CREIAMO IL MODEL PER PRIMO (La memoria dei dati)
-        // Assicurati che ci sia il "new" e che venga salvato nella variabile della classe
         this.model = new EsameGame();
 
-        // 3. Creiamo il pannello di gioco
         this.gamePanel = new GamePanel();
 
-        // 4. CREIAMO IL CONTROLLER PASSANDO IL MODEL APPENA INIZIALIZZATO
-        // Nota che passiamo 'this.model' (che ora non è più null!) e 'this' (il frame)
         this.controller = new GameController(this.model, this);
 
         this.gamePanel.setController(this.controller);
@@ -51,18 +46,14 @@ public class GameMainFrame extends javax.swing.JFrame {
         try {
             java.io.InputStream is = getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf");
 
-            // 2. Creiamo l'oggetto Font di Java (formato TrueType)
             Font pixelFontBase = Font.createFont(Font.TRUETYPE_FONT, is);
 
-            // Registriamo il font nell'ambiente grafico di Java
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(pixelFontBase);
 
-            // Creiamo le varianti di dimensione che ci servono
-            Font fontTitolo = pixelFontBase.deriveFont(Font.BOLD, 40f);  // Per il titolo
-            Font fontBottoni = pixelFontBase.deriveFont(Font.PLAIN, 14f); // Per i pulsanti
+            Font fontTitolo = pixelFontBase.deriveFont(Font.BOLD, 40f);
+            Font fontBottoni = pixelFontBase.deriveFont(Font.PLAIN, 14f);
 
-            // 5. APPLICHIAMO IL FONT AI COMPONENTI 
             jtfTitle.setFont(fontTitolo);
             jtfTitle.setOpaque(false);
             jtfTitle.setBackground(new Color(0, 0, 0, 0));
@@ -85,9 +76,9 @@ public class GameMainFrame extends javax.swing.JFrame {
                     jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
                 }
             });
-            jbNewGame.setForeground(Color.WHITE); // Fa diventare il testo bianco (o Color.GREEN se lo vuoi verde!)
-            jbNewGame.setContentAreaFilled(false); // Rende lo sfondo del bottone trasparente (addio rettangolo grigio!)
-            jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2)); // Opzionale: un bel bordo bianco di 2 pixel
+            jbNewGame.setForeground(Color.WHITE);
+            jbNewGame.setContentAreaFilled(false);
+            jbNewGame.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
 
             jbContinue.setFont(fontBottoni);
             jbContinue.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -100,9 +91,6 @@ public class GameMainFrame extends javax.swing.JFrame {
 
                 public void mouseExited(java.awt.event.MouseEvent e) {
                     if (jbContinue.isEnabled()) {
-                        // Nota: qui stai usando Color.WHITE. Se vuoi che torni al colore
-                        // "sabbia" di setContinueButtonEnabled, puoi usare:
-                        // new java.awt.Color(210, 195, 160) al posto di Color.WHITE!
                         jbContinue.setForeground(Color.WHITE);
                         jbContinue.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
                     }
@@ -123,8 +111,7 @@ public class GameMainFrame extends javax.swing.JFrame {
             });
 
         } catch (Exception e) {
-            System.out.println("Impossibile caricare la font pixel art: " + e.getMessage());
-            // Se fallisce, Swing userà automaticamente la font di default senza crashare
+            System.out.println("Impossibile caricare il font: " + e.getMessage());
         }
     }
 
@@ -133,11 +120,9 @@ public class GameMainFrame extends javax.swing.JFrame {
     }
 
     public int showCombatWindow(Zombie enemy, Player player, java.util.List<GameObject> inventory) {
-        // 'this' fa riferimento al GameMainFrame (la View principale)
         CombatDialog dialog = new CombatDialog(this, true, enemy, player, inventory);
-        dialog.setVisible(true); // Il gioco si blocca qui finché l'utente non chiude la finestra
+        dialog.setVisible(true);
 
-        // Controlliamo l'esito interrogando il Dialog appena prima che venga distrutto
         if (dialog.isCombatWon()) {
             return 1; // 1 = Vittoria
         } else if (dialog.hasFled()) {
@@ -149,10 +134,10 @@ public class GameMainFrame extends javax.swing.JFrame {
     }
 
     public void showLeaderboardDialog(String classifica, String title) {
-        // 'this' fa riferimento al GameMainFrame stesso, che fa da parent per il Dialog
+
         LeaderboardDialog leadDialog = new LeaderboardDialog(this, true, classifica);
         leadDialog.setTitle(title);
-        leadDialog.setVisible(true); // L'esecuzione del gioco si blocca qui finché l'utente non chiude il Dialog
+        leadDialog.setVisible(true);
     }
 
     public void setContinueButtonEnabled(boolean enabled) {
@@ -160,8 +145,8 @@ public class GameMainFrame extends javax.swing.JFrame {
             jbContinue.setEnabled(enabled);
 
             if (enabled) {
-                //jbContinue.setBackground(new java.awt.Color(85, 70, 50));     // Marrone chiaro
-                jbContinue.setForeground(new java.awt.Color(255, 255, 255));  // Sabbia lucido
+
+                jbContinue.setForeground(new java.awt.Color(255, 255, 255));
                 jbContinue.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255), 2));
                 jbContinue.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
             }
@@ -188,21 +173,21 @@ public class GameMainFrame extends javax.swing.JFrame {
                 case "SUN":
                 default:
                     // Il soleggiato: mantienilo asettico, freddo o desaturato
-                    imagePath = "/images/menu_default.png";     
+                    imagePath = "/images/menu_default.png";
                     break;
             }
 
             java.net.URL imgUrl = getClass().getResource(imagePath);
 
             if (imgUrl != null) {
-                // Carica e scala l'immagine a 800x610 esattamente come facevi prima
+
                 javax.swing.ImageIcon weatherIcon = new javax.swing.ImageIcon(imgUrl);
                 java.awt.Image img = weatherIcon.getImage();
                 java.awt.Image imgScalata = img.getScaledInstance(800, 610, java.awt.Image.SCALE_SMOOTH);
                 jlBackground.setIcon(new javax.swing.ImageIcon(imgScalata));
             } else {
                 System.err.println("Immagine di sfondo non trovata al percorso: " + imagePath);
-                // Non rompe il gioco, lascia l'immagine di default settata in initComponents()
+
             }
         } catch (Exception e) {
             System.out.println("Impossibile caricare lo sfondo dinamico: " + e.getMessage());

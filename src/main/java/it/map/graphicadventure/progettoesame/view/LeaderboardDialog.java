@@ -4,27 +4,26 @@
  */
 package it.map.graphicadventure.progettoesame.view;
 
+import java.awt.Color;
+import java.awt.Frame;
+
 /**
  *
  * @author antoniostilla
  */
 public class LeaderboardDialog extends javax.swing.JDialog {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LeaderboardDialog.class.getName());
 
     /**
      * Creates new form LeaderboardDialog
      */
-    public LeaderboardDialog(java.awt.Frame parent, boolean modal, String leaderboardData) {
+    public LeaderboardDialog(Frame parent, boolean modal, String leaderboardData) {
         super(parent, modal);
         initComponents();
-        
-        this.setLocationRelativeTo(parent);
-        
-        // Forza lo sfondo nero del contenitore principale (a volte il Designer lo ignora sui JDialog)
-        this.getContentPane().setBackground(new java.awt.Color(20, 20, 20));
 
-        // Inserisce i dati nella Text Area che hai creato
+        this.setLocationRelativeTo(parent);
+
+        this.getContentPane().setBackground(new Color(20, 20, 20));
+
         if (leaderboardData == null || leaderboardData.trim().isEmpty()) {
             jtaScores.setText("\nNessun punteggio disponibile.\nIl server è irraggiungibile o vuoto.");
         } else {

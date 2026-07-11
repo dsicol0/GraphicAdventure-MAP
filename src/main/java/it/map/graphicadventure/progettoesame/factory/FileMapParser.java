@@ -41,16 +41,12 @@ public class FileMapParser {
                     continue;
                 }
 
-                // Deleghiamo il parsing della singola riga al metodo dedicato
                 processLine(currentSection, line, rooms, roomMap);
             }
         }
         return rooms;
     }
-    
-    // ==========================================
-    // METODI PRIVATI DI SUPPORTO (SRP & CLEAN CODE)
-    // ==========================================
+
 
     private static void processLine(String section, String line, List<Room> rooms, Map<Integer, Room> roomMap) {
         switch (section) {
@@ -68,7 +64,7 @@ public class FileMapParser {
 
     private static void parseRoom(String line, List<Room> rooms, Map<Integer, Room> roomMap) {
         String[] parts = line.split(";");
-        if (parts.length < 3) return; // Guard clause
+        if (parts.length < 3) return;
 
         int id = Integer.parseInt(parts[0].trim());
         String name = parts[1].trim();
@@ -82,7 +78,7 @@ public class FileMapParser {
 
     private static void parseExit(String line, Map<Integer, Room> roomMap) {
         String[] parts = line.split(";", 3);
-        if (parts.length < 3) return; // Guard clause
+        if (parts.length < 3) return;
 
         int fromId = Integer.parseInt(parts[0].trim());
         String direction = parts[1].trim();
@@ -98,11 +94,11 @@ public class FileMapParser {
 
     private static void parseObject(String line, Map<Integer, Room> roomMap) {
         String[] parts = line.split(";");
-        if (parts.length < 10) return; // Guard clause
+        if (parts.length < 10) return;
 
         int roomId = Integer.parseInt(parts[0].trim());
         Room targetRoom = roomMap.get(roomId);
-        if (targetRoom == null) return; // La stanza deve esistere
+        if (targetRoom == null) return;
 
         int objId = Integer.parseInt(parts[1].trim());
         String objType = parts[2].trim();
@@ -114,7 +110,6 @@ public class FileMapParser {
         int width = Integer.parseInt(parts[8].trim());
         int height = Integer.parseInt(parts[9].trim());
 
-        // Deleghiamo la creazione fisica dell'oggetto ad un Factory Method
         GameObject newObj = createObjectInstance(objType, objId, objName, objDesc, objImg, parts);
 
         if (newObj != null) {

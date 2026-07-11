@@ -4,7 +4,6 @@
  */
 package it.map.graphicadventure.progettoesame.controller;
 
-import it.map.graphicadventure.progettoesame.factory.FileMapParser;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
 import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.view.ConfirmDialog;
@@ -37,40 +36,34 @@ public class MovementController extends BaseController {
             // Caso di una stanza chiusa a chiave
             if (nextRoom.isLocked()) {
 
-                // Controlliamo se è l'Aula 2 (ID 2) e se il giocatore ha la chiave (ID 8)
+                // Controlliamo se è l'Aula 2 (ID 2) e se il giocatore ha la chiave (ID 13)
                 if (nextRoom.getId() == ID_AULA_2 && model.getPlayer().hasObject(ID_CHIAVE_AULA_2)) {
 
                     ConfirmDialog cd = new ConfirmDialog(view, true, "Hai la Chiave dell'Aula 2. Vuoi usarla per aprire la porta?");
                     cd.setVisible(true);
 
                     if (cd.isConfirmed()) {
-                        // Sblocchiamo la stanza in memoria
                         model.getUnlockedRooms().add(String.valueOf(nextRoom.getId()));
                         
                         model.getUnlockedRooms().add(String.valueOf(nextRoom.getId()));
-                        // 🟩 FIX CHIAVE: Cancelliamo l'ID 8, che è lo stesso ID reale verificato nel checking!
                         model.getInventory().removeIf(obj -> obj.getId() == ID_CHIAVE_AULA_2);
-
-                        // Spostiamo il giocatore
                         model.setCurrentRoom(nextRoom);
-
-                        // Stampiamo l'uso della chiave E POI la descrizione della stanza!
+                        
                         return "> Hai usato Chiave dell'Aula 2.\nSenti lo scatto della serratura e la porta si spalanca!";
                     } else {
                         return "> Decidi di conservare la chiave. La porta dell'Aula 2 resta sbarrata.";
                     }
                 }
-
-                // Fallback se non ha la chiave
+                
                 return "> La porta che conduce a " + nextRoom.getName() + " è serrata dall'interno. Ti serve la chiave corretta.";
             }
 
-            // 🚪 CASO 2: La stanza è aperta, ci spostiamo normalmente
+            // La stanza è aperta, ci spostiamo normalmente
             model.setCurrentRoom(nextRoom);
             return null;
         }
 
-        // CASO 3: Muro
+        // Muro
         return "> Non puoi andare in quella direzione.";
     }
 }

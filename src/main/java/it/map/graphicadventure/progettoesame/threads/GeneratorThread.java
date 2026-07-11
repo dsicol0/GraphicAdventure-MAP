@@ -38,18 +38,17 @@ public class GeneratorThread extends Thread {
     public void run() {
         while (running && timeRemaining > 0) {
             try {
-                // Aspetta 1 secondo (1000 millisecondi)
                 Thread.sleep(1000);
                 timeRemaining--;
 
-                // Calcola minuti e secondi
+                
                 int minutes = timeRemaining / 60;
                 int seconds = timeRemaining % 60;
                 
-                // Formatta il tempo come "MM:SS" (es. 14:05)
+                
                 String timeString = String.format("%02d:%02d", minutes, seconds);
 
-                // AGGIORNA LA GRAFICA IN MODO SICURO!
+                
                 SwingUtilities.invokeLater(() -> {
                     gamePanel.updateTimerLabel(timeString);
                 });
@@ -60,7 +59,7 @@ public class GeneratorThread extends Thread {
             }
         }
 
-        // Se esce dal ciclo e il tempo è 0, il generatore è morto
+        
         if (timeRemaining <= 0 && running) {
             SwingUtilities.invokeLater(() -> {
                 controller.handleGeneratorDeath();

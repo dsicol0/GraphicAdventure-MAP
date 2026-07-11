@@ -1,7 +1,5 @@
 package it.map.graphicadventure.progettoesame.model;
 
-import java.util.Objects;
-
 public abstract class GameObject {
 
     private final int id;
@@ -55,7 +53,6 @@ public abstract class GameObject {
     
     @Override
     public int hashCode() {
-        // Genera un hash basato sull'ID.
         return java.util.Objects.hash(id);
     }
 }

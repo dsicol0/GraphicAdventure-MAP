@@ -1,15 +1,13 @@
 package it.map.graphicadventure.progettoesame.model;
 
-import java.util.List;
-
 public class Player {
 
     private String name;
 
-    // Gestione della salute per l'aspetto "Survival"
+    
     private int hp = 100;
 
-    // Inventario personale del giocatore
+    
     private final Inventory inventory;
 
     public Player(String name) {
@@ -17,9 +15,7 @@ public class Player {
         this.inventory = new Inventory();
     }
 
-    // =================================
-    //      GETTER & SETTER BASE
-    // =================================
+
     public String getName() {
         return name;
     }
@@ -33,7 +29,6 @@ public class Player {
     }
 
     public void setHp(int hp) {
-        // Evitiamo che la vita superi il massimo consentito
         this.hp = hp;
     }
     

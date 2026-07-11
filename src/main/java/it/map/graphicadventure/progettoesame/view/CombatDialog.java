@@ -18,8 +18,6 @@ import javax.swing.SwingUtilities;
  */
 public class CombatDialog extends javax.swing.JDialog {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CombatDialog.class.getName());
-    
     private Zombie zombie;
     private Player player;
     private List<GameObject> inventory;
@@ -38,18 +36,18 @@ public class CombatDialog extends javax.swing.JDialog {
     public CombatDialog(java.awt.Frame parent, boolean modal, Zombie zombie, Player player, List<GameObject> inventory){
         super(parent, modal);
         
-        // 1. IL DESIGNER CARICA TUTTA LA GRAFICA
+        
         initComponents(); 
         
         this.zombie = zombie;
         this.player = player;
         this.inventory = inventory;
         
-        // TESTI DELLE ETICHETTE
+        
         jLabel1.setText("NEMICO: " + zombie.getName());
         jtaCombatLog.setText(zombie.getDescription() + "\nCosa vuoi fare?");
         
-        // TESTO PER LE ETICHETTE DEGLI HP
+        
         jlPlayerHp.setText("I TUOI HP: " + player.getHp());
         jlZombieHp.setText("HP NEMICO: " + zombie.getLife());
         
@@ -64,7 +62,7 @@ public class CombatDialog extends javax.swing.JDialog {
             }
         } catch (Exception e) {}
         
-        // 3. DIMENSIONI E CENTRATURA
+        
         this.pack(); 
         this.setLocationRelativeTo(parent); 
     }
@@ -79,20 +77,20 @@ public class CombatDialog extends javax.swing.JDialog {
 
     private void checkTurn() {
         if (zombie.isDead()) {
-            // Aggiorna etichetta zombie a 0
+            
             jlZombieHp.setText("HP NEMICO: 0");
             
             combatWon = true;
             javax.swing.JOptionPane.showMessageDialog(this, "Hai sconfitto " + zombie.getName() + "!");
             dispose(); 
         } else {
-            // Aggiorna etichetta zombie
+           
             jlZombieHp.setText("HP NEMICO: " + zombie.getLife());
             
             int dmgTaken = zombie.getDamage(); 
             player.setHp(player.getHp() - dmgTaken);
             
-            // Aggiorna la tua etichetta (evitando numeri negativi)
+            
             int currentHp = Math.max(0, player.getHp());
             jlPlayerHp.setText("I TUOI HP: " + currentHp);
             
@@ -252,7 +250,7 @@ public class CombatDialog extends javax.swing.JDialog {
         InventoryDialog invDialog = new InventoryDialog((Frame) SwingUtilities.getWindowAncestor(this), inventory);
         invDialog.setVisible(true);
 
-        // Recupera l'oggetto scelto
+        
         GameObject chosen = invDialog.getSelectedItem();
 
         if (chosen instanceof Weapon) {
@@ -260,7 +258,7 @@ public class CombatDialog extends javax.swing.JDialog {
             zombie.takeDamage(itemDmg);
             logAction("Usi [" + chosen.getName() + "] e infliggi " + itemDmg + " danni!");
 
-            // Logica consumo oggetto
+            
             if (chosen.getName().contains("Ampolla")) {
                 inventory.remove(chosen);
             }

@@ -4,7 +4,7 @@
  */
 package it.map.graphicadventure.progettoesame.model;
 
-import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
+
 import java.util.List;
 
 /**

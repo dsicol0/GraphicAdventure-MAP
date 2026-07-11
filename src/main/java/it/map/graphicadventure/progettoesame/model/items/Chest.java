@@ -18,10 +18,10 @@ public class Chest<T extends GameObject> extends ObjectContainer<T> implements L
     private final int requiredKeyId;
     
     public Chest(int id, String name, String description, String imagePath, int requiredKeyId) {
-        // Invia i dati base al costruttore di ObjectContainer
+       
         super(id, name, description, imagePath);
         
-        this.locked = true; // La cassa nasce chiusa a chiave
+        this.locked = true; 
         this.requiredKeyId = requiredKeyId;
     }
 
@@ -39,16 +39,16 @@ public class Chest<T extends GameObject> extends ObjectContainer<T> implements L
         this.locked = locked;
     }
     
-    // Metodo per tentare di sbloccarla passando un oggetto Key
+    
     public boolean unlock(Key keyUsed) {
         if (keyUsed != null && keyUsed.getId() == this.requiredKeyId) {
-            this.locked = false; // Serratura scattata!
+            this.locked = false;
             return true;
         }
-        return false; // Chiave sbagliata
+        return false;
     }
     
-    // Modifichiamo il comportamento di apertura inserendo il vincolo della serratura
+    
     @Override
     public void open() {
         if (!locked) {

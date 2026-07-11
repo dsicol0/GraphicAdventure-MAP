@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ObjectContainer<T extends GameObject> extends GameObject implements Openable {
     
-    // La lista ora è fortemente tipizzata con 'T'
+    
     private final List<T> items = new ArrayList<>();
     private boolean open;
 
@@ -17,7 +17,7 @@ public class ObjectContainer<T extends GameObject> extends GameObject implements
         this.open = false;
     }
 
-    // Restituisce una lista del tipo specifico (es. List<Key>)
+    
     public List<T> getInsideItems() {
         return items;
     }

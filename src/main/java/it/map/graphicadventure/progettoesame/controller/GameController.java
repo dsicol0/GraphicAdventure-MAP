@@ -13,7 +13,6 @@ import it.map.graphicadventure.progettoesame.service.DatabaseManager;
 import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
 import it.map.graphicadventure.progettoesame.model.Zombie;
 import it.map.graphicadventure.progettoesame.model.Player;
-import it.map.graphicadventure.progettoesame.model.interfaces.Healable;
 import it.map.graphicadventure.progettoesame.model.items.Food;
 import it.map.graphicadventure.progettoesame.service.NetworkService;
 import it.map.graphicadventure.progettoesame.service.SaveManager;
@@ -75,7 +74,7 @@ public class GameController extends BaseController {
                 }
             }
             
-            startThreads(600); // 15 min * 60 sec
+            startThreads(600); // 10 min * 60 sec
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -114,22 +113,17 @@ public class GameController extends BaseController {
         if (clickedObject instanceof Zombie) {
             Zombie enemy = (Zombie) clickedObject;
             
-            // MVC PURO: Chiediamo alla View di gestire la finestra di combattimento
-            // e ci facciamo restituire un semplice intero che rappresenta l'esito:
             // 1 = Vittoria, 2 = Fuga, 3 = Morte/Sconfitta
             int combatResult = view.showCombatWindow(enemy, model.getPlayer(), model.getInventory());
             view.getGamePanel().updateJlHealth();
 
             if (combatResult == 1) {
-                // 1. Lo togliamo dalla stanza corrente nella sessione attuale
                 model.getCurrentRoom().getObjects().remove(enemy);
-
-                // 2. REGISTRIAMO L'ID NELLA LISTA DEI MORTI DEL MODELLO
+                
                 if (!model.getDeadZombies().contains(String.valueOf(enemy.getId()))) {
                     model.getDeadZombies().add(String.valueOf(enemy.getId()));
                 }
-
-                // 3. Logghiamo l'evento nel DB
+                
                 try {
                     saveDao.logEvent("KILLED", "Il giocatore ha sconfitto lo zombie: " + enemy.getName());
                 } catch (java.sql.SQLException e) {
@@ -137,8 +131,7 @@ public class GameController extends BaseController {
                 }
                 
                 silentAutosave();
-
-                // 5. FINE PARTITA - VITTORIA
+                
                 int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
                 String classifica = networkService.sendAndGetLeaderboard("Matricola", punteggio);
                 
@@ -151,7 +144,6 @@ public class GameController extends BaseController {
                 return "Sei fuggito dal combattimento in preda al panico!";
                 
             } else if (combatResult == 3 || model.getPlayer().getHp() <= 0) {
-                // 5. FINE PARTITA - SCONFITTA (GAME OVER)
                 int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
                 String classifica = networkService.sendAndGetLeaderboard("Matricola_Bocciata", punteggio / 2);
 
@@ -162,7 +154,7 @@ public class GameController extends BaseController {
             return "Combattimento interrotto.";
         }
 
-        // Se non è un nemico, prosegui con la normale interazione oggetti
+        
         String response = interactionController.handleObjectInteraction(clickedObject);
 
         try {
@@ -195,10 +187,9 @@ public class GameController extends BaseController {
     }
     
     public String handleInventoryItemUsage(Food consumable) {
-        // 1. Applichiamo la cura direttamente, senza nessun if o controllo d'istanza!
-        consumable.heal(model.getPlayer());
 
-        // 2. Sappiamo che l'oggetto è anche un GameObject, quindi lo castiamo per gestirlo nell'inventario
+        consumable.heal(model.getPlayer());
+        
         GameObject item = (GameObject) consumable;
         model.getInventory().remove(item);
         
@@ -226,22 +217,20 @@ public class GameController extends BaseController {
             model.init();
             GameDataInitializer.setUpGameData(model);
             view.showGamePanel();
-            loadSavedGame(); // Innesca il caricamento e la pulizia dei nemici morti
+            loadSavedGame();
 
             int savedSeconds = model.getTimeRemaining(); 
-            if (savedSeconds <= 0) savedSeconds = 900; // Fallback di sicurezza
+            if (savedSeconds <= 0) savedSeconds = 600; 
 
             startThreads(savedSeconds);
             
         } catch (Exception ex) {
-            System.err.println("[ERRORE CRITICO] Fallimento durante il caricamento del mondo.");
+            System.err.println("Fallimento durante il caricamento del mondo.");
             ex.printStackTrace();
         }
     }
 
     private void silentAutosave() {
-        // 🟩 AGGIUNGI QUESTA RIGA PER DEBUG:
-        System.out.println("[DEBUG] Tentativo di autosave! Vita attuale del player nel model: " + model.getPlayer().getHp());
         
         try {
             int timeToSave = (generatorThread != null) ? generatorThread.getTimeRemaining() : 900;
@@ -257,21 +246,18 @@ public class GameController extends BaseController {
     } 
     
     private void startThreads(int minutiGeneratore) {
-        // Se c'erano thread vecchi, li fermiamo per sicurezza
         if (generatorThread != null) {
             generatorThread.stopTimer();
         }
 
-        generatorThread = new it.map.graphicadventure.progettoesame.threads.GeneratorThread(minutiGeneratore, view.getGamePanel(), this);
+        generatorThread = new GeneratorThread(minutiGeneratore, view.getGamePanel(), this);
         generatorThread.start();
         
     }
     
     public void handleGeneratorDeath() {
-        // Ferma anche i mostri
         view.getGamePanel().animatedText("CLACK! Il generatore si è spento. Il buio ti avvolge... non puoi più sfuggire ai professori.");
         
-        // Punteggio dimezzato per morte
         int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size()) / 2;
         String classifica = networkService.sendAndGetLeaderboard("Matricola_Al_Buio", punteggio);
         

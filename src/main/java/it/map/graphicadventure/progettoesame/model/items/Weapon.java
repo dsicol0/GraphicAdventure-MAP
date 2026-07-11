@@ -39,26 +39,26 @@ public class Weapon extends GameObject implements Usable, Takeable {
         this.takeable = takeable;
     }
 
-    // Usiamo l'UNICO metodo dell'interfaccia di Usable
+    // metodo di Usable
     @Override
     public boolean use(GameObject target) {
         
-        // Controlliamo se l'oggetto su cui stiamo usando l'arma è un NPC!
+        
         if (target instanceof Zombie enemy) {
             
-            // Immaginiamo che il nemico abbia un metodo per subire danni
-            System.out.println("Hai attaccato " + enemy.getName() + " infliggendo " + this.damage + " danni!");
-            // nemico.takeDamage(this.damage); 
             
-            return true; // Attacco riuscito!
+            System.out.println("Hai attaccato " + enemy.getName() + " infliggendo " + this.damage + " danni!");
+            
+            
+            return true;
             
         } else if (target instanceof Chest) {
-            // Ehi, potremmo anche permettere di sfondare una cassa invece di usare la chiave!
+            
             System.out.println("Hai colpito la cassa, ma è troppo resistente.");
             return false;
         }
         
-        // Se usi l'arma su un muro o un oggetto a caso
+        
         System.out.println("Non puoi attaccare questo oggetto.");
         return false;
     }

@@ -10,9 +10,7 @@ package it.map.graphicadventure.progettoesame.view;
  */
 public class ConfirmDialog extends javax.swing.JDialog {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ConfirmDialog.class.getName());
-    
-    private boolean confirmed = false; // Registra la scelta del giocatore
+    private boolean confirmed = false;
 
     /**
      * Creates new form ConfirmDialog
@@ -24,10 +22,10 @@ public class ConfirmDialog extends javax.swing.JDialog {
         this.getContentPane().setBackground(new java.awt.Color(15, 15, 15));
         jlMessage.setText(messaggio);
 
-        // Centra il testo nella Label 
+        
         jlMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
-        // Centra il popup rispetto alla finestra di gioco principale
+        
         this.setLocationRelativeTo(parent);
         }
 

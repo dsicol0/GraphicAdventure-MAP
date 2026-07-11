@@ -19,15 +19,15 @@ public class Room {
     // Lista degli oggetti presenti nella stanza
     private final List<GameObject> objects = new ArrayList<>();
 
-    // Costruttore originale a 3 parametri (utile per stanze di test o senza sfondo)
+   
     public Room(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.backgroundPath = ""; // Vuoto di default
+        this.backgroundPath = "";
     }
 
-    // 2. NUOVO COSTRUTTORE COMPLETO (Usato da GameUtils / MapBuilder per caricare le immagini da file!)
+    
     public Room(int id, String name, String description, String backgroundPath) {
         this.id = id;
         this.name = name;
@@ -43,7 +43,7 @@ public class Room {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    // 3. IL GETTER MANCANTE: Ora il GamePanel troverà finalmente questo metodo!
+    
     public String getBackgroundPath() { 
         return backgroundPath; 
     }
@@ -52,7 +52,7 @@ public class Room {
         this.backgroundPath = backgroundPath; 
     }
 
-    // Metodi per gestire le uscite
+    
     public void setExit(String direction, Room room) {
         exits.put(direction.toLowerCase(), room);
     }
@@ -65,7 +65,7 @@ public class Room {
         return exits;
     }
 
-    // Metodi per gestire gli oggetti nella stanza
+    
     public List<GameObject> getObjects() {
         return objects;
     }
@@ -89,7 +89,7 @@ public class Room {
      * Restituisce un Set con i nomi di tutte le direzioni disponibili da questa stanza.
      */
     public java.util.Set<String> getAvailableDirections() {
-        return this.exits.keySet(); // Sostituisci 'exits' con il nome reale della tua mappa interna
+        return this.exits.keySet();
     }
     
     public boolean isLocked() {
