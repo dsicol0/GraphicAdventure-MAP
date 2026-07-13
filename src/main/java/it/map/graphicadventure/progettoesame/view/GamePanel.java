@@ -19,11 +19,19 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 /**
+ * Pannello principale dell'interfaccia di gioco.
  *
- * @author David
+ * Rappresenta la View nel pattern MVC. È responsabile del rendering 
+ * grafico della stanza (sfondo e oggetti interattivi), della visualizzazione del testo 
+ * descrittivo e della pulsantiera di navigazione. 
+ * Rispetta rigorosamente il principio dell'Information Hiding: non esegue logica di gioco, 
+ * ma cattura gli eventi (click dell'utente) e li delega al {@link GameController}.
+ *
  */
 public class GamePanel extends javax.swing.JPanel {
 
+    /** * Timer utilizzato per avviare eventi temporizzati 
+     */
     private Timer timerText;
     private GameController controller;
 
@@ -32,12 +40,17 @@ public class GamePanel extends javax.swing.JPanel {
     private JPanel jpInventoryView = null;
     private boolean isInventoryVisible = false;
 
+    /**
+     * Inietta il riferimento al Controller.
+     * @param controller Il controllore della logica.
+     */
     public void setController(GameController controller) {
         this.controller = controller;
     }
 
     /**
-     * Creates new form GamePanel
+     * Costruisce il pannello di gioco inizializzando i componenti e ripulendo 
+     * il look and feel di base dei bottoni per una resa grafica migliore.
      */
     public GamePanel() {
         initComponents();
@@ -49,6 +62,16 @@ public class GamePanel extends javax.swing.JPanel {
         jbInventory.setUI(new javax.swing.plaf.basic.BasicButtonUI());
     }
 
+    /**
+     * Stampa il testo nell'area di dialogo simulando l'effetto "macchina da scrivere".
+     *
+     * Sfrutta un Timer per aggiornare la JTextArea lettera per lettera. 
+     * A differenza di un normale `Thread.sleep()`, il Timer di Swing non blocca 
+     * l'interfaccia grafica, permettendo all'utente di continuare a interagire 
+     * (es. cliccare altri tasti) mentre il testo viene stampato.
+     *
+     * @param testo La stringa completa da mostrare gradualmente.
+     */
     public void animatedText(String testo) {
 
         if (timerText != null && timerText.isRunning()) {
@@ -74,6 +97,16 @@ public class GamePanel extends javax.swing.JPanel {
         timerText.start();
     }
 
+    /**
+     * Ridisegna completamente l'area di gioco centrale basandosi sui dati del Modello.
+     *
+     * Effettua la generazione dinamica della GUI: invece di avere bottoni preimpostati, 
+     * questo metodo legge la lista di {@link GameObject} presenti nella stanza, 
+     * crea dei nuovi {@code JButton} trasparenti a run-time e li posiziona in coordinate 
+     * assolute (Absolute Layout) sopra l'immagine di sfondo.
+     *
+     * @param room La stanza da renderizzare.
+     */
     public void renderRoom(Room room) {
 
         if (isInventoryVisible) {
@@ -178,6 +211,9 @@ public class GamePanel extends javax.swing.JPanel {
         this.repaint();
     }
 
+    /**
+     * Aggiorna graficamente la barra dei Punti Vita (HP) del giocatore.
+     */
     public void updateJlHealth() {
         if (controller != null && controller.getPlayer() != null) {
             Player player = controller.getPlayer();
@@ -197,6 +233,11 @@ public class GamePanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Alterna la visualizzazione del pannello di gioco con quello dell'Inventario.
+     *
+     * @param items La lista di oggetti attualmente nello zaino del giocatore.
+     */
     public void toggleInventory(List<GameObject> items) {
 
         if (isInventoryVisible) {
@@ -286,6 +327,10 @@ public class GamePanel extends javax.swing.JPanel {
         jpPlayingArea.repaint();
     }
 
+    /**
+     * Costruisce graficamente un singolo "Slot" dell'inventario
+     * per l'oggetto passato come parametro, assegnandogli i vari listener.
+     */
     private javax.swing.JPanel createItemSlot(GameObject item) {
         javax.swing.JPanel itemSlot = new javax.swing.JPanel(new java.awt.BorderLayout());
         itemSlot.setBackground(new java.awt.Color(30, 30, 30));
@@ -403,6 +448,10 @@ public class GamePanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Aggiorna l'etichetta testuale raffigurante il timer del generatore.
+     * @param time La stringa con il formato dei minuti e secondi correnti.
+     */
     public void updateTimerLabel(String time) {
         if (jlTimer != null) {
             jlTimer.setText("GENERATORE: " + time);

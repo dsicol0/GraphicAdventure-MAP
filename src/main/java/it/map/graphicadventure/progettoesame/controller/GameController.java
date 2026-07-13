@@ -22,8 +22,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
+ * Controller principale del gioco.
+ * Agisce come un orchestratore (Facade) che coordina la comunicazione tra
+ * la vista grafica, il modello logico e i servizi esterni (Database e Rete).
+ * Smista le azioni utente ai sotto-controller specifici per mantenere il codice modulare.
  *
- * @author David
  */
 public class GameController extends BaseController {
 
@@ -38,6 +41,14 @@ public class GameController extends BaseController {
     
     private GeneratorThread generatorThread;
 
+    /**
+     * Costruttore del GameController.
+     * Inizializza i controller delegati, i servizi di rete e tenta di 
+     * instaurare una connessione al database locale per i salvataggi.
+     *
+     * @param model L'istanza principale della partita in corso.
+     * @param view  L'interfaccia grafica del gioco.
+     */
     public GameController(EsameGame model, GameMainFrame view) {
         super(model, view);
         this.movementController = new MovementController(model, view);
@@ -57,6 +68,11 @@ public class GameController extends BaseController {
         }
     }
 
+    /**
+     * Avvia una nuova partita.
+     * Inizializza la mappa tramite i factory, posiziona il giocatore nella stanza
+     * di partenza, registra l'evento nel log del database e fa partire il thread del timer.
+     */
     public void startNewGame() {
         try {
             model.init();
@@ -81,15 +97,30 @@ public class GameController extends BaseController {
         }
     }
 
+    /**
+     * Restituisce la stanza in cui si trova attualmente il giocatore.
+     * @return L'oggetto Room corrente.
+     */
     public Room getCurrentRoom() {
         return model.getCurrentRoom();
     }
 
+    /**
+     * Restituisce l'entità del giocatore attuale.
+     * @return L'oggetto Player.
+     */
     public Player getPlayer() {
         return model.getPlayer();
     }
 
-    // Gestione movimento
+    /**
+     * Gestisce la richiesta di spostamento del giocatore in una specifica direzione.
+     * Delega l'esecuzione della logica al {@link MovementController} ed effettua 
+     * un salvataggio automatico se lo spostamento va a buon fine.
+     *
+     * @param direction La direzione verso cui spostarsi (es. "nord", "sud").
+     * @return Il messaggio risultante dall'azione da mostrare a schermo.
+     */
     public String handleMovement(String direction) {
         String response = movementController.handleMovement(direction);
         Room currentRoom = model.getCurrentRoom();
@@ -107,7 +138,15 @@ public class GameController extends BaseController {
         return response;
     }
 
-    // Gestione interazione
+    /**
+     * Elabora il click su un oggetto della scena.
+     * Se l'oggetto è un nemico, avvia il flusso di combattimento e gestisce 
+     * le condizioni di vittoria/sconfitta interrogando il server. 
+     * Altrimenti delega l'elaborazione dell'oggetto al controller delle interazioni.
+     *
+     * @param clickedObject L'oggetto con cui il giocatore sta tentando di interagire.
+     * @return L'esito testuale dell'interazione da stampare nella UI.
+     */
     public String processInteraction(GameObject clickedObject) {
 
         if (clickedObject instanceof Zombie) {
@@ -168,6 +207,10 @@ public class GameController extends BaseController {
         return response;
     }
 
+    /**
+     * Genera una stringa riassuntiva del contenuto dell'inventario del giocatore.
+     * * @return Una stringa formattata con la lista degli oggetti raccolti.
+     */
     public String showInventory() {
         List<GameObject> inventory = model.getInventory();
         if (inventory == null || inventory.isEmpty()) {
@@ -181,11 +224,21 @@ public class GameController extends BaseController {
         return sb.toString();
     }
 
+    /**
+     * Chiede alla vista di mostrare o nascondere la schermata grafica dell'inventario.
+     */
     public void handleInventoryToggle() {
         List<GameObject> inventoryItems = model.getInventory();
         view.getGamePanel().toggleInventory(inventoryItems);
     }
     
+    /**
+     * Utilizza un oggetto consumabile (es. cibo o medikit) presente nell'inventario 
+     * per ripristinare i punti vita del giocatore e lo rimuove dalla borsa.
+     *
+     * @param consumable L'oggetto consumabile da utilizzare.
+     * @return Il messaggio di feedback con la quantità di vita curata.
+     */
     public String handleInventoryItemUsage(Food consumable) {
 
         consumable.heal(model.getPlayer());
@@ -197,7 +250,10 @@ public class GameController extends BaseController {
                 + "Hai recuperato " + consumable.getHealAmount()+ "HP! TOT HP: " + model.getPlayer().getHp() + "/100";
     }
 
-
+    /**
+     * Interroga il manager dei salvataggi per caricare l'ultimo stato della partita 
+     * dal database e aggiorna i pannelli dell'interfaccia utente.
+     */
     public void loadSavedGame() {
         boolean success = saveManager.loadGame(model);
         
@@ -212,6 +268,11 @@ public class GameController extends BaseController {
         }
     }
 
+    /**
+     * Riprende una partita precedentemente salvata.
+     * Inizializza un mondo di gioco vuoto, vi sovrascrive i dati recuperati 
+     * dal database e ripristina il conto alla rovescia del generatore di corrente.
+     */
     public void continueSavedGame() {
         try {
             model.init();
@@ -230,6 +291,10 @@ public class GameController extends BaseController {
         }
     }
 
+    /**
+     * Esegue un salvataggio dello stato del gioco in background senza 
+     * interrompere il giocatore, sincronizzando anche il tempo rimanente.
+     */
     private void silentAutosave() {
         
         try {
@@ -241,10 +306,20 @@ public class GameController extends BaseController {
         }
     }
 
+    /**
+     * Richiede l'attuale classifica dei giocatori tramite il servizio di rete.
+     * @return La stringa testuale con i punteggi della leaderboard.
+     */
     public String fetchOnlyLeaderboard() {
         return networkService.fetchOnlyLeaderboard();
     } 
     
+    /**
+     * Inizializza e avvia il thread responsabile del conto alla rovescia del 
+     * tempo a disposizione del giocatore. Se ne esiste già uno in esecuzione, lo interrompe.
+     *
+     * @param minutiGeneratore I secondi iniziali da impostare nel timer.
+     */
     private void startThreads(int minutiGeneratore) {
         if (generatorThread != null) {
             generatorThread.stopTimer();
@@ -255,6 +330,11 @@ public class GameController extends BaseController {
         
     }
     
+    /**
+     * Metodo richiamato dal thread del generatore quando il tempo scade.
+     * Mostra il messaggio di sconfitta, penalizza il punteggio e manda la richiesta 
+     * al server di rete, riportando poi il giocatore al menù principale.
+     */
     public void handleGeneratorDeath() {
         view.getGamePanel().animatedText("CLACK! Il generatore si è spento. Il buio ti avvolge... non puoi più sfuggire ai professori.");
         

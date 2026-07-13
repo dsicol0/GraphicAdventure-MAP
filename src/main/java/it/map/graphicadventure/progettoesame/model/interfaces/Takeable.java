@@ -5,25 +5,24 @@
 package it.map.graphicadventure.progettoesame.model.interfaces;
 
 /**
+ * Interfaccia che identifica gli oggetti di gioco raccoglibili.
+ * Funge da "etichetta" per il compilatore e per i controller: se una classe 
+ * implementa {@code Takeable} (come una Chiave o un'Arma), significa che 
+ * il giocatore può prenderla e metterla nel proprio inventario.
  *
- * @author David
  */
 public interface Takeable {
     
-    /* 
-        Serve esclusivamente per "mettere un'etichetta" su una classe, per dire 
-        al compilatore che questa classe fa parte della categoria delle 
-        COSE RACCOGLIBILI.
-    */
-
     /**
-     * @return true se l'oggetto può essere raccolto in questo momento.
+     * Verifica se l'oggetto può essere raccolto in questo preciso momento.
+     * Utile per oggetti che magari diventano raccoglibili solo dopo un certo evento.
+     * * @return true se l'oggetto può essere preso, false altrimenti.
      */
     boolean isTakeable();
 
     /**
-     * Imposta lo stato dell'oggetto.
-     * @param takeable true per renderlo raccoglibile, false per bloccarlo.
+     * Modifica lo stato dell'oggetto, rendendolo raccoglibile o bloccandolo.
+     * * @param takeable true per permettere al giocatore di raccoglierlo, false per impedirglielo.
      */
     void setTakeable(boolean takeable);
 }

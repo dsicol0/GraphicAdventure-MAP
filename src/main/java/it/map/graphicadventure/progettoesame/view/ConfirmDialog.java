@@ -5,15 +5,22 @@
 package it.map.graphicadventure.progettoesame.view;
 
 /**
+ * Finestra di dialogo per la conferma delle azioni.
+ * 
+ * La finestra è configurata come modale: l'interazione con il frame genitore 
+ * viene bloccata finché l'utente non prende una decisione.
  *
- * @author David
  */
 public class ConfirmDialog extends javax.swing.JDialog {
     
     private boolean confirmed = false;
 
     /**
-     * Creates new form ConfirmDialog
+     * Costruisce e inizializza la schermata di conferma.
+     *
+     * @param parent Il frame genitore rispetto al quale centrare questa finestra.
+     * @param modal Booleano che determina se la finestra deve bloccare il resto dell'interfaccia.
+     * @param messaggio Il testo dinamico da mostrare all'utente (es. "Vuoi davvero uscire?").
      */
     public ConfirmDialog(java.awt.Frame parent, boolean modal, String messaggio) {
         super(parent, modal);
@@ -78,25 +85,37 @@ public class ConfirmDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Listener attivato dal click sul pulsante "Conferma".
+     * Imposta lo stato a {@code true} e invoca il metodo {@code dispose()} per chiudere 
+     * la finestra.
+     */
     private void jbConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbConfirmActionPerformed
         this.confirmed = true;
         
         this.dispose();
     }//GEN-LAST:event_jbConfirmActionPerformed
 
+    /**
+     * Listener attivato dal click sul pulsante "Conferma".
+     * Imposta lo stato a {@code true} e invoca il metodo {@code dispose()} per chiuderee 
+     * la finestra liberando le risorse native dello schermo ad essa associate.
+     */
     private void jbUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbUndoActionPerformed
         this.confirmed = false;
         
         this.dispose();
     }//GEN-LAST:event_jbUndoActionPerformed
 
-    
+    /**
+     * Permette alla classe chiamante (il Controller o la View principale) di leggere 
+     * in modo incapsulato l'esito della scelta dopo che la finestra modale si è chiusa.
+     *
+     * @return {@code true} se l'utente ha confermato, {@code false} altrimenti.
+     */
     public boolean isConfirmed() {
         return confirmed;
     }
-    /**
-     * @param args the command line arguments
-     */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;

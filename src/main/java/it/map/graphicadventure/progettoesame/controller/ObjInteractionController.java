@@ -19,15 +19,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Controller delegato alla gestione di tutte le interazioni con gli oggetti del gioco.
+ * Valuta dinamicamente i comportamenti degli oggetti (se si possono raccogliere, 
+ * aprire o sbloccare) sfruttando il polimorfismo e le interfacce.
  *
- * @author David
  */
 public class ObjInteractionController extends BaseController {
     
+    /**
+     * Costruttore del controller per le interazioni con gli oggetti.
+     *
+     * @param model La partita in corso.
+     * @param view  L'interfaccia grafica.
+     */
     public ObjInteractionController(EsameGame model, GameMainFrame view) {
         super(model, view);
     }
 
+    /**
+     * Metodo principale che valuta l'oggetto cliccato dal giocatore e scatena
+     * la serie di azioni corrispondenti (raccogliere, sbloccare, esaminare, vincere).
+     *
+     * @param clickedObject L'oggetto selezionato dal giocatore nella stanza.
+     * @return Una stringa che descrive l'esito dell'interazione da stampare a schermo.
+     */
     public String handleObjectInteraction(GameObject clickedObject) {
         if (clickedObject == null) {
             return "Non c'è niente di interessante qui.";
@@ -55,39 +70,34 @@ public class ObjInteractionController extends BaseController {
                 return response.toString();
             }
 
-            // Tentativo di sblocco (se fallisce, non fare niente)
+            // Tentativo di sblocco (se fallisce, l'interazione si ferma qui)
             if (!handleUnlockAttempt(openableObj, response)) {
                 return response.toString();
             }
 
-            
+            // Procede con l'apertura dell'oggetto
             handleOpening(openableObj, clickedObject, response);
 
-            
+            // Svuota il contenuto nell'inventario del giocatore
             handleContainerLoot(clickedObject, response);
 
             interactionPerformed = true;
         }
 
+        // 3. Gestione speciale per il pannello elettrico (Condizione di Vittoria)
         if (clickedObject instanceof ElectricPanel) {
 
-            
             Chip chipInInventory = model.getInventory().stream()
                     .filter(obj -> obj instanceof Chip)
                     .map(obj -> (Chip) obj)
                     .findFirst()
                     .orElse(null);
 
-            
             if (chipInInventory != null) {
-
-                
                 if (chipInInventory.use(clickedObject)) {
-
                     
                     model.getInventory().remove(chipInInventory);
 
-                    
                     return "Inserisci il **Chip di Sicurezza** nella fessura del pannello...\n"
                             + "I sistemi si riavviano con un forte ronzio elettronico!\n"
                             + "Le luci dell'edificio si accendono. La corrente è tornata!\n\n"
@@ -100,6 +110,7 @@ public class ObjInteractionController extends BaseController {
             }
         }
         
+        // Se non è successo nulla di speciale, stampa solo la descrizione di base
         if (!interactionPerformed) {
             response.append(clickedObject.getDescription());
         }
@@ -107,20 +118,32 @@ public class ObjInteractionController extends BaseController {
         return response.toString();
     }
 
-    
+    /**
+     * Metodo per verificare se un oggetto può essere raccolto.
+     * * @param obj L'oggetto da controllare.
+     * @return true se implementa Takeable ed è effettivamente raccoglibile.
+     */
     private boolean isTakeable(GameObject obj) {
         return obj instanceof Takeable && ((Takeable) obj).isTakeable();
     }
 
+    /**
+     * Esegue fisicamente la raccolta, spostando l'oggetto dalla stanza all'inventario.
+     * * @param obj L'oggetto da raccogliere.
+     */
     private void performTake(GameObject obj) {
         model.getInventory().add(obj);
         model.getCurrentRoom().removeObject(obj);
     }
 
     /**
-     * Gestisce lo sblocco. Ritorna TRUE se l'oggetto è aperto o è stato appena
-     * sbloccato. Ritorna FALSE se l'oggetto è chiuso a chiave e il giocatore
-     * non ha la chiave.
+     * Tenta di sbloccare un oggetto chiuso a chiave.
+     * Cerca nell'inventario la chiave corrispondente all'ID richiesto dalla serratura.
+     *
+     * @param openableObj L'oggetto che si sta cercando di aprire.
+     * @param response    Lo StringBuilder per accodare i messaggi di testo.
+     * @return true se l'oggetto non ha serratura, era già sbloccato o è stato appena sbloccato;
+     * false se è chiuso a chiave e manca la chiave giusta.
      */
     private boolean handleUnlockAttempt(Openable openableObj, StringBuilder response) {
         if (!(openableObj instanceof Lockable)) {
@@ -132,7 +155,7 @@ public class ObjInteractionController extends BaseController {
             return true; // Ha una serratura ma è già sbloccato
         }
 
-        // L'oggetto è chiuso: cerchiamo la chiave
+        // L'oggetto è chiuso: cerchiamo la chiave giusta nell'inventario
         int requiredKeyId = (openableObj instanceof Chest) ? ((Chest<?>) openableObj).getRequiredKeyId() : -1;
 
         GameObject matchingKey = model.getInventory().stream()
@@ -142,6 +165,7 @@ public class ObjInteractionController extends BaseController {
 
         if (matchingKey != null) {
             boolean unlocked = false;
+            // Se è una Chest usiamo il suo metodo unlock specifico, altrimenti sblocco base
             if (openableObj instanceof Chest && matchingKey instanceof Key) {
                 unlocked = ((Chest<?>) openableObj).unlock((Key) matchingKey);
             } else {
@@ -161,6 +185,14 @@ public class ObjInteractionController extends BaseController {
         return false;
     }
 
+    /**
+     * Apre fisicamente l'oggetto. Se si tratta di un oggetto base senza serratura (es. zaino),
+     * dopo l'apertura viene rimosso dalla stanza. Se è una cassa fissa, resta visibile.
+     *
+     * @param openableObj   L'interfaccia di apertura dell'oggetto.
+     * @param clickedObject L'entità base dell'oggetto cliccato.
+     * @param response      Lo StringBuilder per i messaggi.
+     */
     private void handleOpening(Openable openableObj, GameObject clickedObject, StringBuilder response) {
         if (!openableObj.isOpen()) {
             openableObj.open();
@@ -175,6 +207,13 @@ public class ObjInteractionController extends BaseController {
         }
     }
 
+    /**
+     * Svuota gli oggetti presenti all'interno di un contenitore, trasferendoli
+     * automaticamente nell'inventario del giocatore.
+     *
+     * @param clickedObject L'oggetto cliccato (che dovrebbe essere un ObjectContainer).
+     * @param response      Lo StringBuilder per i messaggi visivi.
+     */
     private void handleContainerLoot(GameObject clickedObject, StringBuilder response) {
         if (!(clickedObject instanceof ObjectContainer)) {
             return;
@@ -193,7 +232,7 @@ public class ObjInteractionController extends BaseController {
                 container.getInsideItems().remove(objDentro);
             }
 
-            // Se lo Zaino viene svuotato, lo facciamo sparire (se non è già stato rimosso)
+            // Se uno Zaino viene svuotato, lo facciamo sparire
             if (!(clickedObject instanceof Lockable)) {
                 model.getCurrentRoom().removeObject(clickedObject);
             }
@@ -201,7 +240,7 @@ public class ObjInteractionController extends BaseController {
         } else {
             response.append("Non c'è niente dentro, è già vuoto.");
 
-            // Se un oggetto già vuoto viene cliccato, sparisce solo se NON è Lockable
+            // Se un oggetto già vuoto viene cliccato, sparisce solo se non è Lockable
             if (!(clickedObject instanceof Lockable)) {
                 model.getCurrentRoom().removeObject(clickedObject);
             }

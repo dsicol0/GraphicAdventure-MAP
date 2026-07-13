@@ -9,11 +9,31 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+
+/**
+ * Finestra di dialogo personalizzata per la selezione 
+ * di un oggetto dall'inventario.
+ *
+ * Progettata per essere invocata principalmente durante le fasi come il combattimento,
+ * questa View è una finestra modale. L'interfaccia 
+ * viene costruita dinamicamente a run-time iterando sulla collezione degli oggetti 
+ * posseduti dal giocatore.
+ *
+ */
 public class InventoryDialog extends JDialog {
 
     private JPanel jpItemsContainer;
     private GameObject selectedItem = null;
 
+    /**
+     * Costruisce la finestra dell'inventario.
+     * Invoca il costruttore della superclasse impostando il flag {@code modal} a true,
+     * impedendo così all'utente di cliccare altrove finché non ha effettuato una scelta 
+     * o chiuso la finestra.
+     *
+     * @param parentFrame Il frame padre su cui centrare il pop-up.
+     * @param items La lista dei {@link GameObject} da mostrare graficamente.
+     */
     public InventoryDialog(Frame parentFrame, List<GameObject> items) {
 
         super(parentFrame, "Inventory", true);
@@ -54,7 +74,16 @@ public class InventoryDialog extends JDialog {
     }
 
     /**
-     * Crea il singolo quadratino dell'inventario per un oggetto
+     * Costruisce graficamente un singolo "Slot" (Pannello quadrato) per l'oggetto,
+     * caricandone l'icona e impostando i listener per l'interazione.
+     *
+     * Sfrutta l'implementazione di una Classe Anonima
+     * per gestire gli eventi di passaggio del mouse (effetto hover) e il click 
+     * di selezione,.
+     *
+     *
+     * @param item L'oggetto del Modello di cui generare la rappresentazione visiva.
+     * @return Il {@link JPanel} completamente configurato.
      */
     private JPanel createItemSlot(GameObject item) {
         JPanel itemSlot = new JPanel();
@@ -109,6 +138,13 @@ public class InventoryDialog extends JDialog {
         return itemSlot;
     }
 
+    /**
+     * Permette alla classe chiamante di recuperare in modo sicuro (tramite incapsulamento) 
+     * l'oggetto selezionato dal giocatore una volta che la finestra è stata chiusa.
+     *
+     * @return L'istanza di {@link GameObject} scelta, oppure {@code null} se 
+     * la finestra è stata chiusa senza selezioni.
+     */
     public GameObject getSelectedItem() {
         return selectedItem;
     }

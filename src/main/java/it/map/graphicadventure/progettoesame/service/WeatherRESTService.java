@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
+ * Servizio RESTful che agisce da Client per l'API esterna OpenWeatherMap.
  *
- * @author antoniostilla
  */
 public class WeatherRESTService {
     
@@ -22,14 +22,16 @@ public class WeatherRESTService {
 
 
     /**
-     * Classe contenitore per mappare il JSON di OpenWeatherMap.
+     * Classe contenitore utilizzata per mappare il JSON di risposta di OpenWeatherMap.
+     * La libreria Gson sfrutterà la Reflection (identificazione dei tipi a run-time) 
+     * per popolare automaticamente questi attributi partendo dalla stringa JSON.
      */
     public static class OpenWeatherResponse {
         public WeatherData[] weather;
     }
 
     /**
-     * Struttura dei dati meteo nel JSON.
+     * Struttura annidata che rappresenta il singolo blocco di dati meteo nel JSON.
      */
     public static class WeatherData {
         public String main;
@@ -37,28 +39,39 @@ public class WeatherRESTService {
     }
 
     /**
-     * Esegue una chiamata REST GET e restituisce l'atmosfera attuale.
+     * Esegue una chiamata REST e restituisce una stringa 
+     * rappresentante l'atmosfera attuale per la GUI.
+     *
+     * Costruisce l'URI in modo dinamico aggiungendo i parametri ({@code queryParam}) 
+     * necessari per l'autenticazione e la ricerca. Successivamente, estrae il payload 
+     * della risposta e lo affida alla libreria {@link Gson} per la deserializzazione
+     * dal formato testuale JSON agli oggetti Java.
+     *
+     * @return Una stringa formattata (es. "RAIN", "SUN") che il motore grafico 
+     * utilizzerà per applicare il filtro visivo corretto. Restituisce "DEFAULT" 
+     * in caso di errore di rete.
      */
     public static String getCurrentAtmosphere() {
         try {
             
+            // Inizializzazione del Client
             Client client = ClientBuilder.newClient();
             WebTarget target = client.target("https://api.openweathermap.org/data/2.5");
             
-            
+            // Costruzione ed esecuzione della richiesta GET richiedendo esplicitamente il formato JSON
             Response resp = target.path("weather")
                     .queryParam("appid", API_KEY)
                     .queryParam("q", CITY)
                     .request(MediaType.APPLICATION_JSON).get();
 
-            
+            // Estrazione del body (payload) della risposta sotto forma di Stringa
             String jsonResponse = resp.readEntity(String.class);
 
-            
+            // Deserializzazione del JSON in oggetti Java tramite Gson
             Gson gson = new Gson();
             OpenWeatherResponse data = gson.fromJson(jsonResponse, OpenWeatherResponse.class);
 
-            
+            // Lettura del dato estratto e conversione nel formato interno del gioco
             if (data != null && data.weather != null && data.weather.length > 0) {
                 String mainCondition = data.weather[0].main;
                 

@@ -9,13 +9,25 @@ import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.model.interfaces.Usable;
 
 /**
+ * Rappresenta una chiave all'interno del gioco.
+ * Estende {@link GameObject} per essere posizionata nella mappa e implementa
+ * {@link Takeable} per poter essere raccolta nell'inventario e {@link Usable} 
+ * per interagire con altri oggetti (nello specifico, per aprire i forzieri).
  *
- * @author David
  */
 public class Key extends GameObject implements Takeable, Usable {
 
     private boolean takeable;
 
+    /**
+     * Costruisce una nuova chiave.
+     * Di default, l'oggetto appena creato viene impostato come raccoglibile.
+     *
+     * @param id L'identificativo univoco della chiave.
+     * @param name Il nome della chiave (es. "Chiave d'oro").
+     * @param description La descrizione mostrata esaminando la chiave.
+     * @param imagePath Il percorso dell'immagine associata.
+     */
     public Key(int id, String name, String description, String imagePath) {
 
         super(id, name, description, imagePath);
@@ -23,7 +35,6 @@ public class Key extends GameObject implements Takeable, Usable {
         this.takeable = true;
     }
 
-    // metodo di Takeable
     @Override
     public boolean isTakeable() {
         return this.takeable;
@@ -34,10 +45,19 @@ public class Key extends GameObject implements Takeable, Usable {
         this.takeable = takeable;
     }
 
-    // metodo di Usable
+    /**
+     * Tenta di usare la chiave su un altro oggetto del gioco.
+     * Utilizza l'operatore {@code instanceof} (RTTI) per 
+     * verificare a run-time se il bersaglio è effettivamente un forziere ({@link Chest}).
+     * In caso affermativo, effettua un cast (downcasting) e prova a sbloccarlo passando
+     * se stessa al forziere.
+     *
+     * @param target L'oggetto su cui il giocatore sta provando ad usare la chiave.
+     * @return {@code true} se la chiave ha aperto con successo il bersaglio, 
+     * {@code false} se la chiave è sbagliata o se il bersaglio non è un forziere.
+     */
     @Override
     public boolean use(GameObject target) {
-        // Se proviamo a usare la chiave su una Cassa...
         if (target instanceof Chest) {
             Chest chest = (Chest) target;
             

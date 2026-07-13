@@ -13,8 +13,14 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 /**
+ * Finestra di dialogo modale che gestisce l'interfaccia 
+ * grafica e la logica di combattimento a turni.
  *
- * @author antoniostilla
+ * Nel pattern architetturale MVC, funge da View per mostrare le statistiche di scontro, 
+ * ma incorpora anche la logica locale per la risoluzione dei turni. È progettata come 
+ * finestra modale: blocca l'input del Frame sottostante finché l'utente non 
+ * sconfigge il nemico, fugge o muore.
+ *
  */
 public class CombatDialog extends javax.swing.JDialog {
     
@@ -26,12 +32,15 @@ public class CombatDialog extends javax.swing.JDialog {
     private boolean fled = false;
     
     /**
-     * Creates new form CombatDialog
-     * @param parent
-     * @param modal
-     * @param zombie
-     * @param player
-     * @param inventory
+     * Costruisce e inizializza la schermata di combattimento.
+     * Oltre a impostare i testi iniziali, si occupa di caricare dinamicamente 
+     * l'immagine del nemico, ridimensionandola per adattarla al pannello grafico.
+     *
+     * @param parent Il frame genitore a cui ancorare questa finestra.
+     * @param modal Se {@code true}, blocca le interazioni con il frame padre.
+     * @param zombie L'oggetto modello che rappresenta il nemico da affrontare.
+     * @param player L'oggetto modello del giocatore (per manipolarne gli HP).
+     * @param inventory La lista degli oggetti posseduti per l'uso di armi.
      */
     public CombatDialog(java.awt.Frame parent, boolean modal, Zombie zombie, Player player, List<GameObject> inventory){
         super(parent, modal);
@@ -70,11 +79,20 @@ public class CombatDialog extends javax.swing.JDialog {
     public boolean isCombatWon() { return combatWon; }
     public boolean hasFled() { return fled; }
 
+    /**
+     * Aggiorna l'area di testo (log) del combattimento scorrendo automaticamente 
+     * in basso per mostrare l'azione più recente.
+     */
     private void logAction(String text) {
         jtaCombatLog.append("\n> " + text);
         jtaCombatLog.setCaretPosition(jtaCombatLog.getDocument().getLength());
     }
 
+    /**
+     * Risolve il turno del combattimento.
+     * Controlla prima le condizioni di vittoria (morte del nemico). In caso contrario, 
+     * elabora il contrattacco dello zombie e aggiorna l'interfaccia.
+     */
     private void checkTurn() {
         if (zombie.isDead()) {
             
@@ -232,6 +250,9 @@ public class CombatDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Esegue l'attacco base (a mani nude) e invoca il calcolo del turno.
+     */
     private void jbAttackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbAttackActionPerformed
         if(zombie.isDead() || player.getHp() <= 0) return;
         int playerDamage = 50; 
@@ -240,6 +261,13 @@ public class CombatDialog extends javax.swing.JDialog {
         checkTurn();
     }//GEN-LAST:event_jbAttackActionPerformed
 
+    /**
+     * Listener registrato sul bottone "USA ZAINO".
+     * Apre in sovraimpressione l'inventario per permettere la selezione di un oggetto.
+     * Sfrutta l'operatore {@code instanceof} (RTTI) 
+     * per verificare se l'oggetto selezionato è concretamente un'arma ({@link Weapon}) prima 
+     * di estrarne il valore di danno e applicarlo al nemico.
+     */
     private void jbItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbItemActionPerformed
         if(zombie.isDead() || player.getHp() <= 0) return;
         if (inventory.isEmpty()) {
@@ -266,6 +294,11 @@ public class CombatDialog extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jbItemActionPerformed
 
+    /**
+     * Listener registrato sul bottone "FUGGI".
+     * Chiude la finestra corrente restituendo il controllo alla mappa, ma segnalando 
+     * la fuga tramite la flag apposita.
+     */
     private void jbFleeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbFleeActionPerformed
         fled = true;
         dispose();

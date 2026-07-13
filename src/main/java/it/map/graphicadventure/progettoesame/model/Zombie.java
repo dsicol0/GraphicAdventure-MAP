@@ -6,22 +6,36 @@ package it.map.graphicadventure.progettoesame.model;
 import java.util.Random;
 
 /**
+ * Rappresenta un nemico (NPC ostile) all'interno del gioco.
  *
- * @author David
+ * Questa classe estende {@link GameObject}, ereditandone le proprietà fisiche e di 
+ * base (nome, descrizione, ID). Aggiunge attributi specifici per il combattimento 
+ * (vita e danno) che vengono inizializzati in modo dinamico sfruttando la classe 
+ * di Java, Random, per garantire imprevedibilità.
+ *
  */
 public class Zombie extends GameObject {
     
     private int life;
     private int damage;
     
+    /**
+     * Costruisce un nuovo nemico di tipo Zombie.
+     * Le sue statistiche (vita e danni) non sono fisse, ma vengono calcolate 
+     * in modo pseudo-casuale al momento dell'istanziazione.
+     *
+     * @param id L'identificativo univoco dello zombie.
+     * @param name Il nome del nemico.
+     * @param description La descrizione visibile al giocatore.
+     * @param imagePath Il percorso dell'immagine (sprite) associata.
+     */
     public Zombie(int id, String name, String description, String imagePath) {
         super(id, name, description, imagePath);
         
-        
         Random rand = new Random();
-        // Vita casuale tra 60 e 100
+        // Genera una quantità di vita casuale (da 50 a 110)
         this.life = rand.nextInt(61) + 50;
-        // Danno casuale tra 15 e 25
+        // Genera un ammontare di danno casuale (da 15 a 39)
         this.damage = rand.nextInt(25) + 15;
     }
 
@@ -32,7 +46,13 @@ public class Zombie extends GameObject {
     
     public void setDamage(int damage) { this.damage = damage; }
     
-    
+    /**
+     * Riduce i punti vita dello zombie a seguito di un attacco.
+     * Implementa un boundary check per assicurarsi che i punti vita 
+     * non scendano mai sotto lo zero, evitando bug logici nel sistema di combattimento.
+     *
+     * @param damageTaken La quantità di danno subita dall'attacco del giocatore.
+     */
     public void takeDamage(int damageTaken) {
         this.life -= damageTaken;
         if (this.life < 0) {
@@ -40,6 +60,11 @@ public class Zombie extends GameObject {
         }
     }
     
+    /**
+     * Verifica se lo zombie è stato definitivamente sconfitto.
+     *
+     * @return {@code true} se la vita è scesa a 0, {@code false} se è ancora in vita.
+     */
     public boolean isDead() {
         return this.life == 0;
     }

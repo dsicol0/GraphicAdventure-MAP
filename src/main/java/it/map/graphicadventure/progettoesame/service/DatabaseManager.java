@@ -7,11 +7,17 @@ import java.sql.*;
 import java.util.Properties;
 
 /**
+ * Classe responsabile della gestione della connessione al database tramite l'API JDBC.
+ * 
+ * Questa classe centralizza l'accesso alla base di dati locale. 
+ * Oltre a fornire l'oggetto {@link Connection}, si occupa di garantire l'integrità 
+ * dello schema relazionale iniziale: al momento della prima connessione esegue 
+ * una serie di istruzioni per creare le tabelle 
+ * e stabilire i vincoli di integrità referenziale, 
+ * qualora non fossero già presenti nel file di database.
  *
- * @author antoniostilla
  */
 public class DatabaseManager {
-
     
     private static final String TABLE_GAMES = "CREATE TABLE IF NOT EXISTS games ("
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -50,8 +56,22 @@ public class DatabaseManager {
         + "room_id TEXT NOT NULL, "
         + "FOREIGN KEY(game_id) REFERENCES games(id) ON DELETE CASCADE)";
 
+    /** Istanza della connessione mantenuta attiva. */
     private Connection conn = null;
 
+    /**
+     * Restituisce l'istanza corrente della connessione al database.
+     *
+     * Implementa una logica di inizializzazione: 
+     * se la connessione non è ancora stata stabilita, provvede a crearla. Utilizza un oggetto 
+     * {@link Statement} per eseguire tutte le query di setup delle tabelle, 
+     * chiudendo lo Statement al termine per rilasciare le risorse.
+     *
+     *
+     * @return L'oggetto {@link Connection} pronto per eseguire le query.
+     * @throws SQLException Se si verifica un errore durante l'apertura della connessione 
+     * o l'esecuzione delle query strutturali.
+     */
     public Connection getConnection() throws SQLException {
         if (conn != null) {
             return conn;
@@ -73,6 +93,15 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Chiude la connessione al database in modo sicuro, liberando le risorse associate.
+     *
+     * È fondamentale richiamare questo metodo al termine dell'applicazione per 
+     * evitare memory leaksul file del db.
+     *
+     *
+     * @throws SQLException Se si verifica un errore durante la fase di chiusura del socket/file.
+     */
     public void closeConnection() throws SQLException {
         if (this.conn != null) {
             conn.close();

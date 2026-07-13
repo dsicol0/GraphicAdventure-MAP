@@ -14,18 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Implementazione del pattern DAO (Data Access Object).
+ * 
+ * Fornisce un'interfaccia a oggetti, prendendo in carico la trasformazione 
+ * delle query SQL tramite l'API JDBC.
  *
- * @author antoniostilla
  */
 public class GameSaveDAO {
 
+    /** Riferimento alla connessione attiva verso il DBMS. */
     private final Connection connection;
 
+    /**
+     * Costruisce il DAO iniettando la connessione attiva.
+     *
+     * @param connection Oggetto Connection fornito dal {@link DatabaseManager}.
+     */
     public GameSaveDAO(Connection connection) {
         this.connection = connection;
     }
 
-    
+    /**
+     * Classe di supporto (interna) per gestire il salvataggio dello stato 
+     * dei singoli oggetti.
+     */
     public static class ObjectSave {
 
         private final String objectId;
@@ -51,10 +63,22 @@ public class GameSaveDAO {
         }
     }
 
-    
+    /**
+     * Esegue il salvataggio completo della sessione di gioco all'interno del Database.
+     *
+     * @param roomName ID testuale della stanza corrente.
+     * @param health Punti vita attuali del giocatore.
+     * @param itemIds Lista degli ID degli oggetti nello zaino.
+     * @param killedEnemyIds Lista degli ID dei nemici abbattuti.
+     * @param unlockedRoomIds Lista delle porte precedentemente bloccate e ora aperte.
+     * @param timeRemaining Secondi rimanenti per il timer di gioco.
+     * @throws SQLException In caso di errore durante l'esecuzione delle query.
+     */
     public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) throws SQLException {
+        // Inizia la transazione
         connection.setAutoCommit(false);
 
+        // Salva i dati base della partita e recupera la chiave primaria generata (gameId)
         PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         stmGame.setString(1, roomName);
         stmGame.setInt(2, health);
@@ -69,7 +93,7 @@ public class GameSaveDAO {
         keys.close();
         stmGame.close();
 
-        // Salva inventario
+        // Salva l'inventario usando executeBatch per ottimizzare la scrittura
         PreparedStatement stmInv = connection.prepareStatement("INSERT INTO inventory_saves(game_id, item_id) VALUES (?, ?)");
         for (String itemId : itemIds) {
             stmInv.setInt(1, gameId);
@@ -89,6 +113,7 @@ public class GameSaveDAO {
         stmKilled.executeBatch();
         stmKilled.close();
 
+        // Salva le porte sbloccate
         PreparedStatement stmRooms = connection.prepareStatement("INSERT INTO unlocked_rooms_saves(game_id, room_id) VALUES (?, ?)");
         for (String roomId : unlockedRoomIds) {
             stmRooms.setInt(1, gameId);
@@ -98,10 +123,24 @@ public class GameSaveDAO {
         stmRooms.executeBatch();
         stmRooms.close();
 
+        // Conferma la transazione
         connection.commit();
         connection.setAutoCommit(true);
     }
 
+    /**
+     * Recupera l'ultimo salvataggio effettuato ricaricando le informazioni da 
+     * tutte le tabelle relazionali interessate.
+     *
+     * Utilizza un oggetto {@link Statement} semplice (senza parametri) per la 
+     * query principale di selezione, per poi iterare sul {@link ResultSet} per 
+     * navigare le tuple restituite (il puntatore viene mosso tramite {@code rs.next()}).
+     *
+     *
+     * @return L'oggetto {@link SaveData} riempito con lo stato della partita, 
+     * oppure {@code null} se non ci sono salvataggi.
+     * @throws SQLException Se si verifica un errore durante le query di SELECT.
+     */
     public SaveData getLatestSave() throws SQLException {
         Statement stm = connection.createStatement();
         ResultSet rs = stm.executeQuery("SELECT id, current_room, health, time_remaining FROM games ORDER BY id DESC LIMIT 1");
@@ -114,12 +153,13 @@ public class GameSaveDAO {
             String room = rs.getString("current_room");
             int health = rs.getInt("health");
             int timeRemaining = rs.getInt("time_remaining");
-          
+            
             data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), timeRemaining);
         }
         rs.close();
         stm.close();
 
+        // Se un salvataggio principale esiste, procede al caricamento delle relazioni
         if (data != null && gameId != -1) {
             // Recupera inventario
             PreparedStatement pstm = connection.prepareStatement("SELECT item_id FROM inventory_saves WHERE game_id = ?");
@@ -141,11 +181,12 @@ public class GameSaveDAO {
             rsKilled.close();
             pstmKilled.close();
 
+            // Recupera le stanze sbloccate
             PreparedStatement pstmRooms = connection.prepareStatement("SELECT room_id FROM unlocked_rooms_saves WHERE game_id = ?");
             pstmRooms.setInt(1, gameId);
             ResultSet rsRooms = pstmRooms.executeQuery();
             while (rsRooms.next()) {
-                data.getUnlockedRoomIds().add(rsRooms.getString("room_id")); // Assicurati di avere questo getter/lista in SaveData
+                data.getUnlockedRoomIds().add(rsRooms.getString("room_id")); 
             }
             rsRooms.close();
             pstmRooms.close();
@@ -153,6 +194,13 @@ public class GameSaveDAO {
         return data;
     }
 
+    /**
+     * Inserisce un nuovo record nel log degli eventi del database.
+     *
+     * @param eventType La categoria dell'evento (es. KILLED, INTERACTED, SYSTEM).
+     * @param description Una descrizione discorsiva di cosa è successo.
+     * @throws SQLException Se l'inserimento non va a buon fine.
+     */
     public void logEvent(String eventType, String description) throws SQLException {
         PreparedStatement stm = connection.prepareStatement("INSERT INTO event_log(event_type, description) VALUES (?, ?)");
         stm.setString(1, eventType.toUpperCase());
@@ -161,6 +209,13 @@ public class GameSaveDAO {
         stm.close();
     }
 
+    /**
+     * Interroga il database per verificare la presenza di salvataggi pregressi.
+     * Viene usato per capire se attivare il tasto "Continua Partita" nel menù.
+     *
+     * @return {@code true} se la tabella 'games' contiene almeno un record, {@code false} altrimenti.
+     * @throws SQLException Se si verifica un errore durante la query di conteggio.
+     */
     public boolean hasSavedGame() throws SQLException {
         Statement stm = connection.createStatement();
         ResultSet rs = stm.executeQuery("SELECT COUNT(id) FROM games");

@@ -7,13 +7,22 @@ package it.map.graphicadventure.progettoesame.model.interfaces;
 import it.map.graphicadventure.progettoesame.model.GameObject;
 
 /**
+ * Interfaccia che definisce il comportamento degli oggetti utilizzabili in modo attivo.
+ * Le classi che implementano {@code Usable} (come Chiavi, Armi o Chip) possono 
+ * interagire con altri oggetti specifici presenti nell'ambiente di gioco.
  *
- * @author David
  */
 public interface Usable {
-    /* 
-        Il metodo restituisce 'true' se l'uso ha avuto successo (es. la chiave ha aperto la porta),
-        'false' se non è successo nulla (es. hai usato la chiave su un muro).
-    */ 
+    
+    /**
+     * Applica l'effetto dell'oggetto corrente su un bersaglio (target).
+     * La logica specifica di interazione viene definita dalla classe concreta 
+     * (es. infliggere danni se l'oggetto è un'arma, oppure sbloccare una serratura 
+     * se l'oggetto è una chiave).
+     *
+     * @param target L'oggetto del mondo di gioco su cui si tenta di usare questo strumento.
+     * @return {@code true} se l'interazione ha avuto successo (es. la chiave ha aperto la porta), 
+     * {@code false} se non è successo nulla (es. si è provato a usare la chiave su un muro).
+     */
     boolean use(GameObject target);
 }

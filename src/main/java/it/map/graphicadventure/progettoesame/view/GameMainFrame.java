@@ -16,8 +16,14 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.BorderFactory;
 
 /**
+ * Finestra principale dell'applicazione.
  *
- * @author David
+ * Agisce come contenitore "Root" per l'interfaccia grafica. Ricopre un ruolo di 
+ * primo piano nel pattern architetturale MVC: 
+ * è responsabile dell'istanziazione iniziale del Modello e del Controller, 
+ * nonché dello scambio dinamico dei pannelli (dal Menù Principale al Pannello di Gioco) 
+ * all'interno del suo {@code ContentPane}.
+ *
  */
 public class GameMainFrame extends javax.swing.JFrame {
 
@@ -27,7 +33,12 @@ public class GameMainFrame extends javax.swing.JFrame {
     private GamePanel gamePanel;
 
     /**
-     * Creates new form GameMainFrame
+     * Costruisce la finestra principale e avvia l'architettura del gioco.
+     *
+     * Questo costruttore orchestra il setup iniziale: inizializza i componenti 
+     * grafici , crea le istanze di Model, View e Controller collegandole 
+     * tra loro, carica le risorse e invoca il servizio RESTful per impostare 
+     * lo sfondo in base al meteo reale.
      */
     public GameMainFrame() {
 
@@ -119,6 +130,15 @@ public class GameMainFrame extends javax.swing.JFrame {
         return this.gamePanel;
     }
 
+    /**
+     * Mostra la finestra di dialogo modale per la gestione dei combattimenti.
+     * Blocca l'esecuzione sottostante finché l'utente non termina l'incontro.
+     *
+     * @param enemy Il nemico affrontato.
+     * @param player Il giocatore corrente.
+     * @param inventory L'inventario disponibile per l'uso in combattimento.
+     * @return Un codice numerico rappresentante l'esito: 1 (Vittoria), 2 (Fuga), 3 (Sconfitta), 0 (Altro).
+     */
     public int showCombatWindow(Zombie enemy, Player player, java.util.List<GameObject> inventory) {
         CombatDialog dialog = new CombatDialog(this, true, enemy, player, inventory);
         dialog.setVisible(true);
@@ -133,6 +153,11 @@ public class GameMainFrame extends javax.swing.JFrame {
         return 0; // 0 = Annullato/Altro
     }
 
+    /**
+     * Apre la finestra grafica contenente la classifica dei punteggi.
+     * @param classifica La stringa formattata ricevuta dal server.
+     * @param title Il titolo della finestra di dialogo.
+     */
     public void showLeaderboardDialog(String classifica, String title) {
 
         LeaderboardDialog leadDialog = new LeaderboardDialog(this, true, classifica);
@@ -153,6 +178,10 @@ public class GameMainFrame extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Invoca il servizio REST per determinare le condizioni atmosferiche e 
+     * adatta di conseguenza lo sfondo dell'interfaccia.
+     */
     private void applyDynamicWeatherBackground() {
         try {
             String atmosphere = WeatherRESTService.getCurrentAtmosphere();
@@ -294,6 +323,9 @@ public class GameMainFrame extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jbQuitActionPerformed
 
+    /**
+     * Sostituisce dinamicamente il menù principale con il pannello di gioco.
+     */
     public void showGamePanel() {
         // 1. Sostituisce completamente il menu con il pannello di gioco
         this.setContentPane(gamePanel);
@@ -306,6 +338,9 @@ public class GameMainFrame extends javax.swing.JFrame {
         gamePanel.requestFocusInWindow();
     }
 
+    /**
+     * Sostituisce il pannello di gioco ripristinando il menù principale.
+     */
     public void showMainMenu() {
         // 1. Sostituisce il pannello di gioco rimettendo il menu iniziale
         this.setContentPane(jpMenu);
@@ -323,6 +358,11 @@ public class GameMainFrame extends javax.swing.JFrame {
         controller.startNewGame();
     }//GEN-LAST:event_jbNewGameActionPerformed
 
+    
+    /**
+     * Listener per il recupero di un salvataggio precedente.
+     * Delega l'operazione interamente al Controller.
+     */
     private void jbContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbContinueActionPerformed
         if (controller != null) {
             // Deleghiamo tutta la logica complessa al GameController

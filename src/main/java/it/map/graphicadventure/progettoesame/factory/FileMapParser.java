@@ -19,8 +19,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Classe di utilità per caricare la mappa di gioco da un file di testo.
+ * Analizza il file riga per riga e istanzia le stanze, i collegamenti (uscite) 
+ * e gli oggetti fisici all'interno del mondo.
+ */
 public class FileMapParser {
 
+    /**
+     * Legge il file di configurazione della mappa e costruisce le stanze.
+     * Utilizza un BufferedReader in un blocco try-with-resources per garantire 
+     * la chiusura automatica dello stream alla fine della lettura.
+     *
+     * @param filePath Il percorso del file di testo da leggere (es. "src/.../map.txt").
+     * @return La lista completa delle stanze generate e popolate.
+     * @throws IOException Se si verifica un errore di lettura o se il file non viene trovato.
+     */
     public static List<Room> loadMapFromFile(String filePath) throws IOException {
         List<Room> rooms = new ArrayList<>();
         Map<Integer, Room> roomMap = new HashMap<>();
@@ -47,7 +61,15 @@ public class FileMapParser {
         return rooms;
     }
 
-
+    /**
+     * Smista la riga letta al metodo di parsing corretto in base alla sezione
+     * attuale del file (es. stanze, uscite o oggetti).
+     *
+     * @param section La sezione corrente del file (es. "[ROOMS]").
+     * @param line La riga di testo da analizzare.
+     * @param rooms La lista globale delle stanze.
+     * @param roomMap Una mappa di supporto per trovare velocemente le stanze tramite il loro ID.
+     */
     private static void processLine(String section, String line, List<Room> rooms, Map<Integer, Room> roomMap) {
         switch (section) {
             case "[ROOMS]":
@@ -62,6 +84,13 @@ public class FileMapParser {
         }
     }
 
+    /**
+     * Crea un'istanza di Room partendo da una riga di testo delimitata da punto e virgola.
+     *
+     * @param line La riga contenente i dati della stanza.
+     * @param rooms La lista in cui aggiungere la nuova stanza.
+     * @param roomMap La mappa in cui registrare la stanza usando l'ID come chiave.
+     */
     private static void parseRoom(String line, List<Room> rooms, Map<Integer, Room> roomMap) {
         String[] parts = line.split(";");
         if (parts.length < 3) return;
@@ -76,6 +105,12 @@ public class FileMapParser {
         roomMap.put(id, room);
     }
 
+    /**
+     * Collega due stanze tra loro impostando le uscite (es. da stanza 1 a est vai a stanza 2).
+     *
+     * @param line La riga contenente ID origine, direzione e ID destinazione.
+     * @param roomMap La mappa per recuperare rapidamente le istanze delle stanze.
+     */
     private static void parseExit(String line, Map<Integer, Room> roomMap) {
         String[] parts = line.split(";", 3);
         if (parts.length < 3) return;
@@ -92,6 +127,12 @@ public class FileMapParser {
         }
     }
 
+    /**
+     * Legge una riga di configurazione di un oggetto e lo aggiunge alla stanza corretta.
+     *
+     * @param line La stringa con i dati dell'oggetto (ID, tipo, nome, coordinate, ecc.).
+     * @param roomMap La mappa per recuperare la stanza a cui assegnare l'oggetto.
+     */
     private static void parseObject(String line, Map<Integer, Room> roomMap) {
         String[] parts = line.split(";");
         if (parts.length < 10) return;
@@ -124,7 +165,17 @@ public class FileMapParser {
     }
 
     /**
-     * Factory Method: si occupa solo di istanziare la classe giusta in base alla stringa.
+     * Implementazione del pattern Factory Method.
+     * Valuta la stringa del tipo (es. "Key" o "Weapon") e istanzia la sottoclasse
+     * corretta di GameObject sfruttando il polimorfismo.
+     *
+     * @param type Il tipo di oggetto letto dal file.
+     * @param id L'identificativo numerico dell'oggetto.
+     * @param name Il nome dell'oggetto.
+     * @param desc La descrizione dell'oggetto.
+     * @param img Il percorso dell'immagine dell'oggetto.
+     * @param parts L'array completo di informazioni (usato per estrarre attributi extra come i danni).
+     * @return L'istanza concreta dell'oggetto creato, o null se il tipo non esiste.
      */
     private static GameObject createObjectInstance(String type, int id, String name, String desc, String img, String[] parts) {
         switch (type.trim()) {
@@ -151,5 +202,4 @@ public class FileMapParser {
                 return null;
         }
     }
-
 }

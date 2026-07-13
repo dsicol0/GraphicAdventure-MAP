@@ -8,13 +8,25 @@ import java.awt.Color;
 import java.awt.Frame;
 
 /**
+ * Finestra di dialogo modale dedicata alla visualizzazione 
+ * della classifica globale dei punteggi.
  *
- * @author antoniostilla
+ * In ottica MVC, questa classe funge da View passiva: non effettua chiamate di rete 
+ * né elabora dati. Si limita a ricevere una stringa già formattata dal Controller e a 
+ * mostrarla all'interno di un'area di testo incapsulata 
+ * in un pannello a scorrimento.
+ * Essendo modale, blocca l'interazione con il frame padre finché non viene chiusa.
+ *
  */
 public class LeaderboardDialog extends javax.swing.JDialog {
 
     /**
-     * Creates new form LeaderboardDialog
+     * Costruisce e inizializza la schermata della classifica.
+     *
+     * @param parent Il frame genitore, utilizzato per centrare la finestra di dialogo.
+     * @param modal Booleano per impostare la modalità di blocco della finestra.
+     * @param leaderboardData La stringa contenente i dati della classifica elaborati dal Server, 
+     * o {@code null}/vuota in caso di server irraggiungibile.
      */
     public LeaderboardDialog(Frame parent, boolean modal, String leaderboardData) {
         super(parent, modal);
@@ -99,6 +111,15 @@ public class LeaderboardDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Listener registrato sul bottone "CHIUDI".
+     *
+     * Utilizza il metodo {@code dispose()} per eliminare l'oggetto grafico, 
+     * restituendo il controllo alla finestra genitore.
+     * </p>
+     *
+     * @param evt L'evento dal click sul bottone.
+     */
     private void jbCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCloseActionPerformed
         dispose();
     }//GEN-LAST:event_jbCloseActionPerformed

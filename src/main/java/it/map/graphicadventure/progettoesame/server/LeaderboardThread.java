@@ -15,8 +15,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Gestisce la comunicazione autonoma con un singolo client connesso al server.
+ * 
+ * Estendendo la classe {@link Thread}, permette al server di essere Multi-Threaded 
+ * e di servire richieste concorrenti. Interpreta i messaggi in ingresso tramite 
+ * I/O Stream e utilizza le Espressioni Regolari (Regex) per fare 
+ * il parsing del protocollo testuale di comunicazione (es. comandi #score, #top).
  *
- * @author antoniostilla
  */
  public class LeaderboardThread extends Thread {
 
@@ -25,16 +30,32 @@ import java.util.regex.Pattern;
     private final LeaderboardData ld;
     private PrintWriter out = null;
 
+    /**
+     * Costruisce il thread dedicato alla singola connessione.
+     *
+     * @param socket Il socket accettato dal ServerSocket principale.
+     * @param ld Il riferimento all'oggetto condiviso (e sincronizzato) che contiene la classifica.
+     * @param name L'identificativo assegnato a questo specifico Thread.
+     */
     public LeaderboardThread(Socket socket, LeaderboardData ld, String name) {
         this.socket = socket;
         this.ld = ld;
         this.setName(name);
     }
 
+    /**
+     * Ciclo di vita del thread. 
+     * Inizializza i flussi di Input/Output e cicla continuamente in ascolto di messaggi 
+     * finché il client non invia il comando di chiusura.
+     * Garantisce una gestione robusta degli errori rilasciando sempre le risorse 
+     * di rete all'interno del blocco {@code finally}.
+     */
     @Override
     public void run() {
         try {
             System.out.println("Connessione classifica accettata: " + socket);
+            
+            // Wrapping del flusso di byte in flusso di caratteri bufferizzato per lettura/scrittura ottimizzata
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
             
@@ -43,22 +64,28 @@ import java.util.regex.Pattern;
                 if (str != null) {
                     str = str.trim();
                     
+                    // Utilizzo delle espressioni regolari per isolare i token (parole separate da spazi)
                     Pattern pattern = Pattern.compile("\\S+");
                     Matcher matcher = pattern.matcher(str);
                     boolean findcmd = matcher.find();
                     
+                    // Comando per registrare un nuovo punteggio
                     if (findcmd && matcher.group().equalsIgnoreCase("#score")) {
                         
                         String name = null;
                         String scoreStr = null;
+                        
+                        // Estrazione iterativa dei gruppi (nome e punteggio)
                         if (matcher.find()) {
                             name = matcher.group();
                             if (matcher.find()) {
                                 scoreStr = matcher.group();
                             }
                         }
+                        
                         if (name != null && scoreStr != null) {
                             try {
+                                // Conversione sicura: cattura possibili errori di formato se l'utente invia lettere invece di numeri
                                 int score = Integer.parseInt(scoreStr);
                                 ld.addScore(name, score);
                                 out.println("#ok Punteggio registrato");
@@ -69,12 +96,14 @@ import java.util.regex.Pattern;
                              out.println("#error Parametri mancanti");
                         }
                         
+                    // Comando per richiedere la lettura della classifica
                     } else if (findcmd && matcher.group().equalsIgnoreCase("#top")) {
                         
                         out.println("#start_top");
                         out.println(ld.getTopLeaderboard());
                         out.println("#end_top");
                         
+                    // Comando di terminazione connessione
                     } else if (findcmd && matcher.group().equalsIgnoreCase("#exit")) {
                         run = false;
                     } else {
@@ -83,12 +112,16 @@ import java.util.regex.Pattern;
                 }
             }
         } catch (IOException ex) {
-            System.err.println(ex);
+            System.err.println("Errore di I/O nel Thread: " + ex);
         } finally {
+            // Blocco finally vitale: si assicura che il socket venga chiuso 
+            // a prescindere dall'esito (successo o eccezione)
             try {
-                socket.close();
+                if (socket != null && !socket.isClosed()) {
+                    socket.close();
+                }
             } catch (IOException ex) {
-                System.err.println(ex);
+                System.err.println("Errore durante la chiusura del socket: " + ex);
             }
         }
     }
