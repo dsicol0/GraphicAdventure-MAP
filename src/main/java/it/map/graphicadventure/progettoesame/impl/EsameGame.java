@@ -21,6 +21,16 @@ public class EsameGame extends GameDescription {
     private List<String> deadZombies = new ArrayList<>();
     private List<String> unlockedRooms = new ArrayList<>();
     private int timeRemaining = 900;
+    
+    private boolean powerRestored = false;
+
+    public boolean isPowerRestored() {
+        return powerRestored;
+    }
+
+    public void setPowerRestored(boolean powerRestored) {
+        this.powerRestored = powerRestored;
+    }
 
     /**
      * Inizializza la partita creando il giocatore e caricando la mappa da file.

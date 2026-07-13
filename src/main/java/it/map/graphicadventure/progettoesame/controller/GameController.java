@@ -122,6 +122,26 @@ public class GameController extends BaseController {
      * @return Il messaggio risultante dall'azione da mostrare a schermo.
      */
     public String handleMovement(String direction) {
+        
+        // Controlloiamo se andiamo a EST, dal corridoio principale, e se la corrente è attiva abbiamo vinto
+        if (direction.equalsIgnoreCase("EST") && model.getCurrentRoom().getId() == 1 && model.isPowerRestored()) {
+            
+            // Ferma il thread del conto alla rovescia
+            if (generatorThread != null) {
+                generatorThread.stopTimer();
+            }
+            
+            // Avvia la grafica di chiusura
+            view.getGamePanel().showEndingSequence();
+            
+            // Invia i dati in classifica (Punteggio raddoppiato per la vittoria)
+            int punteggio = networkService.calculateFinalScore(model.getTimeRemaining() / 60, model.getInventory().size(), model.getDeadZombies().size()) * 2;
+            networkService.sendAndGetLeaderboard("Sopravvissuto", punteggio);
+
+            return "";
+        }
+
+        
         String response = movementController.handleMovement(direction);
         Room currentRoom = model.getCurrentRoom();
 
@@ -131,7 +151,6 @@ public class GameController extends BaseController {
             } catch (java.sql.SQLException e) {
                 System.err.println("Errore: " + e.getMessage());
             }
-
             silentAutosave();
         }
 
@@ -171,9 +190,6 @@ public class GameController extends BaseController {
                 
                 silentAutosave();
                 
-                int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
-                String classifica = networkService.sendAndGetLeaderboard("Matricola", punteggio);
-                
                 return "Hai sconfitto " + enemy.getName() + "!";
                 
             } else if (combatResult == 2) {
@@ -191,6 +207,13 @@ public class GameController extends BaseController {
                 return "Sei morto... Ricarica un salvataggio dal menù principale.";
             }
             return "Combattimento interrotto.";
+        }
+        
+        boolean zombieAlive = model.getCurrentRoom().getObjects().stream()
+                .anyMatch(obj -> obj instanceof Zombie);
+        
+        if (zombieAlive) {
+            return "Non puoi prendere o usare " + clickedObject.getName() + " adesso!\nIl professore infetto ti sbarra la strada. Devi prima affrontarlo!";
         }
 
         

@@ -10,6 +10,7 @@ import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
 import it.map.graphicadventure.progettoesame.model.interfaces.Takeable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
+import it.map.graphicadventure.progettoesame.model.Room;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
 import it.map.graphicadventure.progettoesame.model.items.Chip;
 import it.map.graphicadventure.progettoesame.model.items.ElectricPanel;
@@ -97,11 +98,20 @@ public class ObjInteractionController extends BaseController {
                 if (chipInInventory.use(clickedObject)) {
                     
                     model.getInventory().remove(chipInInventory);
+                    
+                    model.setPowerRestored(true);
+                    
+                    for (Room r : model.getRooms()) {
+                        if (r.getId() == 1) { // L'Atrio principale
+                            r.setExit("EST", null);
+                            break;
+                        }
+                    }
 
                     return "Inserisci il **Chip di Sicurezza** nella fessura del pannello...\n"
-                            + "I sistemi si riavviano con un forte ronzio elettronico!\n"
-                            + "Le luci dell'edificio si accendono. La corrente è tornata!\n\n"
-                            + "🏆 COMPLIMENTI! HAI RIPRISTINATO LA CORRENTE E SUPERATO L'ESAME! HAI VINTO! 🏆";
+                         + "I sistemi si riavviano con un forte ronzio elettronico! Le luci si accendono.\n"
+                         + "All'improvviso senti un tonfo metallico provenire dal piano di sotto...\n\n"
+                         + "Le enormi porte a EST dell'atrio principale si sono sbloccate! Corri all'uscita!";
                 }
             } else {
                 return "Esamini: " + clickedObject.getName() + ".\n"

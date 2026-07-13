@@ -463,6 +463,47 @@ public class GamePanel extends javax.swing.JPanel {
             }
         }
     }
+    
+    /**
+     * Esegue la sequenza cinematografica di fine gioco.
+     */
+    public void showEndingSequence() {
+        // 1. Ferma l'effetto macchina da scrivere se attivo
+        if (timerText != null && timerText.isRunning()) {
+            timerText.stop();
+        }
+
+        // 2. Nasconde la pulsantiera, l'inventario e le statistiche
+        jpControls.setVisible(false);
+        if (jpInventoryView != null) {
+            jpPlayingArea.remove(jpInventoryView);
+        }
+
+        // 3. Rimuove tutti gli oggetti interattivi dall'area grafica
+        jlBackground.removeAll();
+
+        this.validate();
+        
+        String imagePath = "/images/sentiero_esterno.png";
+        java.net.URL imgURL = getClass().getResource(imagePath);
+        
+        if (imgURL != null) {
+            int width = jpPlayingArea.getWidth() > 0 ? jpPlayingArea.getWidth() : 800;
+            int height = jpPlayingArea.getHeight() > 0 ? jpPlayingArea.getHeight() : 450;
+            javax.swing.ImageIcon originalImage = new javax.swing.ImageIcon(imgURL);
+            java.awt.Image scaledImage = originalImage.getImage().getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH);
+            jlBackground.setIcon(new javax.swing.ImageIcon(scaledImage));
+        }
+
+        
+        jpPlayingArea.revalidate();
+        jpPlayingArea.repaint();
+        this.revalidate();
+        this.repaint();
+
+        
+        animatedText("CLACK! Le enormi porte a vetri a EST si sbloccano.\nL'aria fredda della notte ti investe il viso. Ti ritrovi all'esterno, su un sentiero buio e desolato. Alle tue spalle, l'università infetta riecheggia di lamenti... ma tu sei fuori.\n\nSEI SOPRAVVISSUTO. HAI VINTO!");
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
