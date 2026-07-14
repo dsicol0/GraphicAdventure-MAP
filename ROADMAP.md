@@ -6,9 +6,9 @@
 
 - [x] Scegliere il nome del gioco e del gruppo
 - [x] Scrivere la descrizione dell'avventura (trama, obiettivo, ambientazione)
-- [ ] Definire le stanze dell'edificio (corridoi, aule, laboratori, ufficio del direttore, ecc.)
-- [ ] Definire le connessioni tra stanze (quali porte portano dove)
-- [ ] Disegnare/raccogliere le immagini di sfondo per ogni stanza
+- [x] Definire le stanze dell'edificio (corridoi, aule, laboratori, ufficio del direttore, ecc.)
+- [x] Definire le connessioni tra stanze (quali porte portano dove)
+- [x] Disegnare/raccogliere le immagini di sfondo per ogni stanza
 
 ---
 
@@ -18,7 +18,7 @@
 - [x] Creare i contenitori (casse, armadietti) che nascondono oggetti
 - [x] Creare il badge del Direttore (oggetto obiettivo finale)
 - [x] Implementare le interazioni: raccogliere, aprire, usare
-- [ ] Implementare la saracinesca di uscita (si sblocca solo col badge)
+- [x] Implementare la saracinesca di uscita (si sblocca solo col badge)
 
 ---
 
@@ -66,19 +66,19 @@
 
 ## Fase 8 — Documentazione
 
-- [ ] Scrivere la descrizione dell'avventura nel documento
+- [x] Scrivere la descrizione dell'avventura nel documento
 - [ ] Inserire il diagramma delle classi (porzione significativa) e commentarlo
 - [ ] Scrivere la specifica algebrica di una struttura dati usata nel progetto
-- [ ] Compilare la sezione "Dettagli implementativi" per ognuno dei 7 argomenti:
-  - [ ] Programmazione generica
-  - [ ] File
-  - [ ] Database (JDBC)
-  - [ ] Lambda Expression, stream e pipeline
-  - [ ] SWING
-  - [ ] Thread e programmazione concorrente
-  - [ ] Socket e/o REST
-- [ ] RIMUOVERE TUTTI I COMMENTI DI AI
-- [ ] Documentare il codice (Javadoc sui metodi principali)
+- [x] Compilare la sezione "Dettagli implementativi" per ognuno dei 7 argomenti:
+  - [x] Programmazione generica
+  - [x] File
+  - [x] Database (JDBC)
+  - [x] Lambda Expression, stream e pipeline
+  - [x] SWING
+  - [x] Thread e programmazione concorrente
+  - [x] Socket e/o REST
+- [x] RIMUOVERE TUTTI I COMMENTI DI AI
+- [x] Documentare il codice (Javadoc sui metodi principali)
 
 ---
 
