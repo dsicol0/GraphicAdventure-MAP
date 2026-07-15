@@ -5,6 +5,7 @@
 package it.map.graphicadventure.progettoesame.model;
 
 
+import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
 import java.util.List;
 
 /**
@@ -26,6 +27,9 @@ public class SaveData {
     private final List<String> killedEnemyIds;
     private final List<String> unlockedRoomIds;
     private int timeRemaining;
+    private boolean powerRestored;
+    
+    private final List<GameSaveDAO.ObjectSave> objectStates;
 
     /**
      * Costruisce un nuovo oggetto contenente i dati di salvataggio.
@@ -39,13 +43,15 @@ public class SaveData {
      * @param unlockedRoomIds La lista delle stanze precedentemente chiuse e ora accessibili.
      * @param timeRemaining Il tempo rimanente (in secondi) prima dello spegnimento del generatore.
      */
-    public SaveData(String currentRoom, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) {
+    public SaveData(String currentRoom, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining, boolean powerRestored, List<GameSaveDAO.ObjectSave> objectStates) {
         this.currentRoom = currentRoom;
         this.health = health;
         this.itemIds = itemIds;
         this.killedEnemyIds = killedEnemyIds;
         this.unlockedRoomIds = unlockedRoomIds;
         this.timeRemaining = timeRemaining;
+        this.powerRestored = powerRestored;
+        this.objectStates = objectStates;
     }
 
     /**
@@ -104,4 +110,8 @@ public class SaveData {
     public void setTimeRemaining(int timeRemaining) {
         this.timeRemaining = timeRemaining;
     }
+    
+    public boolean isPowerRestored() { return powerRestored; }
+    
+    public List<GameSaveDAO.ObjectSave> getObjectStates() { return objectStates; }
 }

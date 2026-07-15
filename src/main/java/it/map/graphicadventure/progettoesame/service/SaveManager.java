@@ -2,6 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package it.map.graphicadventure.progettoesame.service;
 
 import it.map.graphicadventure.progettoesame.impl.EsameGame;
@@ -12,12 +16,13 @@ import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Controller dedicato alla serializzazione logica dello stato del gioco.
- *
+ * 
  * Questa classe funge da "ponte" (o Service) tra la struttura a grafo 
  * del mondo di gioco ({@link EsameGame}) e lo stato di persistenza ({@link GameSaveDAO}). 
  * Estrae i dati vitali dal Model, 
@@ -51,23 +56,47 @@ public class SaveManager {
             return;
         }
 
-        
         List<String> itemIds = model.getInventory().stream()
                 .map(obj -> String.valueOf(obj.getId()))
                 .collect(Collectors.toList());
 
-        // Invocazione del DAO
+        
+        List<GameSaveDAO.ObjectSave> objStates = new ArrayList<>();
+        for (Room room : model.getRooms()) {
+            if (room.getObjects() != null) {
+                for (GameObject obj : room.getObjects()) {
+                    if (obj instanceof Lockable || obj instanceof Chest) {
+                        boolean isLocked = false;
+                        boolean isOpen = false;
+                        
+                        if (obj instanceof Lockable lockableObj) {
+                            isLocked = lockableObj.isLocked();
+                        }
+                        if (obj instanceof Chest chestObj) {
+                            isLocked = chestObj.isLocked();
+                            isOpen = !chestObj.isLocked();
+                        }
+                        
+                        objStates.add(new GameSaveDAO.ObjectSave(String.valueOf(obj.getId()), isLocked, isOpen));
+                    }
+                }
+            }
+        }
+
+        
         saveDao.saveGame(
                 model.getCurrentRoom().getName(), 
                 model.getPlayer().getHp(), 
                 itemIds, 
                 model.getDeadZombies(), 
                 model.getUnlockedRooms(),
-                model.getTimeRemaining()
+                model.getTimeRemaining(),
+                model.isPowerRestored(),
+                objStates
         );
     }
 
-    /**
+     /**
      * Tenta di caricare l'ultimo salvataggio disponibile nel database e di ripristinare 
      * lo stato del Model (inventario, vita, nemici, porte).
      *
@@ -80,7 +109,7 @@ public class SaveManager {
         try {
             data = saveDao.getLatestSave();
         } catch (SQLException e) {
-            System.err.println("Errore durante il recupero del salvataggio: " + e.getMessage());
+            System.err.println("Error during save recovery: " + e.getMessage());
             return false;
         }
 
@@ -89,29 +118,31 @@ public class SaveManager {
         }
 
         
+        model.setTimeRemaining(data.getTimeRemaining());
+        model.setPowerRestored(data.isPowerRestored());
+        
+        
         restoreHealth(model, data);
         restoreCurrentRoom(model, data);
         restoreInventory(model, data);
         restoreDeadZombies(model, data);
-        restoreUnlockedRoomsAndFixes(model, data);
         
-        model.setTimeRemaining(data.getTimeRemaining());
+        restoreUnlockedRoomsAndFixes(model, data);
+        restoreInteractiveObjects(model, data);
 
         return true;
     }
-    
-    
     
     private void restoreHealth(EsameGame model, SaveData data) {
         model.getPlayer().setHp(data.getHealth());
     }
 
     /**
-     * Riposiziona il giocatore nella stanza corretta usando le Stream API.
+     * Riposiziona il giocatore nella stanza corretta.
      */
     private void restoreCurrentRoom(EsameGame model, SaveData data) {
         model.getRooms().stream()
-                .filter(r -> r.getName().trim().equalsIgnoreCase(data.getRoomName().trim()))
+                .filter(room -> room.getName().trim().equalsIgnoreCase(data.getRoomName().trim()))
                 .findFirst()
                 .ifPresent(model::setCurrentRoom);
     }
@@ -129,18 +160,17 @@ public class SaveManager {
         }
     }
 
-    /**
+     /**
      * Rimuove fisicamente dalla mappa i nemici che erano già stati uccisi in precedenza.
      */
     private void restoreDeadZombies(EsameGame model, SaveData data) {
         model.getDeadZombies().clear();
         model.getDeadZombies().addAll(data.getKilledEnemyIds());
         
-        
         for (String deadId : model.getDeadZombies()) {
-            model.getRooms().forEach(r -> {
-                if (r.getObjects() != null) {
-                    r.getObjects().removeIf(obj -> String.valueOf(obj.getId()).equals(deadId));
+            model.getRooms().forEach(room -> {
+                if (room.getObjects() != null) {
+                    room.getObjects().removeIf(obj -> String.valueOf(obj.getId()).equals(deadId));
                 }
             });
         }
@@ -156,58 +186,86 @@ public class SaveManager {
         }
 
         for (String idOrName : model.getUnlockedRooms()) {
-            model.getRooms().forEach(r -> {
-                if (String.valueOf(r.getId()).equals(idOrName) || r.getName().trim().equalsIgnoreCase(idOrName.trim())) {
-                    r.setLocked(false);
+            model.getRooms().forEach(room -> {
+                if (String.valueOf(room.getId()).equals(idOrName) || room.getName().trim().equalsIgnoreCase(idOrName.trim())) {
+                    room.setLocked(false);
                 }
             });
         }
 
         applyMapSpecificFixes(model);
     }
-
+    
     /**
-     * Esegue controlli specifici (es. sblocco forzieri o chiavi nell'Aula 2).
+     * Ripristina lo stato esatto (aperto/chiuso) dei forziere e degli oggetti chiudibili
      */
-    private void applyMapSpecificFixes(EsameGame model) {
-        boolean aula2Sbloccata = model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2");
-        boolean hasChipInInventory = model.getPlayer().hasObject(19);
-
-        for (Room r : model.getRooms()) {
-            if (r.getObjects() != null) {
-
-                r.getObjects().removeIf(obj -> {
-                    
-                    if (aula2Sbloccata && obj.getId() == 8) {
-                        return true;
-                    }
-
-                    
-                    if (obj instanceof ObjectContainer && !(obj instanceof Lockable)) {
-                        if (hasChipInInventory) {
-                            return true;
+    private void restoreInteractiveObjects(EsameGame model, SaveData data) {
+        if (data.getObjectStates() == null) return;
+        
+        for (GameSaveDAO.ObjectSave savedObj : data.getObjectStates()) {
+            for (Room room : model.getRooms()) {
+                if (room.getObjects() != null) {
+                    for (GameObject obj : room.getObjects()) {
+                        
+                        if (String.valueOf(obj.getId()).equals(savedObj.getObjectId())) {
+                            if (obj instanceof Lockable lockableObj) {
+                                lockableObj.setLocked(savedObj.isLocked());
+                            }
+                            if (obj instanceof Chest chestObj) {
+                                chestObj.setLocked(savedObj.isLocked());
+                                if (!savedObj.isLocked()) {
+                                    chestObj.open(); 
+                                }
+                            }
                         }
-                        ObjectContainer<?> container = (ObjectContainer<?>) obj;
-                        return container.getInsideItems() == null || container.getInsideItems().isEmpty();
-                    }
-                    return false;
-                });
-
-                // Forza l'apertura grafica delle casse già sbloccate
-                for (GameObject obj : r.getObjects()) {
-                    if (obj instanceof Chest f) {
-
-                        if (f.getInsideItems() == null || f.getInsideItems().isEmpty() || hasChipInInventory) {
-                            f.setLocked(false);
-                            f.open();
-                        }
+                        
                     }
                 }
             }
         }
     }
 
-    /**
+     /**
+     * Esegue controlli specifici (es. sblocco forzieri o chiavi nell'Aula 2).
+     */
+    private void applyMapSpecificFixes(EsameGame model) {
+        boolean isAula2Unlocked = model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2");
+        boolean hasChipInInventory = model.getPlayer().hasObject(19);
+        boolean powerRestored = model.isPowerRestored();
+
+        for (Room room : model.getRooms()) {
+            if (room.getObjects() != null) {
+
+                room.getObjects().removeIf(obj -> {
+                    
+                    
+                    if (isAula2Unlocked && (obj.getId() == 8 || obj.getId() == 13)) {
+                        return true;
+                    }
+                    
+                    
+                    if (obj instanceof ObjectContainer && !(obj instanceof Lockable)) {
+                        
+                        
+                        if (hasChipInInventory || powerRestored) {
+                            return true;
+                        }
+                        
+                        ObjectContainer<?> container = (ObjectContainer<?>) obj;
+                        return container.getInsideItems() == null || container.getInsideItems().isEmpty();
+                    }
+                    return false;
+                });
+                
+                
+                if (powerRestored && room.getId() == 1) {
+                    room.setExit("EST", null);
+                }
+            }
+        }
+    }
+
+     /**
      * Cerca un oggetto in tutta la mappa (o dentro i contenitori) e lo rimuove fisicamente.
      * Serve a garantire l'integrità: se un oggetto viene caricato nell'inventario dal database, 
      * non deve più esistere a terra o nelle casse. Utilizza un approccio iterativo classico 
@@ -218,25 +276,24 @@ public class SaveManager {
      * @return L'oggetto trovato, oppure un'istanza generica se non era fisicamente piazzato.
      */
     private GameObject findAndRemoveItemFromWorld(EsameGame model, String itemId) {
-        for (Room r : model.getRooms()) {
-            if (r.getObjects() == null) continue;
+        for (Room room : model.getRooms()) {
+            if (room.getObjects() == null) continue;
 
-            for (int i = 0; i < r.getObjects().size(); i++) {
-                GameObject obj = r.getObjects().get(i);
+            for (int i = 0; i < room.getObjects().size(); i++) {
+                GameObject obj = room.getObjects().get(i);
 
-                
                 if (String.valueOf(obj.getId()).equals(itemId)) {
-                    return r.getObjects().remove(i);
+                    return room.getObjects().remove(i);
                 }
 
-                // Controllo ricorsivo dentro i contenitori
+                
                 if (obj instanceof ObjectContainer) {
                     ObjectContainer<?> container = (ObjectContainer<?>) obj;
                     if (container.getInsideItems() != null) {
                         for (int j = 0; j < container.getInsideItems().size(); j++) {
                             Object nested = container.getInsideItems().get(j);
                             if (nested instanceof GameObject && String.valueOf(((GameObject) nested).getId()).equals(itemId)) {
-                                return (GameObject) container.getInsideItems().remove(j); // Rimuove e restituisce l'oggetto in un colpo solo
+                                return (GameObject) container.getInsideItems().remove(j);
                             }
                         }
                     }

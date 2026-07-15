@@ -72,17 +72,20 @@ public class GameSaveDAO {
      * @param killedEnemyIds Lista degli ID dei nemici abbattuti.
      * @param unlockedRoomIds Lista delle porte precedentemente bloccate e ora aperte.
      * @param timeRemaining Secondi rimanenti per il timer di gioco.
+     * @param powerRestored Stato della corrente elettrica.
+     * @param objectStates Lista degli stati per casse e porte (aperto/chiuso).
      * @throws SQLException In caso di errore durante l'esecuzione delle query.
      */
-    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining) throws SQLException {
+    public void saveGame(String roomName, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining, boolean powerRestored, List<ObjectSave> objectStates) throws SQLException {
         // Inizia la transazione
         connection.setAutoCommit(false);
 
         // Salva i dati base della partita e recupera la chiave primaria generata (gameId)
-        PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement stmGame = connection.prepareStatement("INSERT INTO games(current_room, health, time_remaining, power_restored) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
         stmGame.setString(1, roomName);
         stmGame.setInt(2, health);
         stmGame.setInt(3, timeRemaining);
+        stmGame.setBoolean(4, powerRestored);
         stmGame.executeUpdate();
 
         int gameId = -1;
@@ -123,6 +126,18 @@ public class GameSaveDAO {
         stmRooms.executeBatch();
         stmRooms.close();
 
+        // Salva lo stato degli oggetti interattivi (Bauli, Serrature, ecc.)
+        PreparedStatement stmObj = connection.prepareStatement("INSERT INTO object_saves(game_id, object_id, is_locked, is_open) VALUES (?, ?, ?, ?)");
+        for (ObjectSave os : objectStates) {
+            stmObj.setInt(1, gameId);
+            stmObj.setString(2, os.getObjectId());
+            stmObj.setInt(3, os.isLocked() ? 1 : 0);
+            stmObj.setInt(4, os.isOpen() ? 1 : 0);
+            stmObj.addBatch();
+        }
+        stmObj.executeBatch();
+        stmObj.close();
+
         // Conferma la transazione
         connection.commit();
         connection.setAutoCommit(true);
@@ -143,7 +158,7 @@ public class GameSaveDAO {
      */
     public SaveData getLatestSave() throws SQLException {
         Statement stm = connection.createStatement();
-        ResultSet rs = stm.executeQuery("SELECT id, current_room, health, time_remaining FROM games ORDER BY id DESC LIMIT 1");
+        ResultSet rs = stm.executeQuery("SELECT id, current_room, health, time_remaining, power_restored FROM games ORDER BY id DESC LIMIT 1");
 
         SaveData data = null;
         int gameId = -1;
@@ -153,14 +168,17 @@ public class GameSaveDAO {
             String room = rs.getString("current_room");
             int health = rs.getInt("health");
             int timeRemaining = rs.getInt("time_remaining");
+            boolean powerRestored = rs.getBoolean("power_restored");
             
-            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), timeRemaining);
+         
+            data = new SaveData(room, health, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), timeRemaining, powerRestored, new ArrayList<>());
         }
         rs.close();
         stm.close();
 
         // Se un salvataggio principale esiste, procede al caricamento delle relazioni
         if (data != null && gameId != -1) {
+            
             // Recupera inventario
             PreparedStatement pstm = connection.prepareStatement("SELECT item_id FROM inventory_saves WHERE game_id = ?");
             pstm.setInt(1, gameId);
@@ -190,6 +208,20 @@ public class GameSaveDAO {
             }
             rsRooms.close();
             pstmRooms.close();
+            
+            // Recupera gli stati degli oggetti interattivi (Bauli e Porte)
+            PreparedStatement pstmObj = connection.prepareStatement("SELECT object_id, is_locked, is_open FROM object_saves WHERE game_id = ?");
+            pstmObj.setInt(1, gameId);
+            ResultSet rsObj = pstmObj.executeQuery();
+            while (rsObj.next()) {
+                data.getObjectStates().add(new ObjectSave(
+                        rsObj.getString("object_id"),
+                        rsObj.getInt("is_locked") == 1,
+                        rsObj.getInt("is_open") == 1
+                ));
+            }
+            rsObj.close();
+            pstmObj.close();
         }
         return data;
     }

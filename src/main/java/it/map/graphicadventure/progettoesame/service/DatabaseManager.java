@@ -23,8 +23,9 @@ public class DatabaseManager {
             + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + "save_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
             + "current_room TEXT NOT NULL, "
-            + "health INTEGER NOT NULL, " 
-            + "time_remaining INTEGER DEFAULT 900)";
+            + "health INTEGER NOT NULL, "
+            + "time_remaining INTEGER DEFAULT 900, "
+            + "power_restored BOOLEAN DEFAULT 0)";
 
     private static final String TABLE_INVENTORY = "CREATE TABLE IF NOT EXISTS inventory_saves ("
             + "game_id INTEGER, "
