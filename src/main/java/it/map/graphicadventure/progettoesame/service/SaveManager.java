@@ -11,7 +11,6 @@ import it.map.graphicadventure.progettoesame.model.SaveData;
 import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
 import it.map.graphicadventure.progettoesame.model.items.ObjectContainer;
 import it.map.graphicadventure.progettoesame.model.items.Chest;
-import it.map.graphicadventure.progettoesame.model.items.Chip;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -164,13 +163,13 @@ public class SaveManager {
             });
         }
 
-        applyMapSpecificFixes(model, data);
+        applyMapSpecificFixes(model);
     }
 
     /**
      * Esegue controlli specifici (es. sblocco forzieri o chiavi nell'Aula 2).
      */
-    private void applyMapSpecificFixes(EsameGame model, SaveData data) {
+    private void applyMapSpecificFixes(EsameGame model) {
         boolean aula2Sbloccata = model.getUnlockedRooms().contains("2") || model.getUnlockedRooms().contains("Aula 2");
         boolean hasChipInInventory = model.getPlayer().hasObject(19);
 
@@ -196,8 +195,7 @@ public class SaveManager {
 
                 // Forza l'apertura grafica delle casse già sbloccate
                 for (GameObject obj : r.getObjects()) {
-                    if (obj instanceof Chest) {
-                        Chest f = (Chest) obj;
+                    if (obj instanceof Chest f) {
 
                         if (f.getInsideItems() == null || f.getInsideItems().isEmpty() || hasChipInInventory) {
                             f.setLocked(false);

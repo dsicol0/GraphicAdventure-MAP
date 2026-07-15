@@ -24,7 +24,7 @@ public interface Openable {
     
     /**
      * Verifica lo stato corrente dell'oggetto.
-     * * @return true se l'oggetto è attualmente aperto, false se è chiuso.
+     * @return true se l'oggetto è attualmente aperto, false se è chiuso.
      */
     boolean isOpen();
 

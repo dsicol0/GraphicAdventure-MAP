@@ -30,7 +30,7 @@ public class LeaderboardServer {
      * viene generato un ID univoco universale per la sessione 
      * e viene avviato un {@code LeaderboardThread} per servire la richiesta.
      *
-     * * @param args Argomenti passati da riga di comando (non utilizzati).
+     * @param args Argomenti passati da riga di comando (non utilizzati).
      * @throws IOException Se la porta 6666 è già in uso o se si verifica un errore di I/O.
      */
     public static void main(String[] args) throws IOException {

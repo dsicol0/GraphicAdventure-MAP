@@ -5,6 +5,7 @@
 package it.map.graphicadventure.progettoesame.service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -75,20 +76,24 @@ public class WeatherRESTService {
             if (data != null && data.weather != null && data.weather.length > 0) {
                 String mainCondition = data.weather[0].main;
                 
-                if ("Thunderstorm".equals(mainCondition)) {
-                    return "THUNDERSTORM"; // Tuoni e Fulmini
-                } else if ("Rain".equals(mainCondition) || "Drizzle".equals(mainCondition)) {
-                    return "RAIN";         // Pioggia normale
-                } else if ("Clouds".equals(mainCondition)) {
-                    return "CLOUDS";       // Coperto/Nuvoloso
-                } else if ("Clear".equals(mainCondition)) {
-                    return "SUN";          // Soleggiato/Sereno
-                } else {
+                if (null == mainCondition) {
                     return "FOG";          // Fallback per Nebbia, Foschia, ecc.
+                } else switch (mainCondition) {
+                    case "Thunderstorm":
+                        return "THUNDERSTORM"; // Tuoni e Fulmini
+                    case "Rain":
+                    case "Drizzle":
+                        return "RAIN";         // Pioggia normale
+                    case "Clouds":
+                        return "CLOUDS";       // Coperto/Nuvoloso
+                    case "Clear":
+                        return "SUN";          // Soleggiato/Sereno
+                    default:
+                        return "FOG";          // Fallback per Nebbia, Foschia, ecc.
                 }
             }
 
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             System.err.println("Errore di connessione a OpenWeatherMap: " + e.getMessage());
         }
         

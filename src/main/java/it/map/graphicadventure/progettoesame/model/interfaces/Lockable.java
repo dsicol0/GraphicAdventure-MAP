@@ -14,13 +14,13 @@ public interface Lockable {
     
     /**
      * Verifica lo stato corrente della serratura.
-     * * @return true se l'oggetto è chiuso a chiave e inaccessibile, false se è sbloccato.
+     * @return true se l'oggetto è chiuso a chiave e inaccessibile, false se è sbloccato.
      */
     boolean isLocked();
     
     /**
      * Modifica lo stato della serratura dell'oggetto.
-     * * @param locked true per chiudere l'oggetto a chiave, false per sbloccarlo.
+     * @param locked true per chiudere l'oggetto a chiave, false per sbloccarlo.
      */
     void setLocked(boolean locked);
 }

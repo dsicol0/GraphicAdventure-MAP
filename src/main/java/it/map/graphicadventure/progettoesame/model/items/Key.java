@@ -58,8 +58,7 @@ public class Key extends GameObject implements Takeable, Usable {
      */
     @Override
     public boolean use(GameObject target) {
-        if (target instanceof Chest) {
-            Chest chest = (Chest) target;
+        if (target instanceof Chest chest) {
             
             // Proviamo a sbloccarla passando questa stessa chiave (this)
             if (chest.unlock(this)) {

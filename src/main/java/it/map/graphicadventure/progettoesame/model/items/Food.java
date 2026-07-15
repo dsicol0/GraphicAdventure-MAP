@@ -22,7 +22,7 @@ public class Food extends GameObject implements Healable, Takeable{
     
     /**
      * Costruisce un nuovo oggetto curativo.
-     * * @param id L'identificativo univoco dell'oggetto.
+     * @param id L'identificativo univoco dell'oggetto.
      * @param name Il nome del consumabile (es. "Mela", "Barretta energetica").
      * @param description La descrizione testuale dell'oggetto.
      * @param pathImage Il percorso del file immagine da mostrare nell'interfaccia.

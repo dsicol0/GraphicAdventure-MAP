@@ -166,8 +166,8 @@ public class Room {
      */
     @Override
     public boolean equals(Object o) {
-        if(o instanceof Room) {
-            return (((Room)o).getId() == this.getId());
+        if(o instanceof Room room) {
+            return (room.getId() == this.getId());
         } else {
             return false;
         }
@@ -176,6 +176,7 @@ public class Room {
     /**
      * Calcola l'hash code per questa stanza, basandosi sul suo ID univoco.
      * Garantisce il corretto posizionamento di questo oggetto all'interno di Hash Table.
+     * @return 
      */
     @Override
     public int hashCode() {

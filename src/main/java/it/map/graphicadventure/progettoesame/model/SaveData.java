@@ -20,10 +20,10 @@ import java.util.List;
  */
 public class SaveData {
 
-    private String currentRoom;
-    private int health;
-    private List<String> itemIds;
-    private List<String> killedEnemyIds;
+    private final String currentRoom;
+    private final int health;
+    private final List<String> itemIds;
+    private final List<String> killedEnemyIds;
     private final List<String> unlockedRoomIds;
     private int timeRemaining;
 
@@ -99,7 +99,7 @@ public class SaveData {
     /**
      * Aggiorna il tempo rimanente nel salvataggio.
      * Utilizzato spesso per gli autosalvataggi silenziosi che avvengono periodicamente.
-     * * @param timeRemaining Il nuovo valore in secondi da salvare.
+     * @param timeRemaining Il nuovo valore in secondi da salvare.
      */
     public void setTimeRemaining(int timeRemaining) {
         this.timeRemaining = timeRemaining;

@@ -6,7 +6,6 @@ package it.map.graphicadventure.progettoesame.model.items;
 
 import it.map.graphicadventure.progettoesame.model.GameObject;
 import it.map.graphicadventure.progettoesame.model.interfaces.Lockable;
-import it.map.graphicadventure.progettoesame.model.items.Key;
 
 /**
  * Rappresenta un contenitore chiuso a chiave (es. un forziere o una cassaforte).

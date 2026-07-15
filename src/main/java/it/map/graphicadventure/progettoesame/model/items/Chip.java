@@ -58,10 +58,7 @@ public class Chip extends GameObject implements Takeable, Usable {
      */
     @Override
     public boolean use(GameObject target) {
-        if (target instanceof ElectricPanel) {
-            return true;
-        }
-        return false; 
+        return target instanceof ElectricPanel; 
     }
 }
 

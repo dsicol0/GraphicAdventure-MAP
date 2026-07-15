@@ -17,13 +17,13 @@ public interface Healable {
     /**
      * Applica l'effetto curativo al giocatore.
      * Incrementa i punti vita attuali senza superare il limite massimo consentito.
-     * * @param player Il giocatore a cui ripristinare la salute.
+     * @param player Il giocatore a cui ripristinare la salute.
      */
     void heal(Player player);
     
     /**
      * Restituisce la quantità di punti vita che questo oggetto è in grado di curare.
-     * * @return Il valore numerico dei punti vita (HP) ripristinati.
+     * @return Il valore numerico dei punti vita (HP) ripristinati.
      */
     int getHealAmount();
 }

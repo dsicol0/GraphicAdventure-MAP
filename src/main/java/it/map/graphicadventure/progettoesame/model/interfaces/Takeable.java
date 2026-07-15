@@ -16,13 +16,13 @@ public interface Takeable {
     /**
      * Verifica se l'oggetto può essere raccolto in questo preciso momento.
      * Utile per oggetti che magari diventano raccoglibili solo dopo un certo evento.
-     * * @return true se l'oggetto può essere preso, false altrimenti.
+     * @return true se l'oggetto può essere preso, false altrimenti.
      */
     boolean isTakeable();
 
     /**
      * Modifica lo stato dell'oggetto, rendendolo raccoglibile o bloccandolo.
-     * * @param takeable true per permettere al giocatore di raccoglierlo, false per impedirglielo.
+     * @param takeable true per permettere al giocatore di raccoglierlo, false per impedirglielo.
      */
     void setTakeable(boolean takeable);
 }

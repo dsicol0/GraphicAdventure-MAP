@@ -93,7 +93,6 @@ public class GameController extends BaseController {
             startThreads(600); // 10 min * 60 sec
             
         } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
@@ -168,8 +167,7 @@ public class GameController extends BaseController {
      */
     public String processInteraction(GameObject clickedObject) {
 
-        if (clickedObject instanceof Zombie) {
-            Zombie enemy = (Zombie) clickedObject;
+        if (clickedObject instanceof Zombie enemy) {
             
             // 1 = Vittoria, 2 = Fuga, 3 = Morte/Sconfitta
             int combatResult = view.showCombatWindow(enemy, model.getPlayer(), model.getInventory());
@@ -200,7 +198,6 @@ public class GameController extends BaseController {
                 
             } else if (combatResult == 3 || model.getPlayer().getHp() <= 0) {
                 int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
-                String classifica = networkService.sendAndGetLeaderboard("Matricola_Bocciata", punteggio / 2);
 
                 view.showMainMenu();
                 
@@ -232,7 +229,7 @@ public class GameController extends BaseController {
 
     /**
      * Genera una stringa riassuntiva del contenuto dell'inventario del giocatore.
-     * * @return Una stringa formattata con la lista degli oggetti raccolti.
+     * @return Una stringa formattata con la lista degli oggetti raccolti.
      */
     public String showInventory() {
         List<GameObject> inventory = model.getInventory();
@@ -310,7 +307,6 @@ public class GameController extends BaseController {
             
         } catch (Exception ex) {
             System.err.println("Fallimento durante il caricamento del mondo.");
-            ex.printStackTrace();
         }
     }
 

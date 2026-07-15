@@ -17,9 +17,9 @@ import java.util.List;
 public class EsameGame extends GameDescription {
 
     private Player player;
-    private List<GameObject> allObjects = new ArrayList<>();
-    private List<String> deadZombies = new ArrayList<>();
-    private List<String> unlockedRooms = new ArrayList<>();
+    private final List<GameObject> allObjects = new ArrayList<>();
+    private final List<String> deadZombies = new ArrayList<>();
+    private final List<String> unlockedRooms = new ArrayList<>();
     private int timeRemaining = 900;
     
     private boolean powerRestored = false;
@@ -142,9 +142,11 @@ public class EsameGame extends GameDescription {
      */
     @Override
     public String getWelcomeMsg() {
-        return "La testa ti pulsa. Ti sei addormentato sul manuale di Java.\n"
-                + "Guardi l'orologio: sono le 3:00 del mattino.\n"
-                + "Dal corridoio senti un lamento: 'Dov'è il tuo libretttooooo...'\n"
-                + "Devi uscire di qui. Ora.\n";
+        return """
+               La testa ti pulsa. Ti sei addormentato sul manuale di Java.
+               Guardi l'orologio: sono le 3:00 del mattino.
+               Dal corridoio senti un lamento: 'Dov'\u00e8 il tuo libretttooooo...'
+               Devi uscire di qui. Ora.
+               """;
     }
 }

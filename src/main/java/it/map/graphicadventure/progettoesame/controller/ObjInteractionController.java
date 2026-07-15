@@ -62,8 +62,7 @@ public class ObjInteractionController extends BaseController {
         boolean interactionPerformed = false;
 
         // 2. Aprire, Sbloccare e Svuotare (Openable)
-        if (clickedObject instanceof Openable) {
-            Openable openableObj = (Openable) clickedObject;
+        if (clickedObject instanceof Openable openableObj) {
 
             // Mostra il messaggio specifico per la Chest rimasta nella stanza
             if (openableObj.isOpen()) {
@@ -108,10 +107,12 @@ public class ObjInteractionController extends BaseController {
                         }
                     }
 
-                    return "Inserisci il **Chip di Sicurezza** nella fessura del pannello...\n"
-                         + "I sistemi si riavviano con un forte ronzio elettronico! Le luci si accendono.\n"
-                         + "All'improvviso senti un tonfo metallico provenire dal piano di sotto...\n\n"
-                         + "Le enormi porte a EST dell'atrio principale si sono sbloccate! Corri all'uscita!";
+                    return """
+                           Inserisci il **Chip di Sicurezza** nella fessura del pannello...
+                           I sistemi si riavviano con un forte ronzio elettronico! Le luci si accendono.
+                           All'improvviso senti un tonfo metallico provenire dal piano di sotto...
+                           
+                           Le enormi porte a EST dell'atrio principale si sono sbloccate! Corri all'uscita!""";
                 }
             } else {
                 return "Esamini: " + clickedObject.getName() + ".\n"
