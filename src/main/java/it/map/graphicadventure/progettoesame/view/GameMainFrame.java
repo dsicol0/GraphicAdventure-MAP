@@ -365,7 +365,7 @@ public class GameMainFrame extends javax.swing.JFrame {
      */
     private void jbContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbContinueActionPerformed
         if (controller != null) {
-            // Deleghiamo tutta la logica complessa al GameController
+            // Deleghiamo tutta la logica al GameController
             controller.continueSavedGame();
         } else {
             System.err.println("Attenzione: Controller non collegato alla View!");

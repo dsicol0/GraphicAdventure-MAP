@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
                 if (str != null) {
                     str = str.trim();
                     
-                    // Utilizzo delle espressioni regolari per isolare i token (parole separate da spazi)
+                    
                     Pattern pattern = Pattern.compile("\\S+");
                     Matcher matcher = pattern.matcher(str);
                     boolean findcmd = matcher.find();
@@ -85,7 +85,6 @@ import java.util.regex.Pattern;
                         
                         if (name != null && scoreStr != null) {
                             try {
-                                // Conversione sicura: cattura possibili errori di formato se l'utente invia lettere invece di numeri
                                 int score = Integer.parseInt(scoreStr);
                                 ld.addScore(name, score);
                                 out.println("#ok Punteggio registrato");
@@ -114,8 +113,6 @@ import java.util.regex.Pattern;
         } catch (IOException ex) {
             System.err.println("Errore di I/O nel Thread: " + ex);
         } finally {
-            // Blocco finally vitale: si assicura che il socket venga chiuso 
-            // a prescindere dall'esito (successo o eccezione)
             try {
                 if (socket != null && !socket.isClosed()) {
                     socket.close();

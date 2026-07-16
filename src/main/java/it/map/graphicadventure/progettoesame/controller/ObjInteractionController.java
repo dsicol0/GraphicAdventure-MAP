@@ -70,21 +70,21 @@ public class ObjInteractionController extends BaseController {
                 return response.toString();
             }
 
-            // Tentativo di sblocco (se fallisce, l'interazione si ferma qui)
+            // Prova a sbloccare, nel caso fallisse si ferma qui l'interazione
             if (!handleUnlockAttempt(openableObj, response)) {
                 return response.toString();
             }
 
-            // Procede con l'apertura dell'oggetto
+            
             handleOpening(openableObj, clickedObject, response);
 
-            // Svuota il contenuto nell'inventario del giocatore
+            // Lo rimuove dal inventario
             handleContainerLoot(clickedObject, response);
 
             interactionPerformed = true;
         }
 
-        // 3. Gestione speciale per il pannello elettrico (Condizione di Vittoria)
+        // 3. Gestione per il pannello elettrico (Condizione di Vittoria)
         if (clickedObject instanceof ElectricPanel) {
 
             Chip chipInInventory = model.getInventory().stream()
@@ -121,7 +121,7 @@ public class ObjInteractionController extends BaseController {
             }
         }
         
-        // Se non è successo nulla di speciale, stampa solo la descrizione di base
+        // Se non è successo nulla, stampa solo la descrizione 
         if (!interactionPerformed) {
             response.append(clickedObject.getDescription());
         }
@@ -176,7 +176,7 @@ public class ObjInteractionController extends BaseController {
 
         if (matchingKey != null) {
             boolean unlocked = false;
-            // Se è una Chest usiamo il suo metodo unlock specifico, altrimenti sblocco base
+            // Se è una Chest usiamo il metodo unlock, altrimenti sblocco base
             if (openableObj instanceof Chest && matchingKey instanceof Key) {
                 unlocked = ((Chest<?>) openableObj).unlock((Key) matchingKey);
             } else {

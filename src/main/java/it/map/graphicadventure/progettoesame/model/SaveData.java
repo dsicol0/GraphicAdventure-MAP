@@ -4,19 +4,19 @@
  */
 package it.map.graphicadventure.progettoesame.model;
 
-
 import it.map.graphicadventure.progettoesame.service.GameSaveDAO;
 import java.util.List;
 
 /**
  * Rappresenta un'istantanea (snapshot) dello stato attuale della partita.
  *
- * Questa classe agisce strutturalmente come un DTO (Data Transfer Object).
- * Il suo scopo è raccogliere le informazioni vitali del gioco (salute, stanza, oggetti, timer)
- * in un unico contenitore, disaccoppiando il motore logico complesso ({@code EsameGame}) 
- * dal livello di persistenza (il Database). In questo modo il DAO (Data Access Object) 
- * lavora solo con dati primitivi e collezioni base, senza dipendere direttamente dagli 
- * oggetti di business complessi.
+ * Questa classe agisce strutturalmente come un DTO (Data Transfer Object). Il
+ * suo scopo è raccogliere le informazioni vitali del gioco (salute, stanza,
+ * oggetti, timer) in un unico contenitore, disaccoppiando il motore logico
+ * complesso ({@code EsameGame}) dal livello di persistenza (il Database). In
+ * questo modo il DAO (Data Access Object) lavora solo con dati primitivi e
+ * collezioni base, senza dipendere direttamente dagli oggetti di business
+ * complessi.
  *
  */
 public class SaveData {
@@ -28,20 +28,30 @@ public class SaveData {
     private final List<String> unlockedRoomIds;
     private int timeRemaining;
     private boolean powerRestored;
-    
+
     private final List<GameSaveDAO.ObjectSave> objectStates;
 
     /**
-     * Costruisce un nuovo oggetto contenente i dati di salvataggio.
-     * I dati passati rappresentano lo stato esatto del giocatore e dell'ambiente 
-     * in un preciso istante di tempo.
+     * Costruisce un nuovo oggetto contenente i dati di salvataggio. I dati
+     * passati rappresentano lo stato esatto del giocatore e dell'ambiente in un
+     * preciso istante di tempo.
      *
-     * @param currentRoom Il nome (o ID testuale) della stanza in cui si trova il giocatore.
+     * @param currentRoom Il nome (o ID testuale) della stanza in cui si trova
+     * il giocatore.
      * @param health I punti vita attuali del giocatore.
-     * @param itemIds La lista degli identificativi degli oggetti presenti nell'inventario.
-     * @param killedEnemyIds La lista degli ID dei nemici che sono già stati sconfitti.
-     * @param unlockedRoomIds La lista delle stanze precedentemente chiuse e ora accessibili.
-     * @param timeRemaining Il tempo rimanente (in secondi) prima dello spegnimento del generatore.
+     * @param itemIds La lista degli identificativi degli oggetti presenti
+     * nell'inventario.
+     * @param killedEnemyIds La lista degli ID dei nemici che sono già stati
+     * sconfitti.
+     * @param unlockedRoomIds La lista delle stanze precedentemente chiuse e ora
+     * accessibili.
+     * @param timeRemaining Il tempo rimanente (in secondi) prima dello
+     * spegnimento del generatore.
+     * @param powerRestored Lo stato della corrente elettrica al momento del
+     * salvataggio.
+     * @param objectStates La lista contenente lo stato dinamico
+     * (aperto/bloccato) degli oggetti interattivi come i bauli.
+     *
      */
     public SaveData(String currentRoom, int health, List<String> itemIds, List<String> killedEnemyIds, List<String> unlockedRoomIds, int timeRemaining, boolean powerRestored, List<GameSaveDAO.ObjectSave> objectStates) {
         this.currentRoom = currentRoom;
@@ -56,6 +66,7 @@ public class SaveData {
 
     /**
      * Restituisce l'identificativo della stanza salvata.
+     *
      * @return Il nome della stanza.
      */
     public String getRoomName() {
@@ -64,6 +75,7 @@ public class SaveData {
 
     /**
      * Restituisce i punti vita salvati del giocatore.
+     *
      * @return L'ammontare degli HP.
      */
     public int getHealth() {
@@ -72,6 +84,7 @@ public class SaveData {
 
     /**
      * Restituisce la lista degli ID degli oggetti nell'inventario.
+     *
      * @return La lista di identificativi sotto forma di stringhe.
      */
     public List<String> getItemIds() {
@@ -80,6 +93,7 @@ public class SaveData {
 
     /**
      * Restituisce la lista degli ID dei nemici sconfitti.
+     *
      * @return La lista degli ID per non far "respawnare" gli zombie uccisi.
      */
     public List<String> getKilledEnemyIds() {
@@ -88,6 +102,7 @@ public class SaveData {
 
     /**
      * Restituisce la lista degli ID delle stanze sbloccate.
+     *
      * @return Le porte che non necessitano più di chiavi.
      */
     public List<String> getUnlockedRoomIds() {
@@ -96,6 +111,7 @@ public class SaveData {
 
     /**
      * Restituisce il tempo rimasto al momento del salvataggio.
+     *
      * @return I secondi mancanti al Game Over.
      */
     public int getTimeRemaining() {
@@ -103,15 +119,35 @@ public class SaveData {
     }
 
     /**
-     * Aggiorna il tempo rimanente nel salvataggio.
-     * Utilizzato spesso per gli autosalvataggi silenziosi che avvengono periodicamente.
+     * Aggiorna il tempo rimanente nel salvataggio. Utilizzato spesso per gli
+     * autosalvataggi silenziosi che avvengono periodicamente.
+     *
      * @param timeRemaining Il nuovo valore in secondi da salvare.
      */
     public void setTimeRemaining(int timeRemaining) {
         this.timeRemaining = timeRemaining;
     }
-    
-    public boolean isPowerRestored() { return powerRestored; }
-    
-    public List<GameSaveDAO.ObjectSave> getObjectStates() { return objectStates; }
+
+    /**
+     * Restituisce lo stato della rete elettrica salvato in questa istantanea.
+     *
+     * @return {@code true} se la corrente era stata ripristinata, {@code false}
+     * altrimenti.
+     */
+    public boolean isPowerRestored() {
+        return powerRestored;
+    }
+
+    /**
+     * Restituisce la lista degli stati dinamici degli oggetti interattivi (come
+     * bauli e serrature). Questo è fondamentale per garantire che un
+     * contenitore aperto dal giocatore rimanga coerentemente aperto al
+     * ricaricamento della partita.
+     *
+     * @return La lista degli stati degli oggetti sotto forma di
+     * {@link GameSaveDAO.ObjectSave}.
+     */
+    public List<GameSaveDAO.ObjectSave> getObjectStates() {
+        return objectStates;
+    }
 }

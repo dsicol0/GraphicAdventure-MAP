@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementazione concreta dell'avventura grafica.
- * Estende {@link GameDescription} per mantenere lo stato globale della partita in corso.
- * Gestisce i dati del giocatore, il timer del generatore e tiene traccia 
+ * Implementazione concreta dell'avventura grafica. Estende
+ * {@link GameDescription} per mantenere lo stato globale della partita in
+ * corso. Gestisce i dati del giocatore, il timer del generatore e tiene traccia
  * degli eventi persistenti (come i nemici sconfitti e le stanze sbloccate).
  *
  */
@@ -21,46 +21,37 @@ public class EsameGame extends GameDescription {
     private final List<String> deadZombies = new ArrayList<>();
     private final List<String> unlockedRooms = new ArrayList<>();
     private int timeRemaining = 900;
-    
     private boolean powerRestored = false;
-
-    public boolean isPowerRestored() {
-        return powerRestored;
-    }
-
-    public void setPowerRestored(boolean powerRestored) {
-        this.powerRestored = powerRestored;
-    }
 
     /**
      * Inizializza la partita creando il giocatore e caricando la mappa da file.
      *
-     * @throws Exception Se si verifica un errore durante la lettura del file di mappa 
-     * o se la stanza di partenza (ID 1) non esiste.
+     * @throws Exception Se si verifica un errore durante la lettura del file di
+     * mappa o se la stanza di partenza (ID 1) non esiste.
      */
     @Override
     public void init() throws Exception {
-        
+
         player = new Player("Matricola Disperata");
 
-        String pathMappa = "src/main/resources/map/map.txt";
-        List<Room> stanzeCaricate = FileMapParser.loadMapFromFile(pathMappa);
+        String mapPath = "src/main/resources/map/map.txt";
+        List<Room> loadedRooms = FileMapParser.loadMapFromFile(mapPath);
 
         // Aggiunge tutte le stanze caricate alla lista principale ereditata dal padre
-        stanzeCaricate.forEach(room -> getRooms().add(room));
+        loadedRooms.forEach(room -> getRooms().add(room));
 
-        stanzeCaricate.stream()
+        loadedRooms.stream()
                 .filter(room -> room.getObjects() != null)
                 .flatMap(room -> room.getObjects().stream())
                 .forEach(obj -> allObjects.add(obj));
 
         // Trova la stanza iniziale (ID 1). Lancia un'eccezione se il file mappa è corrotto.
-        Room stanzaIniziale = getRooms().stream()
+        Room initialRoom = getRooms().stream()
                 .filter(room -> room.getId() == 1)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Errore critico: Aula Studio (ID 1) non trovata nel file di configurazione!"));
-        
-        setCurrentRoom(stanzaIniziale);
+
+        setCurrentRoom(initialRoom);
 
         // Blocca preventivamente la porta dell'Aula 2 (ID 2)
         getRooms().stream()
@@ -71,6 +62,7 @@ public class EsameGame extends GameDescription {
 
     /**
      * Restituisce l'entità del giocatore.
+     *
      * @return L'oggetto Player.
      */
     public Player getPlayer() {
@@ -78,7 +70,9 @@ public class EsameGame extends GameDescription {
     }
 
     /**
-     * Restituisce una lista piatta contenente tutti gli oggetti presenti nel gioco.
+     * Restituisce una lista piatta contenente tutti gli oggetti presenti nel
+     * gioco.
+     *
      * @return La lista completa dei GameObject.
      */
     public List<GameObject> getAllObjects() {
@@ -86,8 +80,9 @@ public class EsameGame extends GameDescription {
     }
 
     /**
-     * Restituisce la lista degli ID dei nemici sconfitti.
-     * Usata per evitare che gli zombie ricompaiano dopo un caricamento.
+     * Restituisce la lista degli ID dei nemici sconfitti. Usata per evitare che
+     * gli zombie ricompaiano dopo un caricamento.
+     *
      * @return La lista degli ID dei morti.
      */
     public List<String> getDeadZombies() {
@@ -96,6 +91,7 @@ public class EsameGame extends GameDescription {
 
     /**
      * Restituisce la lista degli ID (o nomi) delle stanze sbloccate.
+     *
      * @return La lista delle stanze aperte.
      */
     public List<String> getUnlockedRooms() {
@@ -104,6 +100,7 @@ public class EsameGame extends GameDescription {
 
     /**
      * Restituisce i secondi rimanenti prima che il generatore si spenga.
+     *
      * @return Il tempo rimanente in secondi.
      */
     public int getTimeRemaining() {
@@ -112,6 +109,7 @@ public class EsameGame extends GameDescription {
 
     /**
      * Aggiorna il tempo rimanente del generatore.
+     *
      * @param timeRemaining I nuovi secondi rimanenti.
      */
     public void setTimeRemaining(int timeRemaining) {
@@ -119,9 +117,34 @@ public class EsameGame extends GameDescription {
     }
 
     /**
-     * Restituisce l'inventario in uso.
-     * Sovrascrive il metodo di base per puntare direttamente all'inventario
-     * specifico dell'oggetto {@link Player}.
+     * Verifica se la corrente elettrica principale del dipartimento è stata
+     * ripristinata. Lo stato della rete elettrica è fondamentale per lo sblocco
+     * dei sistemi informatici e per consentire l'apertura delle vie di fuga.
+     *
+     * @return {@code true} se la corrente è attiva, {@code false} se è ancora
+     * staccata.
+     */
+    public boolean isPowerRestored() {
+        return powerRestored;
+    }
+
+    /**
+     * Imposta lo stato della rete elettrica del dipartimento. Questo metodo
+     * viene richiamato quando il giocatore risolve l'enigma o interagisce con
+     * il quadro elettrico, scatenando eventi a cascata nella mappa (es. sblocco
+     * delle porte elettroniche o rimozione di ostacoli).
+     *
+     * @param powerRestored {@code true} per riattivare la corrente,
+     * {@code false} per disattivarla.
+     */
+    public void setPowerRestored(boolean powerRestored) {
+        this.powerRestored = powerRestored;
+    }
+
+    /**
+     * Restituisce l'inventario in uso. Sovrascrive il metodo di base per
+     * puntare direttamente all'inventario specifico dell'oggetto
+     * {@link Player}.
      *
      * @return La lista degli oggetti attualmente posseduti dal giocatore.
      */
@@ -131,12 +154,13 @@ public class EsameGame extends GameDescription {
         if (player != null && player.getInventory() != null) {
             return player.getInventory().getList();
         }
-        
+
         return super.getInventory();
     }
 
     /**
-     * Fornisce il testo narrativo iniziale mostrato all'avvio di una nuova partita.
+     * Fornisce il testo narrativo iniziale mostrato all'avvio di una nuova
+     * partita.
      *
      * @return La stringa introduttiva della trama.
      */

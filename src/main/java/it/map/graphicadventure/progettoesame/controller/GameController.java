@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class GameController extends BaseController {
 
-    // Riferimenti ai due sotto-controller
+    // Riferimenti ai sotto-controller
     private final MovementController movementController;
     private final ObjInteractionController interactionController;
     private final NetworkService networkService;
@@ -133,7 +133,7 @@ public class GameController extends BaseController {
             // Avvia la grafica di chiusura
             view.getGamePanel().showEndingSequence();
             
-            // Invia i dati in classifica (Punteggio raddoppiato per la vittoria)
+            // raddoppia puntegio per la vittoria
             int punteggio = networkService.calculateFinalScore(model.getTimeRemaining() / 60, model.getInventory().size(), model.getDeadZombies().size()) * 2;
             networkService.sendAndGetLeaderboard("Sopravvissuto", punteggio);
 
@@ -197,7 +197,6 @@ public class GameController extends BaseController {
                 return "Sei fuggito dal combattimento in preda al panico!";
                 
             } else if (combatResult == 3 || model.getPlayer().getHp() <= 0) {
-                int punteggio = networkService.calculateFinalScore(15, model.getInventory().size(), model.getDeadZombies().size());
 
                 view.showMainMenu();
                 
@@ -209,6 +208,7 @@ public class GameController extends BaseController {
         boolean zombieAlive = model.getCurrentRoom().getObjects().stream()
                 .anyMatch(obj -> obj instanceof Zombie);
         
+        // Se lo zombie è vivo non puoi raccoglie o usare, devi prima ucciderlo
         if (zombieAlive) {
             return "Non puoi prendere o usare " + clickedObject.getName() + " adesso!\nIl professore infetto ti sbarra la strada. Devi prima affrontarlo!";
         }
@@ -317,7 +317,7 @@ public class GameController extends BaseController {
     private void silentAutosave() {
         
         try {
-            int timeToSave = (generatorThread != null) ? generatorThread.getTimeRemaining() : 900;
+            int timeToSave = (generatorThread != null) ? generatorThread.getTimeRemaining() : 600;
             model.setTimeRemaining(timeToSave);
             saveManager.saveGame(model);
         } catch (SQLException e) {
@@ -339,12 +339,12 @@ public class GameController extends BaseController {
      *
      * @param minutiGeneratore I secondi iniziali da impostare nel timer.
      */
-    private void startThreads(int minutiGeneratore) {
+    private void startThreads(int playerMinutes) {
         if (generatorThread != null) {
             generatorThread.stopTimer();
         }
 
-        generatorThread = new GeneratorThread(minutiGeneratore, view.getGamePanel(), this);
+        generatorThread = new GeneratorThread(playerMinutes, view.getGamePanel(), this);
         generatorThread.start();
         
     }

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 
 /**
  * Controller dedicato alla serializzazione logica dello stato del gioco.
- * 
- * Questa classe funge da "ponte" (o Service) tra la struttura a grafo 
- * del mondo di gioco ({@link EsameGame}) e lo stato di persistenza ({@link GameSaveDAO}). 
- * Estrae i dati vitali dal Model, 
- * li converte in formati primitivi (o liste di ID) e li passa al DAO per la scrittura su DB.
- * Al contrario, in fase di caricamento, effettua il ripristino di tutti gli oggetti 
- * nelle corrette stanze o nell'inventario del giocatore.
+ *
+ * Questa classe funge da "ponte" (o Service) tra la struttura a grafo del mondo
+ * di gioco ({@link EsameGame}) e lo stato di persistenza ({@link GameSaveDAO}).
+ * Estrae i dati vitali dal Model, li converte in formati primitivi (o liste di
+ * ID) e li passa al DAO per la scrittura su DB. Al contrario, in fase di
+ * caricamento, effettua il ripristino di tutti gli oggetti nelle corrette
+ * stanze o nell'inventario del giocatore.
  *
  */
 public class SaveManager {
@@ -37,6 +37,7 @@ public class SaveManager {
 
     /**
      * Costruisce il gestore dei salvataggi.
+     *
      * @param saveDao L'oggetto DAO già connesso al database.
      */
     public SaveManager(GameSaveDAO saveDao) {
@@ -44,12 +45,14 @@ public class SaveManager {
     }
 
     /**
-     * Estrae lo stato corrente (snapshot) del gioco e comanda al DAO di salvarlo.
-     * Sfrutta le Stream API (Paradigma Funzionale) per trasformare 
-     * la lista di oggetti fisici nell'inventario in una semplice lista di stringhe (ID).
+     * Estrae lo stato corrente (snapshot) del gioco e comanda al DAO di
+     * salvarlo. Sfrutta le Stream API (Paradigma Funzionale) per trasformare la
+     * lista di oggetti fisici nell'inventario in una semplice lista di stringhe
+     * (ID).
      *
      * @param model L'istanza principale del motore di gioco.
-     * @throws SQLException Se si verifica un problema di scrittura nel database.
+     * @throws SQLException Se si verifica un problema di scrittura nel
+     * database.
      */
     public void saveGame(EsameGame model) throws SQLException {
         if (model.getCurrentRoom() == null || model.getPlayer() == null) {
@@ -60,7 +63,6 @@ public class SaveManager {
                 .map(obj -> String.valueOf(obj.getId()))
                 .collect(Collectors.toList());
 
-        
         List<GameSaveDAO.ObjectSave> objStates = new ArrayList<>();
         for (Room room : model.getRooms()) {
             if (room.getObjects() != null) {
@@ -68,7 +70,7 @@ public class SaveManager {
                     if (obj instanceof Lockable || obj instanceof Chest) {
                         boolean isLocked = false;
                         boolean isOpen = false;
-                        
+
                         if (obj instanceof Lockable lockableObj) {
                             isLocked = lockableObj.isLocked();
                         }
@@ -76,19 +78,18 @@ public class SaveManager {
                             isLocked = chestObj.isLocked();
                             isOpen = !chestObj.isLocked();
                         }
-                        
+
                         objStates.add(new GameSaveDAO.ObjectSave(String.valueOf(obj.getId()), isLocked, isOpen));
                     }
                 }
             }
         }
 
-        
         saveDao.saveGame(
-                model.getCurrentRoom().getName(), 
-                model.getPlayer().getHp(), 
-                itemIds, 
-                model.getDeadZombies(), 
+                model.getCurrentRoom().getName(),
+                model.getPlayer().getHp(),
+                itemIds,
+                model.getDeadZombies(),
                 model.getUnlockedRooms(),
                 model.getTimeRemaining(),
                 model.isPowerRestored(),
@@ -96,13 +97,13 @@ public class SaveManager {
         );
     }
 
-     /**
-     * Tenta di caricare l'ultimo salvataggio disponibile nel database e di ripristinare 
-     * lo stato del Model (inventario, vita, nemici, porte).
+    /**
+     * Tenta di caricare l'ultimo salvataggio disponibile nel database e di
+     * ripristinare lo stato del Model (inventario, vita, nemici, porte).
      *
      * @param model L'istanza del gioco da sovrascrivere con i dati vecchi.
-     * @return {@code true} se il caricamento ha avuto successo, {@code false} se non ci sono 
-     * salvataggi o si è verificato un errore.
+     * @return {@code true} se il caricamento ha avuto successo, {@code false}
+     * se non ci sono salvataggi o si è verificato un errore.
      */
     public boolean loadGame(EsameGame model) {
         SaveData data;
@@ -117,22 +118,20 @@ public class SaveManager {
             return false;
         }
 
-        
         model.setTimeRemaining(data.getTimeRemaining());
         model.setPowerRestored(data.isPowerRestored());
-        
-        
+
         restoreHealth(model, data);
         restoreCurrentRoom(model, data);
         restoreInventory(model, data);
         restoreDeadZombies(model, data);
-        
+
         restoreUnlockedRoomsAndFixes(model, data);
         restoreInteractiveObjects(model, data);
 
         return true;
     }
-    
+
     private void restoreHealth(EsameGame model, SaveData data) {
         model.getPlayer().setHp(data.getHealth());
     }
@@ -148,7 +147,8 @@ public class SaveManager {
     }
 
     /**
-     * Ricarica gli oggetti nell'inventario prelevandoli dal mondo di gioco (per evitare duplicati).
+     * Ricarica gli oggetti nell'inventario prelevandoli dal mondo di gioco (per
+     * evitare duplicati).
      */
     private void restoreInventory(EsameGame model, SaveData data) {
         model.getInventory().clear();
@@ -160,13 +160,14 @@ public class SaveManager {
         }
     }
 
-     /**
-     * Rimuove fisicamente dalla mappa i nemici che erano già stati uccisi in precedenza.
+    /**
+     * Rimuove fisicamente dalla mappa i nemici che erano già stati uccisi in
+     * precedenza.
      */
     private void restoreDeadZombies(EsameGame model, SaveData data) {
         model.getDeadZombies().clear();
         model.getDeadZombies().addAll(data.getKilledEnemyIds());
-        
+
         for (String deadId : model.getDeadZombies()) {
             model.getRooms().forEach(room -> {
                 if (room.getObjects() != null) {
@@ -195,18 +196,21 @@ public class SaveManager {
 
         applyMapSpecificFixes(model);
     }
-    
+
     /**
-     * Ripristina lo stato esatto (aperto/chiuso) dei forziere e degli oggetti chiudibili
+     * Ripristina lo stato esatto (aperto/chiuso) dei forziere e degli oggetti
+     * chiudibili
      */
     private void restoreInteractiveObjects(EsameGame model, SaveData data) {
-        if (data.getObjectStates() == null) return;
-        
+        if (data.getObjectStates() == null) {
+            return;
+        }
+
         for (GameSaveDAO.ObjectSave savedObj : data.getObjectStates()) {
             for (Room room : model.getRooms()) {
                 if (room.getObjects() != null) {
                     for (GameObject obj : room.getObjects()) {
-                        
+
                         if (String.valueOf(obj.getId()).equals(savedObj.getObjectId())) {
                             if (obj instanceof Lockable lockableObj) {
                                 lockableObj.setLocked(savedObj.isLocked());
@@ -214,18 +218,18 @@ public class SaveManager {
                             if (obj instanceof Chest chestObj) {
                                 chestObj.setLocked(savedObj.isLocked());
                                 if (!savedObj.isLocked()) {
-                                    chestObj.open(); 
+                                    chestObj.open();
                                 }
                             }
                         }
-                        
+
                     }
                 }
             }
         }
     }
 
-     /**
+    /**
      * Esegue controlli specifici (es. sblocco forzieri o chiavi nell'Aula 2).
      */
     private void applyMapSpecificFixes(EsameGame model) {
@@ -237,27 +241,23 @@ public class SaveManager {
             if (room.getObjects() != null) {
 
                 room.getObjects().removeIf(obj -> {
-                    
-                    
+
                     if (isAula2Unlocked && (obj.getId() == 8 || obj.getId() == 13)) {
                         return true;
                     }
-                    
-                    
+
                     if (obj instanceof ObjectContainer && !(obj instanceof Lockable)) {
-                        
-                        
+
                         if (hasChipInInventory || powerRestored) {
                             return true;
                         }
-                        
+
                         ObjectContainer<?> container = (ObjectContainer<?>) obj;
                         return container.getInsideItems() == null || container.getInsideItems().isEmpty();
                     }
                     return false;
                 });
-                
-                
+
                 if (powerRestored && room.getId() == 1) {
                     room.setExit("EST", null);
                 }
@@ -265,19 +265,23 @@ public class SaveManager {
         }
     }
 
-     /**
-     * Cerca un oggetto in tutta la mappa (o dentro i contenitori) e lo rimuove fisicamente.
-     * Serve a garantire l'integrità: se un oggetto viene caricato nell'inventario dal database, 
-     * non deve più esistere a terra o nelle casse. Utilizza un approccio iterativo classico 
-     * per poter eseguire la rimozione sicura senza iteratori.
+    /**
+     * Cerca un oggetto in tutta la mappa (o dentro i contenitori) e lo rimuove
+     * fisicamente. Serve a garantire l'integrità: se un oggetto viene caricato
+     * nell'inventario dal database, non deve più esistere a terra o nelle
+     * casse. Utilizza un approccio iterativo classico per poter eseguire la
+     * rimozione sicura senza iteratori.
      *
      * @param model Il motore di gioco.
      * @param itemId L'ID dell'oggetto da cercare e rimuovere.
-     * @return L'oggetto trovato, oppure un'istanza generica se non era fisicamente piazzato.
+     * @return L'oggetto trovato, oppure un'istanza generica se non era
+     * fisicamente piazzato.
      */
     private GameObject findAndRemoveItemFromWorld(EsameGame model, String itemId) {
         for (Room room : model.getRooms()) {
-            if (room.getObjects() == null) continue;
+            if (room.getObjects() == null) {
+                continue;
+            }
 
             for (int i = 0; i < room.getObjects().size(); i++) {
                 GameObject obj = room.getObjects().get(i);
@@ -286,7 +290,6 @@ public class SaveManager {
                     return room.getObjects().remove(i);
                 }
 
-                
                 if (obj instanceof ObjectContainer) {
                     ObjectContainer<?> container = (ObjectContainer<?>) obj;
                     if (container.getInsideItems() != null) {
@@ -301,7 +304,6 @@ public class SaveManager {
             }
         }
 
-        
         return model.getAllObjects().stream()
                 .filter(obj -> String.valueOf(obj.getId()).equals(itemId))
                 .findFirst()
