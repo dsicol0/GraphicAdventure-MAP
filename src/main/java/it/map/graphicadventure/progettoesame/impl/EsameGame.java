@@ -20,7 +20,7 @@ public class EsameGame extends GameDescription {
     private final List<GameObject> allObjects = new ArrayList<>();
     private final List<String> deadZombies = new ArrayList<>();
     private final List<String> unlockedRooms = new ArrayList<>();
-    private int timeRemaining = 900;
+    private int timeRemaining = 600;
     private boolean powerRestored = false;
 
     /**
@@ -45,11 +45,10 @@ public class EsameGame extends GameDescription {
                 .flatMap(room -> room.getObjects().stream())
                 .forEach(obj -> allObjects.add(obj));
 
-        // Trova la stanza iniziale (ID 1). Lancia un'eccezione se il file mappa è corrotto.
         Room initialRoom = getRooms().stream()
                 .filter(room -> room.getId() == 1)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Errore critico: Aula Studio (ID 1) non trovata nel file di configurazione!"));
+                .orElse(null);
 
         setCurrentRoom(initialRoom);
 
